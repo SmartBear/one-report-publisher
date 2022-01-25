@@ -8,13 +8,7 @@
     "project": "tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "import",
-    "simple-import-sort",
-    "node",
-    "@typescript-eslint"
-  ],
+  "plugins": ["import", "simple-import-sort", "node", "@typescript-eslint"],
   "extends": [
     "eslint:recommended",
     "plugin:import/typescript",

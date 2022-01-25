@@ -64,20 +64,28 @@ describe('publish', () => {
   it('publishes junit.xml files', async () => {
     const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
-    const stats = await lstat('test/fixtures/simple.xml')
-
-    await publish(['test/fixtures/simple.xml'], organizationId, `http://localhost:${port}`)
+    await publish(['test/fixtures/*.{xml,json}'], organizationId, `http://localhost:${port}`)
     // Then
     const expected: ReceivedRequest[] = [
       {
         url: `/api/organization/${organizationId}/executions`,
         headers: {
-          'content-type': 'text/xml',
-          'content-length': String(stats.size),
+          'content-type': 'application/json',
+          'content-length': String((await lstat('test/fixtures/cucumber.json')).size),
           connection: 'close',
           host: `localhost:${port}`,
         },
-        body: await readFile('test/fixtures/simple.xml'),
+        body: await readFile('test/fixtures/cucumber.json'),
+      },
+      {
+        url: `/api/organization/${organizationId}/executions`,
+        headers: {
+          'content-type': 'text/xml',
+          'content-length': String((await lstat('test/fixtures/junit.xml')).size),
+          connection: 'close',
+          host: `localhost:${port}`,
+        },
+        body: await readFile('test/fixtures/junit.xml'),
       },
     ]
     assert.deepStrictEqual(receivedRequests, expected)

@@ -2,11 +2,21 @@ import http from 'node:http'
 import fs from 'node:fs'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
+import fg from 'fast-glob'
+import { extname } from 'node:path'
 
 const lstat = promisify(fs.lstat)
 
+type Extension = '.xml' | '.json'
+const extensions: Extension[] = ['.xml', '.json']
+
+const contentTypes: Record<Extension, string> = {
+  '.xml': 'text/xml',
+  '.json': 'application/json',
+}
+
 export default async function publish(
-  paths: readonly string[],
+  globs: readonly string[],
   organizationId: string,
   baseUrl: string
 ): Promise<void[]> {
@@ -14,6 +24,17 @@ export default async function publish(
     `/api/organization/${encodeURIComponent(organizationId)}/executions`,
     baseUrl
   ).toString()
+
+  const paths = (
+    await Promise.all(
+      globs.reduce<readonly Promise<string[]>[]>((prev, glob) => {
+        return prev.concat(fg(glob))
+      }, [])
+    )
+  )
+    .flatMap((paths) => paths)
+    .filter((path) => extensions.includes(extname(path) as Extension))
+    .sort()
 
   return Promise.all(paths.map((path) => publishFile(path, url)))
 }
@@ -27,7 +48,7 @@ async function publishFile(path: string, url: string): Promise<void> {
           {
             method: 'POST',
             headers: {
-              'Content-Type': 'text/xml',
+              'Content-Type': contentTypes[extname(path) as Extension],
               'Content-Length': stat.size,
             },
           },
