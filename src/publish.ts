@@ -18,6 +18,15 @@ const contentTypes: Record<Extension, string> = {
   '.json': 'application/json',
 }
 
+/**
+ * Publishes test results to OneReport
+ *
+ * @param globs a list of globs pointing to JUnit XML and Cucumber JSON files
+ * @param organizationId the Organization ID on OneReport
+ * @param baseUrl the base URL of OneReport (e.g. https://one-report.vercel.app/)
+ * @param env the local environment, e.g. process.env (used to detect Git info from env vars set by CI)
+ * @param authenticate a function that returns HTTP request headers for authentication (such as {Cookie: ...})
+ */
 export default async function publish(
   globs: readonly string[],
   organizationId: string,
