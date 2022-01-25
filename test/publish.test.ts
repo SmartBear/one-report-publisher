@@ -3,14 +3,15 @@ import fs from 'fs'
 import { promisify } from 'util'
 import http from 'http'
 import { AddressInfo } from 'net'
+import { Readable, pipeline } from 'stream'
 
 const readFile = promisify(fs.readFile)
+const lstat = promisify(fs.lstat)
 
 type ReceivedRequest = {
   url: string
   headers: http.IncomingHttpHeaders
-  // content: Buffer
-  // mediaType: string
+  body: Buffer
 }
 
 export default async function publish(
@@ -23,6 +24,8 @@ export default async function publish(
     baseUrl
   ).toString()
 
+  const stats = await lstat(paths[0])
+
   return new Promise<void>((resolve, reject) => {
     const req = http.request(
       url,
@@ -30,6 +33,7 @@ export default async function publish(
         method: 'POST',
         headers: {
           'Content-Type': 'text/xml',
+          'Content-Length': stats.size,
         },
       },
       (res) => {
@@ -41,8 +45,26 @@ export default async function publish(
     )
 
     req.on('error', reject)
-    req.end()
+
+    const file = fs.createReadStream(paths[0])
+
+    pipeline(file, req, (err) => {
+      try {
+        if (err) return reject(err)
+        resolve()
+      } finally {
+        req.end()
+      }
+    })
   })
+}
+
+async function readStream(req: Readable): Promise<Buffer> {
+  const chunks = []
+  for await (const chunk of req) {
+    chunks.push(chunk)
+  }
+  return Buffer.concat(chunks)
 }
 
 describe('publish', () => {
@@ -53,13 +75,21 @@ describe('publish', () => {
   beforeEach(async () => {
     port = await new Promise<number>((resolve) => {
       server = http.createServer((req, res) => {
-        assert(req.url)
-        receivedRequests.push({
-          url: req.url,
-          headers: req.headers,
-        })
-        res.statusCode = 201
-        res.end()
+        readStream(req)
+          .then((body) => {
+            assert(req.url)
+            receivedRequests.push({
+              url: req.url,
+              headers: req.headers,
+              body,
+            })
+            res.statusCode = 201
+            res.end()
+          })
+          .catch((err) => {
+            res.statusCode = 500
+            res.end(err.stack)
+          })
       })
       server.listen(0, () => {
         resolve((server.address() as AddressInfo).port)
@@ -78,6 +108,8 @@ describe('publish', () => {
   it('publishes junit.xml files', async () => {
     const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
+    const stats = await lstat('test/fixtures/simple.xml')
+
     await publish(['test/fixtures/simple.xml'], organizationId, `http://localhost:${port}`)
     // Then
     const expected: ReceivedRequest[] = [
@@ -85,12 +117,11 @@ describe('publish', () => {
         url: `/api/organization/${organizationId}/executions`,
         headers: {
           'content-type': 'text/xml',
-          'content-length': '0',
+          'content-length': String(stats.size),
           connection: 'close',
           host: `localhost:${port}`,
         },
-        // content: await readFile('test/fixtures/simple.xml'),
-        // mediaType: 'text/xml',
+        body: await readFile('test/fixtures/simple.xml'),
       },
     ]
     assert.deepStrictEqual(receivedRequests, expected)
