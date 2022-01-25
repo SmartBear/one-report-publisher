@@ -1,9 +1,10 @@
-import assert from 'assert'
-import fs from 'fs'
-import { promisify } from 'util'
-import http from 'http'
-import { AddressInfo } from 'net'
-import { Readable, pipeline } from 'stream'
+import assert from 'node:assert'
+import fs from 'node:fs'
+import { promisify } from 'node:util'
+import http from 'node:http'
+import { AddressInfo } from 'node:net'
+import { Readable } from 'node:stream'
+import publish from '../src/publish.js'
 
 const readFile = promisify(fs.readFile)
 const lstat = promisify(fs.lstat)
@@ -12,51 +13,6 @@ type ReceivedRequest = {
   url: string
   headers: http.IncomingHttpHeaders
   body: Buffer
-}
-
-export default async function publish(
-  paths: readonly string[],
-  organizationId: string,
-  baseUrl: string
-) {
-  const url = new URL(
-    `/api/organization/${encodeURIComponent(organizationId)}/executions`,
-    baseUrl
-  ).toString()
-
-  const stats = await lstat(paths[0])
-
-  return new Promise<void>((resolve, reject) => {
-    const req = http.request(
-      url,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/xml',
-          'Content-Length': stats.size,
-        },
-      },
-      (res) => {
-        if (res.statusCode !== 201) {
-          return reject(new Error(`Unexpected status code ${res.statusCode}`))
-        }
-        return resolve()
-      }
-    )
-
-    req.on('error', reject)
-
-    const file = fs.createReadStream(paths[0])
-
-    pipeline(file, req, (err) => {
-      try {
-        if (err) return reject(err)
-        resolve()
-      } finally {
-        req.end()
-      }
-    })
-  })
 }
 
 async function readStream(req: Readable): Promise<Buffer> {
