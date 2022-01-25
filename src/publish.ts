@@ -2,6 +2,7 @@ import ciEnvironment, { CiEnvironment, Env } from '@cucumber/ci-environment'
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import http from 'node:http'
+import https from 'node:https'
 import { extname } from 'node:path'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
@@ -38,10 +39,8 @@ export async function publish<ResponseBody>(
 ): Promise<readonly ResponseBody[]> {
   const authHeaders = await authenticate()
 
-  const url = new URL(
-    `/api/organization/${encodeURIComponent(organizationId)}/executions`,
-    baseUrl
-  ).toString()
+  const url = new URL(`/api/organization/${encodeURIComponent(organizationId)}/execution`, baseUrl)
+
   const ciEnv = ciEnvironment(env)
 
   const paths = (
@@ -60,30 +59,53 @@ export async function publish<ResponseBody>(
 
 async function publishFile<ResponseBody>(
   path: string,
-  url: string,
+  url: URL,
   ciEnv: CiEnvironment | undefined,
   authHeaders: http.OutgoingHttpHeaders
 ): Promise<ResponseBody> {
   return new Promise<ResponseBody>((resolve, reject) => {
     lstat(path)
       .then((stat) => {
-        const req = http.request(
-          url,
+        let h: typeof http | typeof https
+        switch (url.protocol) {
+          case 'http:':
+            h = http
+            break
+          case 'https:':
+            h = https
+            break
+          default:
+            return reject(new Error(`Unsupported protocol: ${url.toString()}`))
+        }
+        const headers = {
+          'Content-Type': contentTypes[extname(path) as Extension],
+          'Content-Length': stat.size,
+          ...(ciEnv?.git?.remote ? { 'OneReport-SourceControl': ciEnv.git.remote } : {}),
+          ...(ciEnv?.git?.revision ? { 'OneReport-Revision': ciEnv.git.revision } : {}),
+          ...(ciEnv?.git?.branch ? { 'OneReport-Branch': ciEnv.git.branch } : {}),
+          ...(ciEnv?.git?.tag ? { 'OneReport-Tag': ciEnv.git.tag } : {}),
+          ...authHeaders,
+        }
+        const req = h.request(
+          url.toString(),
           {
             method: 'POST',
-            headers: {
-              'Content-Type': contentTypes[extname(path) as Extension],
-              'Content-Length': stat.size,
-              ...(ciEnv?.git?.remote ? { 'OneReport-SourceControl': ciEnv.git.remote } : {}),
-              ...(ciEnv?.git?.revision ? { 'OneReport-Revision': ciEnv.git.revision } : {}),
-              ...(ciEnv?.git?.branch ? { 'OneReport-Branch': ciEnv.git.branch } : {}),
-              ...(ciEnv?.git?.tag ? { 'OneReport-Tag': ciEnv.git.tag } : {}),
-              ...authHeaders,
-            },
+            headers,
           },
           (res) => {
             if (res.statusCode !== 201) {
-              return reject(new Error(`Unexpected status code ${res.statusCode}`))
+              return reject(
+                new Error(`Unexpected status code ${res.statusCode}
+POST ${url.toString()}
+> ${Object.entries(headers)
+                  .map(([h, v]) => `${h}: ${v}`)
+                  .join('\n> ')}
+
+< ${Object.entries(res.headers)
+                  .map(([h, v]) => `${h}: ${v}`)
+                  .join('\n< ')}
+`)
+              )
             }
             readStream(res)
               .then((buffer) => {
