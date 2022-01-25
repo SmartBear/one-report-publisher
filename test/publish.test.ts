@@ -8,6 +8,7 @@ const readFile = promisify(fs.readFile)
 
 type ReceivedRequest = {
   url: string
+  headers: http.IncomingHttpHeaders
   // content: Buffer
   // mediaType: string
 }
@@ -27,6 +28,9 @@ export default async function publish(
       url,
       {
         method: 'POST',
+        headers: {
+          'Content-Type': 'text/xml',
+        },
       },
       (res) => {
         if (res.statusCode !== 201) {
@@ -52,6 +56,7 @@ describe('publish', () => {
         assert(req.url)
         receivedRequests.push({
           url: req.url,
+          headers: req.headers,
         })
         res.statusCode = 201
         res.end()
@@ -78,6 +83,12 @@ describe('publish', () => {
     const expected: ReceivedRequest[] = [
       {
         url: `/api/organization/${organizationId}/executions`,
+        headers: {
+          'content-type': 'text/xml',
+          'content-length': '0',
+          connection: 'close',
+          host: `localhost:${port}`,
+        },
         // content: await readFile('test/fixtures/simple.xml'),
         // mediaType: 'text/xml',
       },
