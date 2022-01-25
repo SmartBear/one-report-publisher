@@ -7,9 +7,9 @@ import { AddressInfo } from 'net'
 const readFile = promisify(fs.readFile)
 
 type ReceivedRequest = {
-  uri: string
-  content: Buffer
-  mediaType: string
+  url: string
+  // content: Buffer
+  // mediaType: string
 }
 
 export default async function publish(
@@ -42,12 +42,17 @@ export default async function publish(
 }
 
 describe('publish', () => {
+  let receivedRequests: ReceivedRequest[]
   let server: http.Server
   let port: number
 
   beforeEach(async () => {
     port = await new Promise<number>((resolve) => {
       server = http.createServer((req, res) => {
+        assert(req.url)
+        receivedRequests.push({
+          url: req.url,
+        })
         res.statusCode = 201
         res.end()
       })
@@ -55,6 +60,7 @@ describe('publish', () => {
         resolve((server.address() as AddressInfo).port)
       })
     })
+    receivedRequests = []
   })
 
   afterEach(async () => {
@@ -65,16 +71,15 @@ describe('publish', () => {
   })
 
   it('publishes junit.xml files', async () => {
-    const receivedRequests: ReceivedRequest[] = []
     const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     await publish(['test/fixtures/simple.xml'], organizationId, `http://localhost:${port}`)
     // Then
     const expected: ReceivedRequest[] = [
       {
-        uri: `/api/organizations/${organizationId}/executions`,
-        content: await readFile('test/fixtures/simple.xml'),
-        mediaType: 'text/xml',
+        url: `/api/organization/${organizationId}/executions`,
+        // content: await readFile('test/fixtures/simple.xml'),
+        // mediaType: 'text/xml',
       },
     ]
     assert.deepStrictEqual(receivedRequests, expected)
