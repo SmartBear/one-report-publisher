@@ -1,3 +1,3 @@
 import http from 'node:http'
 
-export type Authenticate = () => http.OutgoingHttpHeaders
+export type Authenticate = () => Promise<http.OutgoingHttpHeaders>

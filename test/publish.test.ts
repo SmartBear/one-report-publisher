@@ -79,7 +79,7 @@ describe('publish', () => {
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
-      () => ({})
+      () => Promise.resolve({})
     )
     // Then
     const expected: ReceivedRequest[] = [

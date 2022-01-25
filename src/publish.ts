@@ -25,7 +25,7 @@ export default async function publish(
   env: Env,
   authenticate: Authenticate
 ): Promise<void[]> {
-  const authHeaders = authenticate()
+  const authHeaders = await authenticate()
 
   const url = new URL(
     `/api/organization/${encodeURIComponent(organizationId)}/executions`,
