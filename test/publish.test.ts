@@ -78,7 +78,8 @@ describe('publish', () => {
       ['test/fixtures/*.{xml,json}'],
       organizationId,
       `http://localhost:${port}`,
-      fakeEnv
+      fakeEnv,
+      () => ({})
     )
     // Then
     const expected: ReceivedRequest[] = [

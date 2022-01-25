@@ -6,6 +6,8 @@ import { extname } from 'node:path'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
 
+import { Authenticate } from './types'
+
 const lstat = promisify(fs.lstat)
 
 type Extension = '.xml' | '.json'
@@ -20,8 +22,11 @@ export default async function publish(
   globs: readonly string[],
   organizationId: string,
   baseUrl: string,
-  env: Env
+  env: Env,
+  authenticate: Authenticate
 ): Promise<void[]> {
+  const authHeaders = authenticate()
+
   const url = new URL(
     `/api/organization/${encodeURIComponent(organizationId)}/executions`,
     baseUrl
@@ -39,10 +44,15 @@ export default async function publish(
     .filter((path) => extensions.includes(extname(path) as Extension))
     .sort()
 
-  return Promise.all(paths.map((path) => publishFile(path, url, ciEnv)))
+  return Promise.all(paths.map((path) => publishFile(path, url, ciEnv, authHeaders)))
 }
 
-async function publishFile(path: string, url: string, ciEnv?: CiEnvironment): Promise<void> {
+async function publishFile(
+  path: string,
+  url: string,
+  ciEnv: CiEnvironment | undefined,
+  authHeaders: http.OutgoingHttpHeaders
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     lstat(path)
       .then((stat) => {
@@ -57,6 +67,7 @@ async function publishFile(path: string, url: string, ciEnv?: CiEnvironment): Pr
               ...(ciEnv?.git?.revision ? { 'OneReport-Revision': ciEnv.git.revision } : {}),
               ...(ciEnv?.git?.branch ? { 'OneReport-Branch': ciEnv.git.branch } : {}),
               ...(ciEnv?.git?.tag ? { 'OneReport-Tag': ciEnv.git.tag } : {}),
+              ...authHeaders,
             },
           },
           (res) => {
