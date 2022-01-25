@@ -6,7 +6,8 @@ import { extname } from 'node:path'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
 
-import { Authenticate } from './types'
+import { readStream } from './readStream.js'
+import { Authenticate } from './types.js'
 
 const lstat = promisify(fs.lstat)
 
@@ -26,14 +27,15 @@ const contentTypes: Record<Extension, string> = {
  * @param baseUrl the base URL of OneReport (e.g. https://one-report.vercel.app/)
  * @param env the local environment, e.g. process.env (used to detect Git info from env vars set by CI)
  * @param authenticate a function that returns HTTP request headers for authentication (such as {Cookie: ...})
+ * @return an array of ResponseBody constructed by parsing the response of each request as JSON
  */
-export default async function publish(
+export async function publish<ResponseBody>(
   globs: readonly string[],
   organizationId: string,
   baseUrl: string,
   env: Env,
   authenticate: Authenticate
-): Promise<void[]> {
+): Promise<readonly ResponseBody[]> {
   const authHeaders = await authenticate()
 
   const url = new URL(
@@ -53,16 +55,16 @@ export default async function publish(
     .filter((path) => extensions.includes(extname(path) as Extension))
     .sort()
 
-  return Promise.all(paths.map((path) => publishFile(path, url, ciEnv, authHeaders)))
+  return Promise.all<ResponseBody>(paths.map((path) => publishFile(path, url, ciEnv, authHeaders)))
 }
 
-async function publishFile(
+async function publishFile<ResponseBody>(
   path: string,
   url: string,
   ciEnv: CiEnvironment | undefined,
   authHeaders: http.OutgoingHttpHeaders
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+): Promise<ResponseBody> {
+  return new Promise<ResponseBody>((resolve, reject) => {
     lstat(path)
       .then((stat) => {
         const req = http.request(
@@ -83,7 +85,16 @@ async function publishFile(
             if (res.statusCode !== 201) {
               return reject(new Error(`Unexpected status code ${res.statusCode}`))
             }
-            return resolve()
+            readStream(res)
+              .then((buffer) => {
+                try {
+                  const responseBody = JSON.parse(buffer.toString('utf-8')) as ResponseBody
+                  return resolve(responseBody)
+                } catch (err) {
+                  reject(err)
+                }
+              })
+              .catch(reject)
           }
         )
 
@@ -94,7 +105,6 @@ async function publishFile(
         pipeline(file, req, (err) => {
           try {
             if (err) return reject(err)
-            resolve()
           } finally {
             req.end()
           }

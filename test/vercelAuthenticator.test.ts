@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-import { vercelAuthenticator } from '../src/vercelAuthenticator.js'
+import { vercelAuthenticator } from '../src/index.js'
 
 describe('vercelAuthenticator', () => {
   it('returns a jwt cookie when password is correct', async () => {

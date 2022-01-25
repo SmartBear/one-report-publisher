@@ -3,30 +3,26 @@ import assert from 'node:assert'
 import fs from 'node:fs'
 import http from 'node:http'
 import { AddressInfo } from 'node:net'
-import { Readable } from 'node:stream'
 import { promisify } from 'node:util'
 
-import publish from '../src/publish.js'
+import { publish } from '../src/index.js'
+import { readStream } from '../src/readStream.js'
 
 const readFile = promisify(fs.readFile)
 const lstat = promisify(fs.lstat)
 
-type ReceivedRequest = {
+type ServerRequest = {
   url: string
   headers: http.IncomingHttpHeaders
   body: Buffer
 }
 
-async function readStream(req: Readable): Promise<Buffer> {
-  const chunks = []
-  for await (const chunk of req) {
-    chunks.push(chunk)
-  }
-  return Buffer.concat(chunks)
+type TestResponseBody = {
+  hello: string
 }
 
 describe('publish', () => {
-  let receivedRequests: ReceivedRequest[]
+  let serverRequests: ServerRequest[]
   let server: http.Server
   let port: number
 
@@ -36,13 +32,16 @@ describe('publish', () => {
         readStream(req)
           .then((body) => {
             assert(req.url)
-            receivedRequests.push({
+            serverRequests.push({
               url: req.url,
               headers: req.headers,
               body,
             })
             res.statusCode = 201
-            res.end()
+            const responseBody: TestResponseBody = {
+              hello: 'world',
+            }
+            res.end(JSON.stringify(responseBody))
           })
           .catch((err) => {
             res.statusCode = 500
@@ -53,7 +52,7 @@ describe('publish', () => {
         resolve((server.address() as AddressInfo).port)
       })
     })
-    receivedRequests = []
+    serverRequests = []
   })
 
   afterEach(async () => {
@@ -74,15 +73,14 @@ describe('publish', () => {
       GITHUB_REF: 'refs/heads/main',
     }
 
-    await publish(
+    const responseBodies = await publish<TestResponseBody>(
       ['test/fixtures/*.{xml,json}'],
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
       () => Promise.resolve({})
     )
-    // Then
-    const expected: ReceivedRequest[] = [
+    const expectedServerRequests: ServerRequest[] = [
       {
         url: `/api/organization/${organizationId}/executions`,
         headers: {
@@ -110,6 +108,17 @@ describe('publish', () => {
         body: await readFile('test/fixtures/junit.xml'),
       },
     ]
-    assert.deepStrictEqual(receivedRequests, expected)
+    assert.deepStrictEqual(serverRequests, expectedServerRequests)
+
+    const expectedResponseBodies: TestResponseBody[] = [
+      {
+        hello: 'world',
+      },
+      {
+        hello: 'world',
+      },
+    ]
+
+    assert.deepStrictEqual(responseBodies, expectedResponseBodies)
   })
 })
