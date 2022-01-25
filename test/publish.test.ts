@@ -82,7 +82,7 @@ describe('publish', () => {
     )
     const expectedServerRequests: ServerRequest[] = [
       {
-        url: `/api/organization/${organizationId}/executions`,
+        url: `/api/organization/${organizationId}/execution`,
         headers: {
           'content-type': 'application/json',
           'content-length': String((await lstat('test/fixtures/cucumber.json')).size),
@@ -95,7 +95,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/cucumber.json'),
       },
       {
-        url: `/api/organization/${organizationId}/executions`,
+        url: `/api/organization/${organizationId}/execution`,
         headers: {
           'content-type': 'text/xml',
           'content-length': String((await lstat('test/fixtures/junit.xml')).size),
@@ -108,7 +108,12 @@ describe('publish', () => {
         body: await readFile('test/fixtures/junit.xml'),
       },
     ]
-    assert.deepStrictEqual(serverRequests, expectedServerRequests)
+    // Requests are sent in parallel, so we don't know what request hit the server first.
+    const sortedServerRequests =
+      serverRequests[0].headers['content-type'] === 'application/json'
+        ? serverRequests
+        : serverRequests.reverse()
+    assert.deepStrictEqual(sortedServerRequests, expectedServerRequests)
 
     const expectedResponseBodies: TestResponseBody[] = [
       {

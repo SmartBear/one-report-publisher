@@ -8,7 +8,7 @@ type OneReportResponseBody = {
 }
 
 describe('oneReportPublish', () => {
-  it.only('publishes to one-report.vercel.app', async () => {
+  it('publishes to one-report.vercel.app', async () => {
     if (!process.env.ONE_REPORT_ORGANIZATION_ID) {
       console.error(
         'WARNING - not testing OneReport publishing. Set ONE_REPORT_ORGANIZATION_ID to test it'
