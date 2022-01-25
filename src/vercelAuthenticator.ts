@@ -1,4 +1,4 @@
-import https from 'node:https'
+import https from 'https'
 
 import { Authenticate } from './types'
 

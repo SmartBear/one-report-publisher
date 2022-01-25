@@ -1,4 +1,4 @@
-import assert from 'node:assert'
+import assert from 'assert'
 
 import { publish, vercelAuthenticator } from '../src/index.js'
 
