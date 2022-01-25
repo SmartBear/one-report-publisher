@@ -6,9 +6,27 @@ import { AddressInfo } from 'net'
 
 const readFile = promisify(fs.readFile)
 
-type ReceivedFile = {
+type ReceivedRequest = {
+  uri: string
   content: Buffer
   mediaType: string
+}
+
+export default async function publish(paths: readonly string[], organizationId: string, baseUrl: string) {
+  const url = new URL( `/api/organization/${encodeURIComponent(organizationId)}/executions`, baseUrl).toString()
+
+  return new Promise<void>((resolve, reject) => {
+    const req = http.request(url, {
+      method: 'POST',
+      },
+      (res) => {
+        if (res.statusCode !== 201) { return reject(new Error(`Unexpected status code ${res.statusCode}`)) }
+        return resolve()
+      })
+
+    req.on('error', reject)
+    req.end()
+  })
 }
 
 describe('publish',  () => {
@@ -35,19 +53,20 @@ describe('publish',  () => {
   })
 
   it('publishes junit.xml files', async() => {
-    const receivedFiles: ReceivedFile[] = []
+    const receivedRequests: ReceivedRequest[] = []
+    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
-    // Given
-
-    console.log({port})
-
-    // When
-
+    await publish(
+      ['test/fixtures/simple.xml'],
+      organizationId,
+      `http://localhost:${port}`
+    )
     // Then
-    const expected: ReceivedFile[] = [{
+    const expected: ReceivedRequest[] = [{
+      uri: `/api/organizations/${organizationId}/executions`,
       content: await readFile('test/fixtures/simple.xml'),
       mediaType: 'text/xml'
     }]
-    // assert.deepStrictEqual(receivedFiles, expected)
+    assert.deepStrictEqual(receivedRequests, expected)
   })
 })
