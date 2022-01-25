@@ -1,9 +1,10 @@
-import http from 'node:http'
+import ciEnvironment, { CiEnvironment, Env } from '@cucumber/ci-environment'
+import fg from 'fast-glob'
 import fs from 'node:fs'
+import http from 'node:http'
+import { extname } from 'node:path'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
-import fg from 'fast-glob'
-import { extname } from 'node:path'
 
 const lstat = promisify(fs.lstat)
 
@@ -18,12 +19,14 @@ const contentTypes: Record<Extension, string> = {
 export default async function publish(
   globs: readonly string[],
   organizationId: string,
-  baseUrl: string
+  baseUrl: string,
+  env: Env
 ): Promise<void[]> {
   const url = new URL(
     `/api/organization/${encodeURIComponent(organizationId)}/executions`,
     baseUrl
   ).toString()
+  const ciEnv = ciEnvironment(env)
 
   const paths = (
     await Promise.all(
@@ -36,10 +39,10 @@ export default async function publish(
     .filter((path) => extensions.includes(extname(path) as Extension))
     .sort()
 
-  return Promise.all(paths.map((path) => publishFile(path, url)))
+  return Promise.all(paths.map((path) => publishFile(path, url, ciEnv)))
 }
 
-async function publishFile(path: string, url: string): Promise<void> {
+async function publishFile(path: string, url: string, ciEnv?: CiEnvironment): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     lstat(path)
       .then((stat) => {
@@ -50,6 +53,10 @@ async function publishFile(path: string, url: string): Promise<void> {
             headers: {
               'Content-Type': contentTypes[extname(path) as Extension],
               'Content-Length': stat.size,
+              ...(ciEnv?.git?.remote ? { 'OneReport-SourceControl': ciEnv.git.remote } : {}),
+              ...(ciEnv?.git?.revision ? { 'OneReport-Revision': ciEnv.git.revision } : {}),
+              ...(ciEnv?.git?.branch ? { 'OneReport-Branch': ciEnv.git.branch } : {}),
+              ...(ciEnv?.git?.tag ? { 'OneReport-Tag': ciEnv.git.tag } : {}),
             },
           },
           (res) => {

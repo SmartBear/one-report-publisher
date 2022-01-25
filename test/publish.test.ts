@@ -1,9 +1,11 @@
+import { Env } from '@cucumber/ci-environment'
 import assert from 'node:assert'
 import fs from 'node:fs'
-import { promisify } from 'node:util'
 import http from 'node:http'
 import { AddressInfo } from 'node:net'
 import { Readable } from 'node:stream'
+import { promisify } from 'node:util'
+
 import publish from '../src/publish.js'
 
 const readFile = promisify(fs.readFile)
@@ -61,10 +63,23 @@ describe('publish', () => {
     })
   })
 
-  it('publishes junit.xml files', async () => {
+  it('publishes files from glob', async () => {
     const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
-    await publish(['test/fixtures/*.{xml,json}'], organizationId, `http://localhost:${port}`)
+    const fakeEnv: Env = {
+      GITHUB_SERVER_URL: 'https://github.com',
+      GITHUB_REPOSITORY: 'SmartBear/one-report-publisher',
+      GITHUB_RUN_ID: '154666429',
+      GITHUB_SHA: 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
+      GITHUB_REF: 'refs/heads/main',
+    }
+
+    await publish(
+      ['test/fixtures/*.{xml,json}'],
+      organizationId,
+      `http://localhost:${port}`,
+      fakeEnv
+    )
     // Then
     const expected: ReceivedRequest[] = [
       {
@@ -74,6 +89,9 @@ describe('publish', () => {
           'content-length': String((await lstat('test/fixtures/cucumber.json')).size),
           connection: 'close',
           host: `localhost:${port}`,
+          'onereport-sourcecontrol': 'https://github.com/SmartBear/one-report-publisher.git',
+          'onereport-revision': 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
+          'onereport-branch': 'main',
         },
         body: await readFile('test/fixtures/cucumber.json'),
       },
@@ -84,6 +102,9 @@ describe('publish', () => {
           'content-length': String((await lstat('test/fixtures/junit.xml')).size),
           connection: 'close',
           host: `localhost:${port}`,
+          'onereport-sourcecontrol': 'https://github.com/SmartBear/one-report-publisher.git',
+          'onereport-revision': 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
+          'onereport-branch': 'main',
         },
         body: await readFile('test/fixtures/junit.xml'),
       },

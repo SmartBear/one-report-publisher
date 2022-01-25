@@ -1,6 +1,6 @@
 {
   "name": "@smartbear/one-report-publisher",
-  "version": "15.0.1",
+  "version": "0.0.1",
   "description": "Publish Test Results to SmartBear OneReport",
   "type": "module",
   "main": "dist/cjs/src/index.js",
@@ -69,6 +69,7 @@
     "test": "test"
   },
   "dependencies": {
+    "@cucumber/ci-environment": "9.0.0",
     "fast-glob": "3.2.11"
   }
 }
