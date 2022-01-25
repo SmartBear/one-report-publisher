@@ -1,5 +1,5 @@
 {
-  "name": "@SmartBear/one-report-publisher",
+  "name": "@smartbear/one-report-publisher",
   "version": "15.0.1",
   "description": "Publish Test Results to SmartBear OneReport",
   "type": "module",

@@ -1,0 +1,8 @@
+<testsuite tests="4">
+    <testcase classname="ClassOne" name="ASuccessfulTest"/>
+    <testcase classname="ClassOne" name="AnotherSuccessfulTest"/>
+    <testcase classname="ClassTwo" name="AFailingTest">
+        <failure type="NotEnoughFoo"> details about failure </failure>
+    </testcase>
+    <testcase classname="ClassFour" name="ClassFour"/>
+</testsuite>
