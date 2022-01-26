@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Command } from 'commander'
 import { OneReportResponseBody, publish, vercelAuthenticator } from 'src/index.js'
 import { URL } from 'url'
