@@ -26,7 +26,7 @@ for details about [supported CI servers](https://github.com/cucumber/ci-environm
 The command-line tool can be launched with the Node.js `npx` command:
 
 ```
-npx @smartbear/one-report-publisher --help
+npx @smartbear/one-report-publisher@v0.0.12 --help
 
 Usage: one-report-publisher [options]
 
@@ -52,7 +52,7 @@ The GitHub Action can be used as follows:
 
 ```yml
 - name: 'Publish to OneReport'
-  uses: smartbear/one-report-publisher@v0.0.10
+  uses: smartbear/one-report-publisher@v0.0.12
   with:
     organization-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
     password: ${{ secrets.ONE_REPORT_PASSWORD }}
