@@ -7218,6 +7218,10 @@ async function main() {
   const password = import_core.default.getInput('password')
   const globs = import_core.default.getMultilineInput('reports')
   const baseUrl = import_core.default.getInput('url')
+  console.log('OrganizationId', organizationId)
+  console.log('Password?', !!password)
+  console.log('Globs', JSON.stringify(globs))
+  console.log('URL', baseUrl)
   const responseBodies = await publish(
     globs,
     organizationId,
@@ -7234,7 +7238,10 @@ async function main() {
   )
 }
 main()
-  .then((urls) => import_core.default.setOutput('report-urls', urls))
+  .then((urls) => {
+    console.log('URLS', JSON.stringify(urls))
+    import_core.default.setOutput('report-urls', urls)
+  })
   .catch((error) => import_core.default.setFailed(error.message))
 /*!
  * fill-range <https://github.com/jonschlinkert/fill-range>

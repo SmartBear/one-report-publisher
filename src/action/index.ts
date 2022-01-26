@@ -8,6 +8,11 @@ async function main() {
   const globs = core.getMultilineInput('reports')
   const baseUrl = core.getInput('url')
 
+  console.log('OrganizationId', organizationId)
+  console.log('Password?', !!password)
+  console.log('Globs', JSON.stringify(globs))
+  console.log('URL', baseUrl)
+
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
     organizationId,
@@ -24,5 +29,8 @@ async function main() {
 }
 
 main()
-  .then((urls) => core.setOutput('report-urls', urls))
+  .then((urls) => {
+    console.log('URLS', JSON.stringify(urls))
+    core.setOutput('report-urls', urls)
+  })
   .catch((error) => core.setFailed(error.message))
