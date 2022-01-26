@@ -55,6 +55,10 @@ export async function publish<ResponseBody>(
     .filter((path) => extensions.includes(extname(path) as Extension))
     .sort()
 
+  if (paths.length === 0) {
+    throw new Error(`No report files found. Please check your globs: ${JSON.stringify(globs)}`)
+  }
+
   return Promise.all<ResponseBody>(paths.map((path) => publishFile(path, url, ciEnv, authHeaders)))
 }
 

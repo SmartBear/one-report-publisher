@@ -41,7 +41,5 @@ jobs:
         with:
           organization-id: ${{ secrets.ONE_REPORT_ORGANIZATION_ID }}
           password: ${{ secrets.ONE_REPORT_PASSWORD }}
-          reports: |
-            tmp/test/*.json
-            tmp/test/*.xml
+          reports: tmp/tests/*.{json,xml}
       - run: npm run eslint

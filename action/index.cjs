@@ -7111,6 +7111,9 @@ async function publish(globs, organizationId, baseUrl, env, authenticate) {
     .flatMap((paths2) => paths2)
     .filter((path) => extensions.includes((0, import_path.extname)(path)))
     .sort()
+  if (paths.length === 0) {
+    throw new Error(`No report files found. Please check your globs: ${JSON.stringify(globs)}`)
+  }
   return Promise.all(paths.map((path) => publishFile(path, url, ciEnv, authHeaders)))
 }
 async function publishFile(path, url, ciEnv, authHeaders) {
