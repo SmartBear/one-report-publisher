@@ -97,7 +97,7 @@ describe('publish', () => {
       {
         url: `/api/organization/${organizationId}/execution`,
         headers: {
-          'content-type': 'text/monkeys',
+          'content-type': 'text/xml',
           'content-length': String((await lstat('test/fixtures/junit.xml')).size),
           connection: 'close',
           host: `localhost:${port}`,
