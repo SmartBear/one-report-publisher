@@ -4,6 +4,23 @@
 
 This is a tool that publishes test results to SmartBear OneReport. It is intended to be used in Continuous Integration workflows.
 
+The tool supports the following file formats:
+
+- JUnit XML
+- Cucumber JSON
+- Cucumber Messages
+- Zip files (containing any of the above)
+
+The tool will also send Git metadata to OneReport:
+
+- Repository URL
+- Commit SHA
+- Current Branch
+- Current Tag (if available)
+
+The Git metadata is detected from environment variables defined by the CI server. See [cucumber/ci-environment](https://github.com/cucumber/ci-environment#readme)
+for details about [supported CI servers](https://github.com/cucumber/ci-environment#supported-ci-servers).
+
 ## Command Line
 
 The command-line tool can be launched with the Node.js `npx` command:
