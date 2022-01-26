@@ -103,7 +103,7 @@ async function publishFile<ResponseBody>(
             if (res.statusCode !== 201) {
               return reject(
                 new Error(`Unexpected status code ${res.statusCode}
-POST ${url.toString()}
+POST ${url.toString()} -d @${path}
 > ${Object.entries(headers)
                   .map(([h, v]) => `${h}: ${v}`)
                   .join('\n> ')}
