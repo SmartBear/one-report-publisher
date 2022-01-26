@@ -12,11 +12,8 @@
     "strictNullChecks": true,
     "experimentalDecorators": true,
     "module": "ESNext",
-    "lib": [
-      "ES6",
-      "dom"
-    ],
-    "target": "ES6",
+    "lib": ["ES6", "dom"],
+    "target": "ESNext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "noEmit": true,

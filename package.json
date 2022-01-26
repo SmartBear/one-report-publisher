@@ -20,7 +20,8 @@
   "scripts": {
     "build:cjs": "tsc --build tsconfig.build-cjs.json && cp package.cjs.json dist/cjs/package.json",
     "build:esm": "tsc --build tsconfig.build-esm.json",
-    "build": "npm run build:cjs && npm run build:esm",
+    "build:action": "esbuild src/action/index.ts --bundle --platform=node --outfile=action/index.cjs",
+    "build": "npm run build:cjs && npm run build:esm && npm run build:action",
     "test": "npm run mocha:esm && npm run mocha:cjs",
     "mocha:esm": "mocha",
     "mocha:cjs": "npm run build:cjs && mocha --config .mocharc-cjs.cjs dist/cjs/test",
@@ -48,10 +49,12 @@
   },
   "homepage": "https://github.com/SmartBear/one-report-publisher#readme",
   "devDependencies": {
+    "@actions/core": "1.6.0",
     "@types/mocha": "9.1.0",
     "@types/node": "17.0.12",
     "@typescript-eslint/eslint-plugin": "5.10.1",
     "@typescript-eslint/parser": "5.10.1",
+    "esbuild": "0.14.14",
     "eslint": "8.7.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.25.4",

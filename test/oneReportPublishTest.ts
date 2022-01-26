@@ -1,11 +1,6 @@
 import assert from 'assert'
 
-import { publish, vercelAuthenticator } from '../src/index.js'
-
-type OneReportResponseBody = {
-  testSetExecutionId: string
-  reportId: string
-}
+import { OneReportResponseBody, publish, vercelAuthenticator } from '../src/index.js'
 
 describe('oneReportPublish', () => {
   it('publishes to one-report.vercel.app', async () => {
