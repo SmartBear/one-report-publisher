@@ -1,4 +1,4 @@
-[![test-javascript](https://github.com/SmartBear/one-report-publisher/actions/workflows/test-javascript.yaml/badge.svg)](https://github.com/SmartBear/one-report-publisher/actions/workflows/test-javascript.yaml)
+[![Run Tests](https://github.com/SmartBear/one-report-publisher/actions/workflows/test.yaml/badge.svg)](https://github.com/SmartBear/one-report-publisher/actions/workflows/test.yaml)
 
 # OneReport Publisher
 
