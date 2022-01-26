@@ -74,7 +74,7 @@ describe('publish', () => {
     }
 
     const responseBodies = await publish<TestResponseBody>(
-      ['test/fixtures/*.{xml,json,ndjson}'],
+      ['test/fixtures/*.{xml,json,ndjson,zip}'],
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
@@ -120,6 +120,19 @@ describe('publish', () => {
         },
         body: await readFile('test/fixtures/cucumber.ndjson'),
       },
+      {
+        url: `/api/organization/${organizationId}/execution`,
+        headers: {
+          'content-type': 'application/zip',
+          'content-length': String((await lstat('test/fixtures/bundled.zip')).size),
+          connection: 'close',
+          host: `localhost:${port}`,
+          'onereport-sourcecontrol': 'https://github.com/SmartBear/one-report-publisher.git',
+          'onereport-revision': 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
+          'onereport-branch': 'main',
+        },
+        body: await readFile('test/fixtures/bundled.zip'),
+      },
     ]
     // Requests are sent in parallel, so we don't know what request hit the server first.
     const sortByContentType = (a: ServerRequest, b: ServerRequest) =>
@@ -130,6 +143,9 @@ describe('publish', () => {
     assert.deepStrictEqual(sortedServerRequests, sortedExpectedServerRequests)
 
     const expectedResponseBodies: TestResponseBody[] = [
+      {
+        hello: 'world',
+      },
       {
         hello: 'world',
       },
