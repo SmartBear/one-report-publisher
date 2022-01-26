@@ -28,11 +28,12 @@ main()
   .then((reportUrls) => {
     // Set report URLs as output, in case someone wants to do something special with them
     core.setOutput('report-urls', reportUrls)
+
     // Also print each URL, for convenience
-    console.log('::group::Report URLs')
+    core.startGroup('Report URLs')
     for (const reportUrl of reportUrls) {
-      console.log(reportUrl)
+      core.info(reportUrl)
     }
-    console.log('::endgroup::')
+    core.endGroup()
   })
   .catch((error) => core.setFailed(error.message))

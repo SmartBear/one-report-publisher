@@ -7238,11 +7238,11 @@ async function main() {
 main()
   .then((reportUrls) => {
     import_core.default.setOutput('report-urls', reportUrls)
-    console.log('::group::Report URLs')
+    import_core.default.startGroup('Report URLs')
     for (const reportUrl of reportUrls) {
-      console.log(reportUrl)
+      import_core.default.info(reportUrl)
     }
-    console.log('::endgroup::')
+    import_core.default.endGroup()
   })
   .catch((error) => import_core.default.setFailed(error.message))
 /*!
