@@ -9,9 +9,9 @@ type OneReportResponseBody = {
 
 describe('oneReportPublish', () => {
   it('publishes to one-report.vercel.app', async () => {
-    if (!process.env.ONE_REPORT_ORGANIZATION_ID) {
+    if (!process.env.ONE_REPORT_TEST_ORGANIZATION_ID) {
       console.error(
-        'WARNING - not testing OneReport publishing. Set ONE_REPORT_ORGANIZATION_ID to test it'
+        'WARNING - not testing OneReport publishing. Set ONE_REPORT_TEST_ORGANIZATION_ID to test it'
       )
       return
     }
@@ -25,7 +25,7 @@ describe('oneReportPublish', () => {
     const baseUrl = `https://one-report.vercel.app`
     const responseBodies = await publish<OneReportResponseBody>(
       ['test/fixtures/*.{xml,json}'],
-      process.env.ONE_REPORT_ORGANIZATION_ID,
+      process.env.ONE_REPORT_TEST_ORGANIZATION_ID,
       baseUrl,
       process.env,
       vercelAuthenticator(baseUrl, process.env.ONE_REPORT_PASSWORD)
