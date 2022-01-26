@@ -7228,18 +7228,21 @@ async function main() {
     process.env,
     vercelAuthenticator(baseUrl, password)
   )
-  console.log('Response Bodies', responseBodies)
-  return responseBodies.map(
-    (body) =>
-      new import_url2.URL(
-        `/organization/${organizationId}/executions/${body.testSetExecutionId}`,
-        baseUrl
-      ).toString
+  return responseBodies.map((body) =>
+    new import_url2.URL(
+      `/organization/${organizationId}/executions/${body.testSetExecutionId}`,
+      baseUrl
+    ).toString()
   )
 }
 main()
-  .then((urls) => {
-    import_core.default.setOutput('report-urls', urls)
+  .then((reportUrls) => {
+    import_core.default.setOutput('report-urls', reportUrls)
+    console.log('::group::Report URLs')
+    for (const reportUrl of reportUrls) {
+      console.log(reportUrl)
+    }
+    console.log('::endgroup::')
   })
   .catch((error) => import_core.default.setFailed(error.message))
 /*!
