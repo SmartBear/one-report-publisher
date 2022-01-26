@@ -9,9 +9,6 @@ jobs:
   pre-release-check:
     uses: smartbear/one-report-publisher/.github/workflows/prerelease-checks.yaml@main
 
-  test:
-    uses: smartbear/one-report-publisher/.github/workflows/test.yaml@main
-
   publish-npm:
     name: Publish NPM module
     needs: [pre-release-check]
