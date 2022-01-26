@@ -16,17 +16,23 @@ async function main() {
     vercelAuthenticator(baseUrl, password)
   )
 
-  console.log('Response Bodies', responseBodies)
-
-  return responseBodies.map(
-    (body) =>
-      new URL(`/organization/${organizationId}/executions/${body.testSetExecutionId}`, baseUrl)
-        .toString
+  return responseBodies.map((body) =>
+    new URL(
+      `/organization/${organizationId}/executions/${body.testSetExecutionId}`,
+      baseUrl
+    ).toString()
   )
 }
 
 main()
-  .then((urls) => {
-    core.setOutput('report-urls', urls)
+  .then((reportUrls) => {
+    // Set report URLs as output, in case someone wants to do something special with them
+    core.setOutput('report-urls', reportUrls)
+    // Also print each URL, for convenience
+    console.log('::group::Report URLs')
+    for (const reportUrl of reportUrls) {
+      console.log(reportUrl)
+    }
+    console.log('::endgroup::')
   })
   .catch((error) => core.setFailed(error.message))

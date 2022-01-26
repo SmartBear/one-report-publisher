@@ -35,8 +35,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - run: npm install-test
-      - name: Publish Results
+      - name: Publish Results to OneReport
         if: ${{ always() }}
+        id: one-report-publisher
         # uses: smartbear/one-report-publisher@v1.0.0
         uses: ./
         with:
