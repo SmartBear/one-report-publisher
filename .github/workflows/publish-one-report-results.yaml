@@ -1,0 +1,32 @@
+name: Publish OneReport Results
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_call:
+
+jobs:
+  test:
+    uses: smartbear/one-report-publisher/.github/workflows/test.yaml@main
+
+  publish-one-report-results:
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish Results to OneReport
+        if: ${{ always() }}
+        # uses: smartbear/one-report-publisher@v1.0.0
+        uses: ./
+        with:
+          # The organization-id cannot come from a repository secret, because
+          # GitHub Actions masks all secrets from the output. We need to be able
+          # to print the report URLs, which contain the organization-id.
+          # This is OK - the repository-id isn't sensitive information.
+          organization-id: 559fa0f2-1343-43a9-b843-90644305ee07
+          password: ${{ secrets.ONE_REPORT_PASSWORD }}
+          reports: tmp/tests/*.{json,xml}
