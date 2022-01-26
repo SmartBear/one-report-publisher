@@ -13,12 +13,13 @@ import { Authenticate } from './types.js'
 
 const lstat = promisify(fs.lstat)
 
-type Extension = '.xml' | '.json'
-const extensions: Extension[] = ['.xml', '.json']
+type Extension = '.xml' | '.json' | '.ndjson'
+const extensions: Extension[] = ['.xml', '.json', '.ndjson']
 
 const contentTypes: Record<Extension, string> = {
   '.xml': 'text/xml',
   '.json': 'application/json',
+  '.ndjson': 'application/x-ndjson',
 }
 
 /**

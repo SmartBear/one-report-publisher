@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support publication of .ndjson files
+
 ## [0.0.8] - 2022-01-26
 
 ### Fixed
