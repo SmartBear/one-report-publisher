@@ -35,4 +35,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - run: npm install-test
+      - name: Publish Results
+        # uses: smartbear/one-report-publisher@v1.0.0
+        uses: ./
+        with:
+          organization-id: ${{ secrets.ONE_REPORT_ORGANIZATION_ID }}
+          password: ${{ secrets.ONE_REPORT_PASSWORD }}
+          reports: |
+            tmp/test/*.json
+            tmp/test/*.xml
       - run: npm run eslint

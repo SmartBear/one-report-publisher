@@ -7075,6 +7075,7 @@ var import_http = __toESM(require('http'), 1)
 var import_https = __toESM(require('https'), 1)
 var import_path = require('path')
 var import_stream = require('stream')
+var import_url = require('url')
 var import_util = require('util')
 
 // src/readStream.ts
@@ -7095,7 +7096,10 @@ var contentTypes = {
 }
 async function publish(globs, organizationId, baseUrl, env, authenticate) {
   const authHeaders = await authenticate()
-  const url = new URL(`/api/organization/${encodeURIComponent(organizationId)}/execution`, baseUrl)
+  const url = new import_url.URL(
+    `/api/organization/${encodeURIComponent(organizationId)}/execution`,
+    baseUrl
+  )
   const ciEnv = src_default(env)
   const paths = (
     await Promise.all(
@@ -7208,11 +7212,12 @@ function vercelAuthenticator(url, vercelPassword) {
 }
 
 // src/action/index.ts
+var import_url2 = require('url')
 async function main() {
-  const organizationId = import_core.default.getInput('one-report-organization-id')
-  const password = import_core.default.getInput('one-report-password')
-  const globs = import_core.default.getMultilineInput('report-globs')
-  const baseUrl = import_core.default.getInput('one-report-url')
+  const organizationId = import_core.default.getInput('organization-id')
+  const password = import_core.default.getInput('password')
+  const globs = import_core.default.getMultilineInput('reports')
+  const baseUrl = import_core.default.getInput('url')
   const responseBodies = await publish(
     globs,
     organizationId,
@@ -7222,8 +7227,10 @@ async function main() {
   )
   return responseBodies.map(
     (body) =>
-      new URL(`/organization/${organizationId}/executions/${body.testSetExecutionId}`, baseUrl)
-        .toString
+      new import_url2.URL(
+        `/organization/${organizationId}/executions/${body.testSetExecutionId}`,
+        baseUrl
+      ).toString
   )
 }
 main()

@@ -1,16 +1,16 @@
 name: 'OneReport Publisher'
 description: 'Publish Test Results to SmartBear OneReport'
 inputs:
-  one-report-organization-id:
+  organization-id:
     description: 'OneReport organization id'
     required: true
-  one-report-password:
+  password:
     description: 'OneReport password'
     required: true
-  report-globs:
+  reports:
     description: 'Globs to the JUnit XML/Cucumber JSON files to publish'
     required: true
-  one-report-url:
+  url:
     description: 'OneReport URL'
     required: false
     default: 'https://one-report.vercel.app'

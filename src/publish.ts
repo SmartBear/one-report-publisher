@@ -5,6 +5,7 @@ import http from 'http'
 import https from 'https'
 import { extname } from 'path'
 import { pipeline } from 'stream'
+import { URL } from 'url'
 import { promisify } from 'util'
 
 import { readStream } from './readStream.js'

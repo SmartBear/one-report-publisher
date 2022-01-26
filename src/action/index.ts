@@ -1,11 +1,12 @@
 import core from '@actions/core'
 import { OneReportResponseBody, publish, vercelAuthenticator } from 'src/index.js'
+import { URL } from 'url'
 
 async function main() {
-  const organizationId = core.getInput('one-report-organization-id')
-  const password = core.getInput('one-report-password')
-  const globs = core.getMultilineInput('report-globs')
-  const baseUrl = core.getInput('one-report-url')
+  const organizationId = core.getInput('organization-id')
+  const password = core.getInput('password')
+  const globs = core.getMultilineInput('reports')
+  const baseUrl = core.getInput('url')
 
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
