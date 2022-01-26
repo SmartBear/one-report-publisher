@@ -1,6 +1,6 @@
 {
   "name": "@smartbear/one-report-publisher",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Publish Test Results to SmartBear OneReport",
   "type": "module",
   "main": "dist/cjs/src/index.js",
