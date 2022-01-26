@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.6] - 2022-01-26
+## [0.0.8] - 2022-01-26
+
+### Fixed
+
+- Put publishing back into test workflow
+
+## 0.0.7 - 2022-01-26
 
 ### Fixed
 
@@ -49,8 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First release
 
-[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.0.6...HEAD
-[0.0.6]: https://github.com/smartbear/one-report-publisher/compare/v0.0.6...v0.0.6
+[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/smartbear/one-report-publisher/compare/v0.0.6...v0.0.8
 [0.0.6]: https://github.com/smartbear/one-report-publisher/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/smartbear/one-report-publisher/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/smartbear/one-report-publisher/compare/v0.0.3...v0.0.4

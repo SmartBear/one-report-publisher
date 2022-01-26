@@ -14,7 +14,7 @@ jobs:
 
   publish-npm:
     name: Publish NPM module
-    needs: [pre-release-check, test]
+    needs: [pre-release-check]
     runs-on: ubuntu-latest
     environment: Release
 
@@ -28,8 +28,6 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - run: npm install-ci-test
-
-      - run: npm run compile
 
       - uses: cucumber/action-publish-npm@v1.0.0
         with:
