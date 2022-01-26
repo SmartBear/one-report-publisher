@@ -37,1423 +37,1639 @@ var __toESM = (module2, isNodeMode) => {
   )
 }
 
-// node_modules/@actions/core/lib/utils.js
-var require_utils = __commonJS({
-  'node_modules/@actions/core/lib/utils.js'(exports) {
-    'use strict'
-    Object.defineProperty(exports, '__esModule', { value: true })
-    exports.toCommandProperties = exports.toCommandValue = void 0
-    function toCommandValue(input) {
-      if (input === null || input === void 0) {
-        return ''
-      } else if (typeof input === 'string' || input instanceof String) {
-        return input
-      }
-      return JSON.stringify(input)
-    }
-    exports.toCommandValue = toCommandValue
-    function toCommandProperties(annotationProperties) {
-      if (!Object.keys(annotationProperties).length) {
-        return {}
-      }
-      return {
-        title: annotationProperties.title,
-        file: annotationProperties.file,
-        line: annotationProperties.startLine,
-        endLine: annotationProperties.endLine,
-        col: annotationProperties.startColumn,
-        endColumn: annotationProperties.endColumn,
-      }
-    }
-    exports.toCommandProperties = toCommandProperties
-  },
-})
-
-// node_modules/@actions/core/lib/command.js
-var require_command = __commonJS({
-  'node_modules/@actions/core/lib/command.js'(exports) {
-    'use strict'
-    var __createBinding =
-      (exports && exports.__createBinding) ||
-      (Object.create
-        ? function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            Object.defineProperty(o, k2, {
-              enumerable: true,
-              get: function () {
-                return m[k]
-              },
-            })
-          }
-        : function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            o[k2] = m[k]
-          })
-    var __setModuleDefault =
-      (exports && exports.__setModuleDefault) ||
-      (Object.create
-        ? function (o, v) {
-            Object.defineProperty(o, 'default', { enumerable: true, value: v })
-          }
-        : function (o, v) {
-            o['default'] = v
-          })
-    var __importStar =
-      (exports && exports.__importStar) ||
-      function (mod) {
-        if (mod && mod.__esModule) return mod
-        var result = {}
-        if (mod != null) {
-          for (var k in mod)
-            if (k !== 'default' && Object.hasOwnProperty.call(mod, k))
-              __createBinding(result, mod, k)
-        }
-        __setModuleDefault(result, mod)
-        return result
-      }
-    Object.defineProperty(exports, '__esModule', { value: true })
-    exports.issue = exports.issueCommand = void 0
-    var os = __importStar(require('os'))
-    var utils_1 = require_utils()
-    function issueCommand(command, properties, message) {
-      const cmd = new Command(command, properties, message)
-      process.stdout.write(cmd.toString() + os.EOL)
-    }
-    exports.issueCommand = issueCommand
-    function issue(name, message = '') {
-      issueCommand(name, {}, message)
-    }
-    exports.issue = issue
-    var CMD_STRING = '::'
-    var Command = class {
-      constructor(command, properties, message) {
-        if (!command) {
-          command = 'missing.command'
-        }
-        this.command = command
-        this.properties = properties
-        this.message = message
-      }
-      toString() {
-        let cmdStr = CMD_STRING + this.command
-        if (this.properties && Object.keys(this.properties).length > 0) {
-          cmdStr += ' '
-          let first = true
-          for (const key in this.properties) {
-            if (this.properties.hasOwnProperty(key)) {
-              const val = this.properties[key]
-              if (val) {
-                if (first) {
-                  first = false
-                } else {
-                  cmdStr += ','
-                }
-                cmdStr += `${key}=${escapeProperty(val)}`
-              }
-            }
-          }
-        }
-        cmdStr += `${CMD_STRING}${escapeData(this.message)}`
-        return cmdStr
-      }
-    }
-    function escapeData(s) {
-      return utils_1
-        .toCommandValue(s)
-        .replace(/%/g, '%25')
-        .replace(/\r/g, '%0D')
-        .replace(/\n/g, '%0A')
-    }
-    function escapeProperty(s) {
-      return utils_1
-        .toCommandValue(s)
-        .replace(/%/g, '%25')
-        .replace(/\r/g, '%0D')
-        .replace(/\n/g, '%0A')
-        .replace(/:/g, '%3A')
-        .replace(/,/g, '%2C')
-    }
-  },
-})
-
-// node_modules/@actions/core/lib/file-command.js
-var require_file_command = __commonJS({
-  'node_modules/@actions/core/lib/file-command.js'(exports) {
-    'use strict'
-    var __createBinding =
-      (exports && exports.__createBinding) ||
-      (Object.create
-        ? function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            Object.defineProperty(o, k2, {
-              enumerable: true,
-              get: function () {
-                return m[k]
-              },
-            })
-          }
-        : function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            o[k2] = m[k]
-          })
-    var __setModuleDefault =
-      (exports && exports.__setModuleDefault) ||
-      (Object.create
-        ? function (o, v) {
-            Object.defineProperty(o, 'default', { enumerable: true, value: v })
-          }
-        : function (o, v) {
-            o['default'] = v
-          })
-    var __importStar =
-      (exports && exports.__importStar) ||
-      function (mod) {
-        if (mod && mod.__esModule) return mod
-        var result = {}
-        if (mod != null) {
-          for (var k in mod)
-            if (k !== 'default' && Object.hasOwnProperty.call(mod, k))
-              __createBinding(result, mod, k)
-        }
-        __setModuleDefault(result, mod)
-        return result
-      }
-    Object.defineProperty(exports, '__esModule', { value: true })
-    exports.issueCommand = void 0
-    var fs2 = __importStar(require('fs'))
-    var os = __importStar(require('os'))
-    var utils_1 = require_utils()
-    function issueCommand(command, message) {
-      const filePath = process.env[`GITHUB_${command}`]
-      if (!filePath) {
-        throw new Error(`Unable to find environment variable for file command ${command}`)
-      }
-      if (!fs2.existsSync(filePath)) {
-        throw new Error(`Missing file at path: ${filePath}`)
-      }
-      fs2.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
-        encoding: 'utf8',
-      })
-    }
-    exports.issueCommand = issueCommand
-  },
-})
-
-// node_modules/@actions/http-client/proxy.js
-var require_proxy = __commonJS({
-  'node_modules/@actions/http-client/proxy.js'(exports) {
-    'use strict'
-    Object.defineProperty(exports, '__esModule', { value: true })
-    function getProxyUrl(reqUrl) {
-      let usingSsl = reqUrl.protocol === 'https:'
-      let proxyUrl
-      if (checkBypass(reqUrl)) {
-        return proxyUrl
-      }
-      let proxyVar
-      if (usingSsl) {
-        proxyVar = process.env['https_proxy'] || process.env['HTTPS_PROXY']
-      } else {
-        proxyVar = process.env['http_proxy'] || process.env['HTTP_PROXY']
-      }
-      if (proxyVar) {
-        proxyUrl = new URL(proxyVar)
-      }
-      return proxyUrl
-    }
-    exports.getProxyUrl = getProxyUrl
-    function checkBypass(reqUrl) {
-      if (!reqUrl.hostname) {
-        return false
-      }
-      let noProxy = process.env['no_proxy'] || process.env['NO_PROXY'] || ''
-      if (!noProxy) {
-        return false
-      }
-      let reqPort
-      if (reqUrl.port) {
-        reqPort = Number(reqUrl.port)
-      } else if (reqUrl.protocol === 'http:') {
-        reqPort = 80
-      } else if (reqUrl.protocol === 'https:') {
-        reqPort = 443
-      }
-      let upperReqHosts = [reqUrl.hostname.toUpperCase()]
-      if (typeof reqPort === 'number') {
-        upperReqHosts.push(`${upperReqHosts[0]}:${reqPort}`)
-      }
-      for (let upperNoProxyItem of noProxy
-        .split(',')
-        .map((x) => x.trim().toUpperCase())
-        .filter((x) => x)) {
-        if (upperReqHosts.some((x) => x === upperNoProxyItem)) {
-          return true
-        }
-      }
-      return false
-    }
-    exports.checkBypass = checkBypass
-  },
-})
-
-// node_modules/tunnel/lib/tunnel.js
-var require_tunnel = __commonJS({
-  'node_modules/tunnel/lib/tunnel.js'(exports) {
-    'use strict'
-    var net = require('net')
-    var tls = require('tls')
-    var http2 = require('http')
-    var https3 = require('https')
-    var events = require('events')
-    var assert = require('assert')
-    var util = require('util')
-    exports.httpOverHttp = httpOverHttp
-    exports.httpsOverHttp = httpsOverHttp
-    exports.httpOverHttps = httpOverHttps
-    exports.httpsOverHttps = httpsOverHttps
-    function httpOverHttp(options) {
-      var agent = new TunnelingAgent(options)
-      agent.request = http2.request
-      return agent
-    }
-    function httpsOverHttp(options) {
-      var agent = new TunnelingAgent(options)
-      agent.request = http2.request
-      agent.createSocket = createSecureSocket
-      agent.defaultPort = 443
-      return agent
-    }
-    function httpOverHttps(options) {
-      var agent = new TunnelingAgent(options)
-      agent.request = https3.request
-      return agent
-    }
-    function httpsOverHttps(options) {
-      var agent = new TunnelingAgent(options)
-      agent.request = https3.request
-      agent.createSocket = createSecureSocket
-      agent.defaultPort = 443
-      return agent
-    }
-    function TunnelingAgent(options) {
-      var self = this
-      self.options = options || {}
-      self.proxyOptions = self.options.proxy || {}
-      self.maxSockets = self.options.maxSockets || http2.Agent.defaultMaxSockets
-      self.requests = []
-      self.sockets = []
-      self.on('free', function onFree(socket, host, port, localAddress) {
-        var options2 = toOptions(host, port, localAddress)
-        for (var i = 0, len = self.requests.length; i < len; ++i) {
-          var pending = self.requests[i]
-          if (pending.host === options2.host && pending.port === options2.port) {
-            self.requests.splice(i, 1)
-            pending.request.onSocket(socket)
-            return
-          }
-        }
-        socket.destroy()
-        self.removeSocket(socket)
-      })
-    }
-    util.inherits(TunnelingAgent, events.EventEmitter)
-    TunnelingAgent.prototype.addRequest = function addRequest(req, host, port, localAddress) {
-      var self = this
-      var options = mergeOptions(
-        { request: req },
-        self.options,
-        toOptions(host, port, localAddress)
-      )
-      if (self.sockets.length >= this.maxSockets) {
-        self.requests.push(options)
-        return
-      }
-      self.createSocket(options, function (socket) {
-        socket.on('free', onFree)
-        socket.on('close', onCloseOrRemove)
-        socket.on('agentRemove', onCloseOrRemove)
-        req.onSocket(socket)
-        function onFree() {
-          self.emit('free', socket, options)
-        }
-        function onCloseOrRemove(err) {
-          self.removeSocket(socket)
-          socket.removeListener('free', onFree)
-          socket.removeListener('close', onCloseOrRemove)
-          socket.removeListener('agentRemove', onCloseOrRemove)
-        }
-      })
-    }
-    TunnelingAgent.prototype.createSocket = function createSocket(options, cb) {
-      var self = this
-      var placeholder = {}
-      self.sockets.push(placeholder)
-      var connectOptions = mergeOptions({}, self.proxyOptions, {
-        method: 'CONNECT',
-        path: options.host + ':' + options.port,
-        agent: false,
-        headers: {
-          host: options.host + ':' + options.port,
-        },
-      })
-      if (options.localAddress) {
-        connectOptions.localAddress = options.localAddress
-      }
-      if (connectOptions.proxyAuth) {
-        connectOptions.headers = connectOptions.headers || {}
-        connectOptions.headers['Proxy-Authorization'] =
-          'Basic ' + new Buffer(connectOptions.proxyAuth).toString('base64')
-      }
-      debug('making CONNECT request')
-      var connectReq = self.request(connectOptions)
-      connectReq.useChunkedEncodingByDefault = false
-      connectReq.once('response', onResponse)
-      connectReq.once('upgrade', onUpgrade)
-      connectReq.once('connect', onConnect)
-      connectReq.once('error', onError)
-      connectReq.end()
-      function onResponse(res) {
-        res.upgrade = true
-      }
-      function onUpgrade(res, socket, head) {
-        process.nextTick(function () {
-          onConnect(res, socket, head)
-        })
-      }
-      function onConnect(res, socket, head) {
-        connectReq.removeAllListeners()
-        socket.removeAllListeners()
-        if (res.statusCode !== 200) {
-          debug('tunneling socket could not be established, statusCode=%d', res.statusCode)
-          socket.destroy()
-          var error = new Error(
-            'tunneling socket could not be established, statusCode=' + res.statusCode
-          )
-          error.code = 'ECONNRESET'
-          options.request.emit('error', error)
-          self.removeSocket(placeholder)
-          return
-        }
-        if (head.length > 0) {
-          debug('got illegal response body from proxy')
-          socket.destroy()
-          var error = new Error('got illegal response body from proxy')
-          error.code = 'ECONNRESET'
-          options.request.emit('error', error)
-          self.removeSocket(placeholder)
-          return
-        }
-        debug('tunneling connection has established')
-        self.sockets[self.sockets.indexOf(placeholder)] = socket
-        return cb(socket)
-      }
-      function onError(cause) {
-        connectReq.removeAllListeners()
-        debug('tunneling socket could not be established, cause=%s\n', cause.message, cause.stack)
-        var error = new Error('tunneling socket could not be established, cause=' + cause.message)
-        error.code = 'ECONNRESET'
-        options.request.emit('error', error)
-        self.removeSocket(placeholder)
-      }
-    }
-    TunnelingAgent.prototype.removeSocket = function removeSocket(socket) {
-      var pos = this.sockets.indexOf(socket)
-      if (pos === -1) {
-        return
-      }
-      this.sockets.splice(pos, 1)
-      var pending = this.requests.shift()
-      if (pending) {
-        this.createSocket(pending, function (socket2) {
-          pending.request.onSocket(socket2)
-        })
-      }
-    }
-    function createSecureSocket(options, cb) {
-      var self = this
-      TunnelingAgent.prototype.createSocket.call(self, options, function (socket) {
-        var hostHeader = options.request.getHeader('host')
-        var tlsOptions = mergeOptions({}, self.options, {
-          socket,
-          servername: hostHeader ? hostHeader.replace(/:.*$/, '') : options.host,
-        })
-        var secureSocket = tls.connect(0, tlsOptions)
-        self.sockets[self.sockets.indexOf(socket)] = secureSocket
-        cb(secureSocket)
-      })
-    }
-    function toOptions(host, port, localAddress) {
-      if (typeof host === 'string') {
-        return {
-          host,
-          port,
-          localAddress,
-        }
-      }
-      return host
-    }
-    function mergeOptions(target) {
-      for (var i = 1, len = arguments.length; i < len; ++i) {
-        var overrides = arguments[i]
-        if (typeof overrides === 'object') {
-          var keys = Object.keys(overrides)
-          for (var j = 0, keyLen = keys.length; j < keyLen; ++j) {
-            var k = keys[j]
-            if (overrides[k] !== void 0) {
-              target[k] = overrides[k]
-            }
-          }
-        }
-      }
-      return target
-    }
-    var debug
-    if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug = function () {
-        var args = Array.prototype.slice.call(arguments)
-        if (typeof args[0] === 'string') {
-          args[0] = 'TUNNEL: ' + args[0]
-        } else {
-          args.unshift('TUNNEL:')
-        }
-        console.error.apply(console, args)
-      }
-    } else {
-      debug = function () {}
-    }
-    exports.debug = debug
-  },
-})
-
-// node_modules/tunnel/index.js
-var require_tunnel2 = __commonJS({
-  'node_modules/tunnel/index.js'(exports, module2) {
-    module2.exports = require_tunnel()
-  },
-})
-
-// node_modules/@actions/http-client/index.js
-var require_http_client = __commonJS({
-  'node_modules/@actions/http-client/index.js'(exports) {
-    'use strict'
-    Object.defineProperty(exports, '__esModule', { value: true })
-    var http2 = require('http')
-    var https3 = require('https')
-    var pm = require_proxy()
-    var tunnel
-    var HttpCodes
-    ;(function (HttpCodes2) {
-      HttpCodes2[(HttpCodes2['OK'] = 200)] = 'OK'
-      HttpCodes2[(HttpCodes2['MultipleChoices'] = 300)] = 'MultipleChoices'
-      HttpCodes2[(HttpCodes2['MovedPermanently'] = 301)] = 'MovedPermanently'
-      HttpCodes2[(HttpCodes2['ResourceMoved'] = 302)] = 'ResourceMoved'
-      HttpCodes2[(HttpCodes2['SeeOther'] = 303)] = 'SeeOther'
-      HttpCodes2[(HttpCodes2['NotModified'] = 304)] = 'NotModified'
-      HttpCodes2[(HttpCodes2['UseProxy'] = 305)] = 'UseProxy'
-      HttpCodes2[(HttpCodes2['SwitchProxy'] = 306)] = 'SwitchProxy'
-      HttpCodes2[(HttpCodes2['TemporaryRedirect'] = 307)] = 'TemporaryRedirect'
-      HttpCodes2[(HttpCodes2['PermanentRedirect'] = 308)] = 'PermanentRedirect'
-      HttpCodes2[(HttpCodes2['BadRequest'] = 400)] = 'BadRequest'
-      HttpCodes2[(HttpCodes2['Unauthorized'] = 401)] = 'Unauthorized'
-      HttpCodes2[(HttpCodes2['PaymentRequired'] = 402)] = 'PaymentRequired'
-      HttpCodes2[(HttpCodes2['Forbidden'] = 403)] = 'Forbidden'
-      HttpCodes2[(HttpCodes2['NotFound'] = 404)] = 'NotFound'
-      HttpCodes2[(HttpCodes2['MethodNotAllowed'] = 405)] = 'MethodNotAllowed'
-      HttpCodes2[(HttpCodes2['NotAcceptable'] = 406)] = 'NotAcceptable'
-      HttpCodes2[(HttpCodes2['ProxyAuthenticationRequired'] = 407)] = 'ProxyAuthenticationRequired'
-      HttpCodes2[(HttpCodes2['RequestTimeout'] = 408)] = 'RequestTimeout'
-      HttpCodes2[(HttpCodes2['Conflict'] = 409)] = 'Conflict'
-      HttpCodes2[(HttpCodes2['Gone'] = 410)] = 'Gone'
-      HttpCodes2[(HttpCodes2['TooManyRequests'] = 429)] = 'TooManyRequests'
-      HttpCodes2[(HttpCodes2['InternalServerError'] = 500)] = 'InternalServerError'
-      HttpCodes2[(HttpCodes2['NotImplemented'] = 501)] = 'NotImplemented'
-      HttpCodes2[(HttpCodes2['BadGateway'] = 502)] = 'BadGateway'
-      HttpCodes2[(HttpCodes2['ServiceUnavailable'] = 503)] = 'ServiceUnavailable'
-      HttpCodes2[(HttpCodes2['GatewayTimeout'] = 504)] = 'GatewayTimeout'
-    })((HttpCodes = exports.HttpCodes || (exports.HttpCodes = {})))
-    var Headers
-    ;(function (Headers2) {
-      Headers2['Accept'] = 'accept'
-      Headers2['ContentType'] = 'content-type'
-    })((Headers = exports.Headers || (exports.Headers = {})))
-    var MediaTypes
-    ;(function (MediaTypes2) {
-      MediaTypes2['ApplicationJson'] = 'application/json'
-    })((MediaTypes = exports.MediaTypes || (exports.MediaTypes = {})))
-    function getProxyUrl(serverUrl) {
-      let proxyUrl = pm.getProxyUrl(new URL(serverUrl))
-      return proxyUrl ? proxyUrl.href : ''
-    }
-    exports.getProxyUrl = getProxyUrl
-    var HttpRedirectCodes = [
-      HttpCodes.MovedPermanently,
-      HttpCodes.ResourceMoved,
-      HttpCodes.SeeOther,
-      HttpCodes.TemporaryRedirect,
-      HttpCodes.PermanentRedirect,
-    ]
-    var HttpResponseRetryCodes = [
-      HttpCodes.BadGateway,
-      HttpCodes.ServiceUnavailable,
-      HttpCodes.GatewayTimeout,
-    ]
-    var RetryableHttpVerbs = ['OPTIONS', 'GET', 'DELETE', 'HEAD']
-    var ExponentialBackoffCeiling = 10
-    var ExponentialBackoffTimeSlice = 5
-    var HttpClientError = class extends Error {
-      constructor(message, statusCode) {
+// node_modules/commander/lib/error.js
+var require_error = __commonJS({
+  'node_modules/commander/lib/error.js'(exports) {
+    var CommanderError = class extends Error {
+      constructor(exitCode, code, message) {
         super(message)
-        this.name = 'HttpClientError'
-        this.statusCode = statusCode
-        Object.setPrototypeOf(this, HttpClientError.prototype)
+        Error.captureStackTrace(this, this.constructor)
+        this.name = this.constructor.name
+        this.code = code
+        this.exitCode = exitCode
+        this.nestedError = void 0
       }
     }
-    exports.HttpClientError = HttpClientError
-    var HttpClientResponse = class {
+    var InvalidArgumentError = class extends CommanderError {
       constructor(message) {
-        this.message = message
+        super(1, 'commander.invalidArgument', message)
+        Error.captureStackTrace(this, this.constructor)
+        this.name = this.constructor.name
       }
-      readBody() {
-        return new Promise(async (resolve, reject) => {
-          let output = Buffer.alloc(0)
-          this.message.on('data', (chunk) => {
-            output = Buffer.concat([output, chunk])
+    }
+    exports.CommanderError = CommanderError
+    exports.InvalidArgumentError = InvalidArgumentError
+  },
+})
+
+// node_modules/commander/lib/argument.js
+var require_argument = __commonJS({
+  'node_modules/commander/lib/argument.js'(exports) {
+    var { InvalidArgumentError } = require_error()
+    var Argument = class {
+      constructor(name, description) {
+        this.description = description || ''
+        this.variadic = false
+        this.parseArg = void 0
+        this.defaultValue = void 0
+        this.defaultValueDescription = void 0
+        this.argChoices = void 0
+        switch (name[0]) {
+          case '<':
+            this.required = true
+            this._name = name.slice(1, -1)
+            break
+          case '[':
+            this.required = false
+            this._name = name.slice(1, -1)
+            break
+          default:
+            this.required = true
+            this._name = name
+            break
+        }
+        if (this._name.length > 3 && this._name.slice(-3) === '...') {
+          this.variadic = true
+          this._name = this._name.slice(0, -3)
+        }
+      }
+      name() {
+        return this._name
+      }
+      _concatValue(value, previous) {
+        if (previous === this.defaultValue || !Array.isArray(previous)) {
+          return [value]
+        }
+        return previous.concat(value)
+      }
+      default(value, description) {
+        this.defaultValue = value
+        this.defaultValueDescription = description
+        return this
+      }
+      argParser(fn) {
+        this.parseArg = fn
+        return this
+      }
+      choices(values) {
+        this.argChoices = values
+        this.parseArg = (arg, previous) => {
+          if (!values.includes(arg)) {
+            throw new InvalidArgumentError(`Allowed choices are ${values.join(', ')}.`)
+          }
+          if (this.variadic) {
+            return this._concatValue(arg, previous)
+          }
+          return arg
+        }
+        return this
+      }
+      argRequired() {
+        this.required = true
+        return this
+      }
+      argOptional() {
+        this.required = false
+        return this
+      }
+    }
+    function humanReadableArgName(arg) {
+      const nameOutput = arg.name() + (arg.variadic === true ? '...' : '')
+      return arg.required ? '<' + nameOutput + '>' : '[' + nameOutput + ']'
+    }
+    exports.Argument = Argument
+    exports.humanReadableArgName = humanReadableArgName
+  },
+})
+
+// node_modules/commander/lib/help.js
+var require_help = __commonJS({
+  'node_modules/commander/lib/help.js'(exports) {
+    var { humanReadableArgName } = require_argument()
+    var Help = class {
+      constructor() {
+        this.helpWidth = void 0
+        this.sortSubcommands = false
+        this.sortOptions = false
+      }
+      visibleCommands(cmd) {
+        const visibleCommands = cmd.commands.filter((cmd2) => !cmd2._hidden)
+        if (cmd._hasImplicitHelpCommand()) {
+          const [, helpName, helpArgs] = cmd._helpCommandnameAndArgs.match(/([^ ]+) *(.*)/)
+          const helpCommand = cmd.createCommand(helpName).helpOption(false)
+          helpCommand.description(cmd._helpCommandDescription)
+          if (helpArgs) helpCommand.arguments(helpArgs)
+          visibleCommands.push(helpCommand)
+        }
+        if (this.sortSubcommands) {
+          visibleCommands.sort((a, b) => {
+            return a.name().localeCompare(b.name())
           })
-          this.message.on('end', () => {
-            resolve(output.toString())
+        }
+        return visibleCommands
+      }
+      visibleOptions(cmd) {
+        const visibleOptions = cmd.options.filter((option) => !option.hidden)
+        const showShortHelpFlag =
+          cmd._hasHelpOption && cmd._helpShortFlag && !cmd._findOption(cmd._helpShortFlag)
+        const showLongHelpFlag = cmd._hasHelpOption && !cmd._findOption(cmd._helpLongFlag)
+        if (showShortHelpFlag || showLongHelpFlag) {
+          let helpOption
+          if (!showShortHelpFlag) {
+            helpOption = cmd.createOption(cmd._helpLongFlag, cmd._helpDescription)
+          } else if (!showLongHelpFlag) {
+            helpOption = cmd.createOption(cmd._helpShortFlag, cmd._helpDescription)
+          } else {
+            helpOption = cmd.createOption(cmd._helpFlags, cmd._helpDescription)
+          }
+          visibleOptions.push(helpOption)
+        }
+        if (this.sortOptions) {
+          const getSortKey = (option) => {
+            return option.short ? option.short.replace(/^-/, '') : option.long.replace(/^--/, '')
+          }
+          visibleOptions.sort((a, b) => {
+            return getSortKey(a).localeCompare(getSortKey(b))
           })
+        }
+        return visibleOptions
+      }
+      visibleArguments(cmd) {
+        if (cmd._argsDescription) {
+          cmd._args.forEach((argument) => {
+            argument.description =
+              argument.description || cmd._argsDescription[argument.name()] || ''
+          })
+        }
+        if (cmd._args.find((argument) => argument.description)) {
+          return cmd._args
+        }
+        return []
+      }
+      subcommandTerm(cmd) {
+        const args = cmd._args.map((arg) => humanReadableArgName(arg)).join(' ')
+        return (
+          cmd._name +
+          (cmd._aliases[0] ? '|' + cmd._aliases[0] : '') +
+          (cmd.options.length ? ' [options]' : '') +
+          (args ? ' ' + args : '')
+        )
+      }
+      optionTerm(option) {
+        return option.flags
+      }
+      argumentTerm(argument) {
+        return argument.name()
+      }
+      longestSubcommandTermLength(cmd, helper) {
+        return helper.visibleCommands(cmd).reduce((max, command) => {
+          return Math.max(max, helper.subcommandTerm(command).length)
+        }, 0)
+      }
+      longestOptionTermLength(cmd, helper) {
+        return helper.visibleOptions(cmd).reduce((max, option) => {
+          return Math.max(max, helper.optionTerm(option).length)
+        }, 0)
+      }
+      longestArgumentTermLength(cmd, helper) {
+        return helper.visibleArguments(cmd).reduce((max, argument) => {
+          return Math.max(max, helper.argumentTerm(argument).length)
+        }, 0)
+      }
+      commandUsage(cmd) {
+        let cmdName = cmd._name
+        if (cmd._aliases[0]) {
+          cmdName = cmdName + '|' + cmd._aliases[0]
+        }
+        let parentCmdNames = ''
+        for (let parentCmd = cmd.parent; parentCmd; parentCmd = parentCmd.parent) {
+          parentCmdNames = parentCmd.name() + ' ' + parentCmdNames
+        }
+        return parentCmdNames + cmdName + ' ' + cmd.usage()
+      }
+      commandDescription(cmd) {
+        return cmd.description()
+      }
+      subcommandDescription(cmd) {
+        return cmd.description()
+      }
+      optionDescription(option) {
+        const extraInfo = []
+        if (option.argChoices && !option.negate) {
+          extraInfo.push(
+            `choices: ${option.argChoices.map((choice) => JSON.stringify(choice)).join(', ')}`
+          )
+        }
+        if (option.defaultValue !== void 0 && !option.negate) {
+          extraInfo.push(
+            `default: ${option.defaultValueDescription || JSON.stringify(option.defaultValue)}`
+          )
+        }
+        if (option.envVar !== void 0) {
+          extraInfo.push(`env: ${option.envVar}`)
+        }
+        if (extraInfo.length > 0) {
+          return `${option.description} (${extraInfo.join(', ')})`
+        }
+        return option.description
+      }
+      argumentDescription(argument) {
+        const extraInfo = []
+        if (argument.argChoices) {
+          extraInfo.push(
+            `choices: ${argument.argChoices.map((choice) => JSON.stringify(choice)).join(', ')}`
+          )
+        }
+        if (argument.defaultValue !== void 0) {
+          extraInfo.push(
+            `default: ${argument.defaultValueDescription || JSON.stringify(argument.defaultValue)}`
+          )
+        }
+        if (extraInfo.length > 0) {
+          const extraDescripton = `(${extraInfo.join(', ')})`
+          if (argument.description) {
+            return `${argument.description} ${extraDescripton}`
+          }
+          return extraDescripton
+        }
+        return argument.description
+      }
+      formatHelp(cmd, helper) {
+        const termWidth = helper.padWidth(cmd, helper)
+        const helpWidth = helper.helpWidth || 80
+        const itemIndentWidth = 2
+        const itemSeparatorWidth = 2
+        function formatItem(term, description) {
+          if (description) {
+            const fullText = `${term.padEnd(termWidth + itemSeparatorWidth)}${description}`
+            return helper.wrap(
+              fullText,
+              helpWidth - itemIndentWidth,
+              termWidth + itemSeparatorWidth
+            )
+          }
+          return term
+        }
+        function formatList(textArray) {
+          return textArray.join('\n').replace(/^/gm, ' '.repeat(itemIndentWidth))
+        }
+        let output = [`Usage: ${helper.commandUsage(cmd)}`, '']
+        const commandDescription = helper.commandDescription(cmd)
+        if (commandDescription.length > 0) {
+          output = output.concat([commandDescription, ''])
+        }
+        const argumentList = helper.visibleArguments(cmd).map((argument) => {
+          return formatItem(helper.argumentTerm(argument), helper.argumentDescription(argument))
         })
-      }
-    }
-    exports.HttpClientResponse = HttpClientResponse
-    function isHttps(requestUrl) {
-      let parsedUrl = new URL(requestUrl)
-      return parsedUrl.protocol === 'https:'
-    }
-    exports.isHttps = isHttps
-    var HttpClient = class {
-      constructor(userAgent, handlers, requestOptions) {
-        this._ignoreSslError = false
-        this._allowRedirects = true
-        this._allowRedirectDowngrade = false
-        this._maxRedirects = 50
-        this._allowRetries = false
-        this._maxRetries = 1
-        this._keepAlive = false
-        this._disposed = false
-        this.userAgent = userAgent
-        this.handlers = handlers || []
-        this.requestOptions = requestOptions
-        if (requestOptions) {
-          if (requestOptions.ignoreSslError != null) {
-            this._ignoreSslError = requestOptions.ignoreSslError
-          }
-          this._socketTimeout = requestOptions.socketTimeout
-          if (requestOptions.allowRedirects != null) {
-            this._allowRedirects = requestOptions.allowRedirects
-          }
-          if (requestOptions.allowRedirectDowngrade != null) {
-            this._allowRedirectDowngrade = requestOptions.allowRedirectDowngrade
-          }
-          if (requestOptions.maxRedirects != null) {
-            this._maxRedirects = Math.max(requestOptions.maxRedirects, 0)
-          }
-          if (requestOptions.keepAlive != null) {
-            this._keepAlive = requestOptions.keepAlive
-          }
-          if (requestOptions.allowRetries != null) {
-            this._allowRetries = requestOptions.allowRetries
-          }
-          if (requestOptions.maxRetries != null) {
-            this._maxRetries = requestOptions.maxRetries
-          }
+        if (argumentList.length > 0) {
+          output = output.concat(['Arguments:', formatList(argumentList), ''])
         }
-      }
-      options(requestUrl, additionalHeaders) {
-        return this.request('OPTIONS', requestUrl, null, additionalHeaders || {})
-      }
-      get(requestUrl, additionalHeaders) {
-        return this.request('GET', requestUrl, null, additionalHeaders || {})
-      }
-      del(requestUrl, additionalHeaders) {
-        return this.request('DELETE', requestUrl, null, additionalHeaders || {})
-      }
-      post(requestUrl, data, additionalHeaders) {
-        return this.request('POST', requestUrl, data, additionalHeaders || {})
-      }
-      patch(requestUrl, data, additionalHeaders) {
-        return this.request('PATCH', requestUrl, data, additionalHeaders || {})
-      }
-      put(requestUrl, data, additionalHeaders) {
-        return this.request('PUT', requestUrl, data, additionalHeaders || {})
-      }
-      head(requestUrl, additionalHeaders) {
-        return this.request('HEAD', requestUrl, null, additionalHeaders || {})
-      }
-      sendStream(verb, requestUrl, stream, additionalHeaders) {
-        return this.request(verb, requestUrl, stream, additionalHeaders)
-      }
-      async getJson(requestUrl, additionalHeaders = {}) {
-        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-          additionalHeaders,
-          Headers.Accept,
-          MediaTypes.ApplicationJson
-        )
-        let res = await this.get(requestUrl, additionalHeaders)
-        return this._processResponse(res, this.requestOptions)
-      }
-      async postJson(requestUrl, obj, additionalHeaders = {}) {
-        let data = JSON.stringify(obj, null, 2)
-        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-          additionalHeaders,
-          Headers.Accept,
-          MediaTypes.ApplicationJson
-        )
-        additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
-          additionalHeaders,
-          Headers.ContentType,
-          MediaTypes.ApplicationJson
-        )
-        let res = await this.post(requestUrl, data, additionalHeaders)
-        return this._processResponse(res, this.requestOptions)
-      }
-      async putJson(requestUrl, obj, additionalHeaders = {}) {
-        let data = JSON.stringify(obj, null, 2)
-        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-          additionalHeaders,
-          Headers.Accept,
-          MediaTypes.ApplicationJson
-        )
-        additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
-          additionalHeaders,
-          Headers.ContentType,
-          MediaTypes.ApplicationJson
-        )
-        let res = await this.put(requestUrl, data, additionalHeaders)
-        return this._processResponse(res, this.requestOptions)
-      }
-      async patchJson(requestUrl, obj, additionalHeaders = {}) {
-        let data = JSON.stringify(obj, null, 2)
-        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-          additionalHeaders,
-          Headers.Accept,
-          MediaTypes.ApplicationJson
-        )
-        additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
-          additionalHeaders,
-          Headers.ContentType,
-          MediaTypes.ApplicationJson
-        )
-        let res = await this.patch(requestUrl, data, additionalHeaders)
-        return this._processResponse(res, this.requestOptions)
-      }
-      async request(verb, requestUrl, data, headers) {
-        if (this._disposed) {
-          throw new Error('Client has already been disposed.')
+        const optionList = helper.visibleOptions(cmd).map((option) => {
+          return formatItem(helper.optionTerm(option), helper.optionDescription(option))
+        })
+        if (optionList.length > 0) {
+          output = output.concat(['Options:', formatList(optionList), ''])
         }
-        let parsedUrl = new URL(requestUrl)
-        let info = this._prepareRequest(verb, parsedUrl, headers)
-        let maxTries =
-          this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1
-        let numTries = 0
-        let response
-        while (numTries < maxTries) {
-          response = await this.requestRaw(info, data)
-          if (
-            response &&
-            response.message &&
-            response.message.statusCode === HttpCodes.Unauthorized
-          ) {
-            let authenticationHandler
-            for (let i = 0; i < this.handlers.length; i++) {
-              if (this.handlers[i].canHandleAuthentication(response)) {
-                authenticationHandler = this.handlers[i]
-                break
+        const commandList = helper.visibleCommands(cmd).map((cmd2) => {
+          return formatItem(helper.subcommandTerm(cmd2), helper.subcommandDescription(cmd2))
+        })
+        if (commandList.length > 0) {
+          output = output.concat(['Commands:', formatList(commandList), ''])
+        }
+        return output.join('\n')
+      }
+      padWidth(cmd, helper) {
+        return Math.max(
+          helper.longestOptionTermLength(cmd, helper),
+          helper.longestSubcommandTermLength(cmd, helper),
+          helper.longestArgumentTermLength(cmd, helper)
+        )
+      }
+      wrap(str, width, indent, minColumnWidth = 40) {
+        if (str.match(/[\n]\s+/)) return str
+        const columnWidth = width - indent
+        if (columnWidth < minColumnWidth) return str
+        const leadingStr = str.substr(0, indent)
+        const columnText = str.substr(indent)
+        const indentString = ' '.repeat(indent)
+        const regex = new RegExp(
+          '.{1,' + (columnWidth - 1) + '}([\\s\u200B]|$)|[^\\s\u200B]+?([\\s\u200B]|$)',
+          'g'
+        )
+        const lines = columnText.match(regex) || []
+        return (
+          leadingStr +
+          lines
+            .map((line, i) => {
+              if (line.slice(-1) === '\n') {
+                line = line.slice(0, line.length - 1)
               }
-            }
-            if (authenticationHandler) {
-              return authenticationHandler.handleAuthentication(this, info, data)
-            } else {
-              return response
-            }
+              return (i > 0 ? indentString : '') + line.trimRight()
+            })
+            .join('\n')
+        )
+      }
+    }
+    exports.Help = Help
+  },
+})
+
+// node_modules/commander/lib/option.js
+var require_option = __commonJS({
+  'node_modules/commander/lib/option.js'(exports) {
+    var { InvalidArgumentError } = require_error()
+    var Option = class {
+      constructor(flags, description) {
+        this.flags = flags
+        this.description = description || ''
+        this.required = flags.includes('<')
+        this.optional = flags.includes('[')
+        this.variadic = /\w\.\.\.[>\]]$/.test(flags)
+        this.mandatory = false
+        const optionFlags = splitOptionFlags(flags)
+        this.short = optionFlags.shortFlag
+        this.long = optionFlags.longFlag
+        this.negate = false
+        if (this.long) {
+          this.negate = this.long.startsWith('--no-')
+        }
+        this.defaultValue = void 0
+        this.defaultValueDescription = void 0
+        this.envVar = void 0
+        this.parseArg = void 0
+        this.hidden = false
+        this.argChoices = void 0
+      }
+      default(value, description) {
+        this.defaultValue = value
+        this.defaultValueDescription = description
+        return this
+      }
+      env(name) {
+        this.envVar = name
+        return this
+      }
+      argParser(fn) {
+        this.parseArg = fn
+        return this
+      }
+      makeOptionMandatory(mandatory = true) {
+        this.mandatory = !!mandatory
+        return this
+      }
+      hideHelp(hide = true) {
+        this.hidden = !!hide
+        return this
+      }
+      _concatValue(value, previous) {
+        if (previous === this.defaultValue || !Array.isArray(previous)) {
+          return [value]
+        }
+        return previous.concat(value)
+      }
+      choices(values) {
+        this.argChoices = values
+        this.parseArg = (arg, previous) => {
+          if (!values.includes(arg)) {
+            throw new InvalidArgumentError(`Allowed choices are ${values.join(', ')}.`)
           }
-          let redirectsRemaining = this._maxRedirects
-          while (
-            HttpRedirectCodes.indexOf(response.message.statusCode) != -1 &&
-            this._allowRedirects &&
-            redirectsRemaining > 0
-          ) {
-            const redirectUrl = response.message.headers['location']
-            if (!redirectUrl) {
-              break
-            }
-            let parsedRedirectUrl = new URL(redirectUrl)
-            if (
-              parsedUrl.protocol == 'https:' &&
-              parsedUrl.protocol != parsedRedirectUrl.protocol &&
-              !this._allowRedirectDowngrade
-            ) {
+          if (this.variadic) {
+            return this._concatValue(arg, previous)
+          }
+          return arg
+        }
+        return this
+      }
+      name() {
+        if (this.long) {
+          return this.long.replace(/^--/, '')
+        }
+        return this.short.replace(/^-/, '')
+      }
+      attributeName() {
+        return camelcase(this.name().replace(/^no-/, ''))
+      }
+      is(arg) {
+        return this.short === arg || this.long === arg
+      }
+    }
+    function camelcase(str) {
+      return str.split('-').reduce((str2, word) => {
+        return str2 + word[0].toUpperCase() + word.slice(1)
+      })
+    }
+    function splitOptionFlags(flags) {
+      let shortFlag
+      let longFlag
+      const flagParts = flags.split(/[ |,]+/)
+      if (flagParts.length > 1 && !/^[[<]/.test(flagParts[1])) shortFlag = flagParts.shift()
+      longFlag = flagParts.shift()
+      if (!shortFlag && /^-[^-]$/.test(longFlag)) {
+        shortFlag = longFlag
+        longFlag = void 0
+      }
+      return { shortFlag, longFlag }
+    }
+    exports.Option = Option
+    exports.splitOptionFlags = splitOptionFlags
+  },
+})
+
+// node_modules/commander/lib/suggestSimilar.js
+var require_suggestSimilar = __commonJS({
+  'node_modules/commander/lib/suggestSimilar.js'(exports) {
+    var maxDistance = 3
+    function editDistance(a, b) {
+      if (Math.abs(a.length - b.length) > maxDistance) return Math.max(a.length, b.length)
+      const d = []
+      for (let i = 0; i <= a.length; i++) {
+        d[i] = [i]
+      }
+      for (let j = 0; j <= b.length; j++) {
+        d[0][j] = j
+      }
+      for (let j = 1; j <= b.length; j++) {
+        for (let i = 1; i <= a.length; i++) {
+          let cost = 1
+          if (a[i - 1] === b[j - 1]) {
+            cost = 0
+          } else {
+            cost = 1
+          }
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost)
+          if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+            d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1)
+          }
+        }
+      }
+      return d[a.length][b.length]
+    }
+    function suggestSimilar(word, candidates) {
+      if (!candidates || candidates.length === 0) return ''
+      candidates = Array.from(new Set(candidates))
+      const searchingOptions = word.startsWith('--')
+      if (searchingOptions) {
+        word = word.slice(2)
+        candidates = candidates.map((candidate) => candidate.slice(2))
+      }
+      let similar = []
+      let bestDistance = maxDistance
+      const minSimilarity = 0.4
+      candidates.forEach((candidate) => {
+        if (candidate.length <= 1) return
+        const distance = editDistance(word, candidate)
+        const length = Math.max(word.length, candidate.length)
+        const similarity = (length - distance) / length
+        if (similarity > minSimilarity) {
+          if (distance < bestDistance) {
+            bestDistance = distance
+            similar = [candidate]
+          } else if (distance === bestDistance) {
+            similar.push(candidate)
+          }
+        }
+      })
+      similar.sort((a, b) => a.localeCompare(b))
+      if (searchingOptions) {
+        similar = similar.map((candidate) => `--${candidate}`)
+      }
+      if (similar.length > 1) {
+        return `
+(Did you mean one of ${similar.join(', ')}?)`
+      }
+      if (similar.length === 1) {
+        return `
+(Did you mean ${similar[0]}?)`
+      }
+      return ''
+    }
+    exports.suggestSimilar = suggestSimilar
+  },
+})
+
+// node_modules/commander/lib/command.js
+var require_command = __commonJS({
+  'node_modules/commander/lib/command.js'(exports) {
+    var EventEmitter = require('events').EventEmitter
+    var childProcess = require('child_process')
+    var path = require('path')
+    var fs2 = require('fs')
+    var { Argument, humanReadableArgName } = require_argument()
+    var { CommanderError } = require_error()
+    var { Help } = require_help()
+    var { Option, splitOptionFlags } = require_option()
+    var { suggestSimilar } = require_suggestSimilar()
+    var Command2 = class extends EventEmitter {
+      constructor(name) {
+        super()
+        this.commands = []
+        this.options = []
+        this.parent = null
+        this._allowUnknownOption = false
+        this._allowExcessArguments = true
+        this._args = []
+        this.args = []
+        this.rawArgs = []
+        this.processedArgs = []
+        this._scriptPath = null
+        this._name = name || ''
+        this._optionValues = {}
+        this._optionValueSources = {}
+        this._storeOptionsAsProperties = false
+        this._actionHandler = null
+        this._executableHandler = false
+        this._executableFile = null
+        this._defaultCommandName = null
+        this._exitCallback = null
+        this._aliases = []
+        this._combineFlagAndOptionalValue = true
+        this._description = ''
+        this._argsDescription = void 0
+        this._enablePositionalOptions = false
+        this._passThroughOptions = false
+        this._lifeCycleHooks = {}
+        this._showHelpAfterError = false
+        this._showSuggestionAfterError = false
+        this._outputConfiguration = {
+          writeOut: (str) => process.stdout.write(str),
+          writeErr: (str) => process.stderr.write(str),
+          getOutHelpWidth: () => (process.stdout.isTTY ? process.stdout.columns : void 0),
+          getErrHelpWidth: () => (process.stderr.isTTY ? process.stderr.columns : void 0),
+          outputError: (str, write) => write(str),
+        }
+        this._hidden = false
+        this._hasHelpOption = true
+        this._helpFlags = '-h, --help'
+        this._helpDescription = 'display help for command'
+        this._helpShortFlag = '-h'
+        this._helpLongFlag = '--help'
+        this._addImplicitHelpCommand = void 0
+        this._helpCommandName = 'help'
+        this._helpCommandnameAndArgs = 'help [command]'
+        this._helpCommandDescription = 'display help for command'
+        this._helpConfiguration = {}
+      }
+      copyInheritedSettings(sourceCommand) {
+        this._outputConfiguration = sourceCommand._outputConfiguration
+        this._hasHelpOption = sourceCommand._hasHelpOption
+        this._helpFlags = sourceCommand._helpFlags
+        this._helpDescription = sourceCommand._helpDescription
+        this._helpShortFlag = sourceCommand._helpShortFlag
+        this._helpLongFlag = sourceCommand._helpLongFlag
+        this._helpCommandName = sourceCommand._helpCommandName
+        this._helpCommandnameAndArgs = sourceCommand._helpCommandnameAndArgs
+        this._helpCommandDescription = sourceCommand._helpCommandDescription
+        this._helpConfiguration = sourceCommand._helpConfiguration
+        this._exitCallback = sourceCommand._exitCallback
+        this._storeOptionsAsProperties = sourceCommand._storeOptionsAsProperties
+        this._combineFlagAndOptionalValue = sourceCommand._combineFlagAndOptionalValue
+        this._allowExcessArguments = sourceCommand._allowExcessArguments
+        this._enablePositionalOptions = sourceCommand._enablePositionalOptions
+        this._showHelpAfterError = sourceCommand._showHelpAfterError
+        this._showSuggestionAfterError = sourceCommand._showSuggestionAfterError
+        return this
+      }
+      command(nameAndArgs, actionOptsOrExecDesc, execOpts) {
+        let desc = actionOptsOrExecDesc
+        let opts = execOpts
+        if (typeof desc === 'object' && desc !== null) {
+          opts = desc
+          desc = null
+        }
+        opts = opts || {}
+        const [, name, args] = nameAndArgs.match(/([^ ]+) *(.*)/)
+        const cmd = this.createCommand(name)
+        if (desc) {
+          cmd.description(desc)
+          cmd._executableHandler = true
+        }
+        if (opts.isDefault) this._defaultCommandName = cmd._name
+        cmd._hidden = !!(opts.noHelp || opts.hidden)
+        cmd._executableFile = opts.executableFile || null
+        if (args) cmd.arguments(args)
+        this.commands.push(cmd)
+        cmd.parent = this
+        cmd.copyInheritedSettings(this)
+        if (desc) return this
+        return cmd
+      }
+      createCommand(name) {
+        return new Command2(name)
+      }
+      createHelp() {
+        return Object.assign(new Help(), this.configureHelp())
+      }
+      configureHelp(configuration) {
+        if (configuration === void 0) return this._helpConfiguration
+        this._helpConfiguration = configuration
+        return this
+      }
+      configureOutput(configuration) {
+        if (configuration === void 0) return this._outputConfiguration
+        Object.assign(this._outputConfiguration, configuration)
+        return this
+      }
+      showHelpAfterError(displayHelp = true) {
+        if (typeof displayHelp !== 'string') displayHelp = !!displayHelp
+        this._showHelpAfterError = displayHelp
+        return this
+      }
+      showSuggestionAfterError(displaySuggestion = true) {
+        this._showSuggestionAfterError = !!displaySuggestion
+        return this
+      }
+      addCommand(cmd, opts) {
+        if (!cmd._name) throw new Error('Command passed to .addCommand() must have a name')
+        function checkExplicitNames(commandArray) {
+          commandArray.forEach((cmd2) => {
+            if (cmd2._executableHandler && !cmd2._executableFile) {
               throw new Error(
-                'Redirect from HTTPS to HTTP protocol. This downgrade is not allowed for security reasons. If you want to allow this behavior, set the allowRedirectDowngrade option to true.'
+                `Must specify executableFile for deeply nested executable: ${cmd2.name()}`
               )
             }
-            await response.readBody()
-            if (parsedRedirectUrl.hostname !== parsedUrl.hostname) {
-              for (let header in headers) {
-                if (header.toLowerCase() === 'authorization') {
-                  delete headers[header]
-                }
-              }
-            }
-            info = this._prepareRequest(verb, parsedRedirectUrl, headers)
-            response = await this.requestRaw(info, data)
-            redirectsRemaining--
-          }
-          if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
-            return response
-          }
-          numTries += 1
-          if (numTries < maxTries) {
-            await response.readBody()
-            await this._performExponentialBackoff(numTries)
-          }
-        }
-        return response
-      }
-      dispose() {
-        if (this._agent) {
-          this._agent.destroy()
-        }
-        this._disposed = true
-      }
-      requestRaw(info, data) {
-        return new Promise((resolve, reject) => {
-          let callbackForResult = function (err, res) {
-            if (err) {
-              reject(err)
-            }
-            resolve(res)
-          }
-          this.requestRawWithCallback(info, data, callbackForResult)
-        })
-      }
-      requestRawWithCallback(info, data, onResult) {
-        let socket
-        if (typeof data === 'string') {
-          info.options.headers['Content-Length'] = Buffer.byteLength(data, 'utf8')
-        }
-        let callbackCalled = false
-        let handleResult = (err, res) => {
-          if (!callbackCalled) {
-            callbackCalled = true
-            onResult(err, res)
-          }
-        }
-        let req = info.httpModule.request(info.options, (msg) => {
-          let res = new HttpClientResponse(msg)
-          handleResult(null, res)
-        })
-        req.on('socket', (sock) => {
-          socket = sock
-        })
-        req.setTimeout(this._socketTimeout || 3 * 6e4, () => {
-          if (socket) {
-            socket.end()
-          }
-          handleResult(new Error('Request timeout: ' + info.options.path), null)
-        })
-        req.on('error', function (err) {
-          handleResult(err, null)
-        })
-        if (data && typeof data === 'string') {
-          req.write(data, 'utf8')
-        }
-        if (data && typeof data !== 'string') {
-          data.on('close', function () {
-            req.end()
+            checkExplicitNames(cmd2.commands)
           })
-          data.pipe(req)
+        }
+        checkExplicitNames(cmd.commands)
+        opts = opts || {}
+        if (opts.isDefault) this._defaultCommandName = cmd._name
+        if (opts.noHelp || opts.hidden) cmd._hidden = true
+        this.commands.push(cmd)
+        cmd.parent = this
+        return this
+      }
+      createArgument(name, description) {
+        return new Argument(name, description)
+      }
+      argument(name, description, fn, defaultValue) {
+        const argument = this.createArgument(name, description)
+        if (typeof fn === 'function') {
+          argument.default(defaultValue).argParser(fn)
         } else {
-          req.end()
+          argument.default(fn)
         }
+        this.addArgument(argument)
+        return this
       }
-      getAgent(serverUrl) {
-        let parsedUrl = new URL(serverUrl)
-        return this._getAgent(parsedUrl)
+      arguments(names) {
+        names.split(/ +/).forEach((detail) => {
+          this.argument(detail)
+        })
+        return this
       }
-      _prepareRequest(method, requestUrl, headers) {
-        const info = {}
-        info.parsedUrl = requestUrl
-        const usingSsl = info.parsedUrl.protocol === 'https:'
-        info.httpModule = usingSsl ? https3 : http2
-        const defaultPort = usingSsl ? 443 : 80
-        info.options = {}
-        info.options.host = info.parsedUrl.hostname
-        info.options.port = info.parsedUrl.port ? parseInt(info.parsedUrl.port) : defaultPort
-        info.options.path = (info.parsedUrl.pathname || '') + (info.parsedUrl.search || '')
-        info.options.method = method
-        info.options.headers = this._mergeHeaders(headers)
-        if (this.userAgent != null) {
-          info.options.headers['user-agent'] = this.userAgent
+      addArgument(argument) {
+        const previousArgument = this._args.slice(-1)[0]
+        if (previousArgument && previousArgument.variadic) {
+          throw new Error(`only the last argument can be variadic '${previousArgument.name()}'`)
         }
-        info.options.agent = this._getAgent(info.parsedUrl)
-        if (this.handlers) {
-          this.handlers.forEach((handler) => {
-            handler.prepareRequest(info.options)
-          })
-        }
-        return info
-      }
-      _mergeHeaders(headers) {
-        const lowercaseKeys = (obj) =>
-          Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {})
-        if (this.requestOptions && this.requestOptions.headers) {
-          return Object.assign(
-            {},
-            lowercaseKeys(this.requestOptions.headers),
-            lowercaseKeys(headers)
+        if (argument.required && argument.defaultValue !== void 0 && argument.parseArg === void 0) {
+          throw new Error(
+            `a default value for a required argument is never used: '${argument.name()}'`
           )
         }
-        return lowercaseKeys(headers || {})
+        this._args.push(argument)
+        return this
       }
-      _getExistingOrDefaultHeader(additionalHeaders, header, _default) {
-        const lowercaseKeys = (obj) =>
-          Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {})
-        let clientHeader
-        if (this.requestOptions && this.requestOptions.headers) {
-          clientHeader = lowercaseKeys(this.requestOptions.headers)[header]
+      addHelpCommand(enableOrNameAndArgs, description) {
+        if (enableOrNameAndArgs === false) {
+          this._addImplicitHelpCommand = false
+        } else {
+          this._addImplicitHelpCommand = true
+          if (typeof enableOrNameAndArgs === 'string') {
+            this._helpCommandName = enableOrNameAndArgs.split(' ')[0]
+            this._helpCommandnameAndArgs = enableOrNameAndArgs
+          }
+          this._helpCommandDescription = description || this._helpCommandDescription
         }
-        return additionalHeaders[header] || clientHeader || _default
+        return this
       }
-      _getAgent(parsedUrl) {
-        let agent
-        let proxyUrl = pm.getProxyUrl(parsedUrl)
-        let useProxy = proxyUrl && proxyUrl.hostname
-        if (this._keepAlive && useProxy) {
-          agent = this._proxyAgent
+      _hasImplicitHelpCommand() {
+        if (this._addImplicitHelpCommand === void 0) {
+          return this.commands.length && !this._actionHandler && !this._findCommand('help')
         }
-        if (this._keepAlive && !useProxy) {
-          agent = this._agent
-        }
-        if (!!agent) {
-          return agent
-        }
-        const usingSsl = parsedUrl.protocol === 'https:'
-        let maxSockets = 100
-        if (!!this.requestOptions) {
-          maxSockets = this.requestOptions.maxSockets || http2.globalAgent.maxSockets
-        }
-        if (useProxy) {
-          if (!tunnel) {
-            tunnel = require_tunnel2()
-          }
-          const agentOptions = {
-            maxSockets,
-            keepAlive: this._keepAlive,
-            proxy: {
-              ...((proxyUrl.username || proxyUrl.password) && {
-                proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`,
-              }),
-              host: proxyUrl.hostname,
-              port: proxyUrl.port,
-            },
-          }
-          let tunnelAgent
-          const overHttps = proxyUrl.protocol === 'https:'
-          if (usingSsl) {
-            tunnelAgent = overHttps ? tunnel.httpsOverHttps : tunnel.httpsOverHttp
-          } else {
-            tunnelAgent = overHttps ? tunnel.httpOverHttps : tunnel.httpOverHttp
-          }
-          agent = tunnelAgent(agentOptions)
-          this._proxyAgent = agent
-        }
-        if (this._keepAlive && !agent) {
-          const options = { keepAlive: this._keepAlive, maxSockets }
-          agent = usingSsl ? new https3.Agent(options) : new http2.Agent(options)
-          this._agent = agent
-        }
-        if (!agent) {
-          agent = usingSsl ? https3.globalAgent : http2.globalAgent
-        }
-        if (usingSsl && this._ignoreSslError) {
-          agent.options = Object.assign(agent.options || {}, {
-            rejectUnauthorized: false,
-          })
-        }
-        return agent
+        return this._addImplicitHelpCommand
       }
-      _performExponentialBackoff(retryNumber) {
-        retryNumber = Math.min(ExponentialBackoffCeiling, retryNumber)
-        const ms = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber)
-        return new Promise((resolve) => setTimeout(() => resolve(), ms))
-      }
-      static dateTimeDeserializer(key, value) {
-        if (typeof value === 'string') {
-          let a = new Date(value)
-          if (!isNaN(a.valueOf())) {
-            return a
-          }
+      hook(event, listener) {
+        const allowedValues = ['preAction', 'postAction']
+        if (!allowedValues.includes(event)) {
+          throw new Error(`Unexpected value for event passed to hook : '${event}'.
+Expecting one of '${allowedValues.join("', '")}'`)
         }
-        return value
+        if (this._lifeCycleHooks[event]) {
+          this._lifeCycleHooks[event].push(listener)
+        } else {
+          this._lifeCycleHooks[event] = [listener]
+        }
+        return this
       }
-      async _processResponse(res, options) {
-        return new Promise(async (resolve, reject) => {
-          const statusCode = res.message.statusCode
-          const response = {
-            statusCode,
-            result: null,
-            headers: {},
-          }
-          if (statusCode == HttpCodes.NotFound) {
-            resolve(response)
-          }
-          let obj
-          let contents
-          try {
-            contents = await res.readBody()
-            if (contents && contents.length > 0) {
-              if (options && options.deserializeDates) {
-                obj = JSON.parse(contents, HttpClient.dateTimeDeserializer)
-              } else {
-                obj = JSON.parse(contents)
-              }
-              response.result = obj
-            }
-            response.headers = res.message.headers
-          } catch (err) {}
-          if (statusCode > 299) {
-            let msg
-            if (obj && obj.message) {
-              msg = obj.message
-            } else if (contents && contents.length > 0) {
-              msg = contents
+      exitOverride(fn) {
+        if (fn) {
+          this._exitCallback = fn
+        } else {
+          this._exitCallback = (err) => {
+            if (err.code !== 'commander.executeSubCommandAsync') {
+              throw err
             } else {
-              msg = 'Failed request: (' + statusCode + ')'
             }
-            let err = new HttpClientError(msg, statusCode)
-            err.result = response.result
-            reject(err)
+          }
+        }
+        return this
+      }
+      _exit(exitCode, code, message) {
+        if (this._exitCallback) {
+          this._exitCallback(new CommanderError(exitCode, code, message))
+        }
+        process.exit(exitCode)
+      }
+      action(fn) {
+        const listener = (args) => {
+          const expectedArgsCount = this._args.length
+          const actionArgs = args.slice(0, expectedArgsCount)
+          if (this._storeOptionsAsProperties) {
+            actionArgs[expectedArgsCount] = this
           } else {
-            resolve(response)
+            actionArgs[expectedArgsCount] = this.opts()
           }
-        })
-      }
-    }
-    exports.HttpClient = HttpClient
-  },
-})
-
-// node_modules/@actions/http-client/auth.js
-var require_auth = __commonJS({
-  'node_modules/@actions/http-client/auth.js'(exports) {
-    'use strict'
-    Object.defineProperty(exports, '__esModule', { value: true })
-    var BasicCredentialHandler = class {
-      constructor(username, password) {
-        this.username = username
-        this.password = password
-      }
-      prepareRequest(options) {
-        options.headers['Authorization'] =
-          'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
-      }
-      canHandleAuthentication(response) {
-        return false
-      }
-      handleAuthentication(httpClient, requestInfo, objs) {
-        return null
-      }
-    }
-    exports.BasicCredentialHandler = BasicCredentialHandler
-    var BearerCredentialHandler = class {
-      constructor(token) {
-        this.token = token
-      }
-      prepareRequest(options) {
-        options.headers['Authorization'] = 'Bearer ' + this.token
-      }
-      canHandleAuthentication(response) {
-        return false
-      }
-      handleAuthentication(httpClient, requestInfo, objs) {
-        return null
-      }
-    }
-    exports.BearerCredentialHandler = BearerCredentialHandler
-    var PersonalAccessTokenCredentialHandler = class {
-      constructor(token) {
-        this.token = token
-      }
-      prepareRequest(options) {
-        options.headers['Authorization'] =
-          'Basic ' + Buffer.from('PAT:' + this.token).toString('base64')
-      }
-      canHandleAuthentication(response) {
-        return false
-      }
-      handleAuthentication(httpClient, requestInfo, objs) {
-        return null
-      }
-    }
-    exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler
-  },
-})
-
-// node_modules/@actions/core/lib/oidc-utils.js
-var require_oidc_utils = __commonJS({
-  'node_modules/@actions/core/lib/oidc-utils.js'(exports) {
-    'use strict'
-    var __awaiter =
-      (exports && exports.__awaiter) ||
-      function (thisArg, _arguments, P, generator) {
-        function adopt(value) {
-          return value instanceof P
-            ? value
-            : new P(function (resolve) {
-                resolve(value)
-              })
+          actionArgs.push(this)
+          return fn.apply(this, actionArgs)
         }
-        return new (P || (P = Promise))(function (resolve, reject) {
-          function fulfilled(value) {
+        this._actionHandler = listener
+        return this
+      }
+      createOption(flags, description) {
+        return new Option(flags, description)
+      }
+      addOption(option) {
+        const oname = option.name()
+        const name = option.attributeName()
+        let defaultValue = option.defaultValue
+        if (
+          option.negate ||
+          option.optional ||
+          option.required ||
+          typeof defaultValue === 'boolean'
+        ) {
+          if (option.negate) {
+            const positiveLongFlag = option.long.replace(/^--no-/, '--')
+            defaultValue = this._findOption(positiveLongFlag) ? this.getOptionValue(name) : true
+          }
+          if (defaultValue !== void 0) {
+            this.setOptionValueWithSource(name, defaultValue, 'default')
+          }
+        }
+        this.options.push(option)
+        const handleOptionValue = (val, invalidValueMessage, valueSource) => {
+          const oldValue = this.getOptionValue(name)
+          if (val !== null && option.parseArg) {
             try {
-              step(generator.next(value))
-            } catch (e) {
-              reject(e)
+              val = option.parseArg(val, oldValue === void 0 ? defaultValue : oldValue)
+            } catch (err) {
+              if (err.code === 'commander.invalidArgument') {
+                const message = `${invalidValueMessage} ${err.message}`
+                this._displayError(err.exitCode, err.code, message)
+              }
+              throw err
             }
+          } else if (val !== null && option.variadic) {
+            val = option._concatValue(val, oldValue)
           }
-          function rejected(value) {
-            try {
-              step(generator['throw'](value))
-            } catch (e) {
-              reject(e)
+          if (typeof oldValue === 'boolean' || typeof oldValue === 'undefined') {
+            if (val == null) {
+              this.setOptionValueWithSource(
+                name,
+                option.negate ? false : defaultValue || true,
+                valueSource
+              )
+            } else {
+              this.setOptionValueWithSource(name, val, valueSource)
             }
+          } else if (val !== null) {
+            this.setOptionValueWithSource(name, option.negate ? false : val, valueSource)
           }
-          function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected)
-          }
-          step((generator = generator.apply(thisArg, _arguments || [])).next())
+        }
+        this.on('option:' + oname, (val) => {
+          const invalidValueMessage = `error: option '${option.flags}' argument '${val}' is invalid.`
+          handleOptionValue(val, invalidValueMessage, 'cli')
         })
-      }
-    Object.defineProperty(exports, '__esModule', { value: true })
-    exports.OidcClient = void 0
-    var http_client_1 = require_http_client()
-    var auth_1 = require_auth()
-    var core_1 = require_core()
-    var OidcClient = class {
-      static createHttpClient(allowRetry = true, maxRetry = 10) {
-        const requestOptions = {
-          allowRetries: allowRetry,
-          maxRetries: maxRetry,
-        }
-        return new http_client_1.HttpClient(
-          'actions/oidc-client',
-          [new auth_1.BearerCredentialHandler(OidcClient.getRequestToken())],
-          requestOptions
-        )
-      }
-      static getRequestToken() {
-        const token = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN']
-        if (!token) {
-          throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_TOKEN env variable')
-        }
-        return token
-      }
-      static getIDTokenUrl() {
-        const runtimeUrl = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
-        if (!runtimeUrl) {
-          throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_URL env variable')
-        }
-        return runtimeUrl
-      }
-      static getCall(id_token_url) {
-        var _a
-        return __awaiter(this, void 0, void 0, function* () {
-          const httpclient = OidcClient.createHttpClient()
-          const res = yield httpclient.getJson(id_token_url).catch((error) => {
-            throw new Error(`Failed to get ID Token. 
- 
-        Error Code : ${error.statusCode}
- 
-        Error Message: ${error.result.message}`)
+        if (option.envVar) {
+          this.on('optionEnv:' + oname, (val) => {
+            const invalidValueMessage = `error: option '${option.flags}' value '${val}' from env '${option.envVar}' is invalid.`
+            handleOptionValue(val, invalidValueMessage, 'env')
           })
-          const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value
-          if (!id_token) {
-            throw new Error('Response json body do not have ID Token field')
-          }
-          return id_token
-        })
-      }
-      static getIDToken(audience) {
-        return __awaiter(this, void 0, void 0, function* () {
-          try {
-            let id_token_url = OidcClient.getIDTokenUrl()
-            if (audience) {
-              const encodedAudience = encodeURIComponent(audience)
-              id_token_url = `${id_token_url}&audience=${encodedAudience}`
-            }
-            core_1.debug(`ID token url is ${id_token_url}`)
-            const id_token = yield OidcClient.getCall(id_token_url)
-            core_1.setSecret(id_token)
-            return id_token
-          } catch (error) {
-            throw new Error(`Error message: ${error.message}`)
-          }
-        })
-      }
-    }
-    exports.OidcClient = OidcClient
-  },
-})
-
-// node_modules/@actions/core/lib/core.js
-var require_core = __commonJS({
-  'node_modules/@actions/core/lib/core.js'(exports) {
-    'use strict'
-    var __createBinding =
-      (exports && exports.__createBinding) ||
-      (Object.create
-        ? function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            Object.defineProperty(o, k2, {
-              enumerable: true,
-              get: function () {
-                return m[k]
-              },
-            })
-          }
-        : function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            o[k2] = m[k]
-          })
-    var __setModuleDefault =
-      (exports && exports.__setModuleDefault) ||
-      (Object.create
-        ? function (o, v) {
-            Object.defineProperty(o, 'default', { enumerable: true, value: v })
-          }
-        : function (o, v) {
-            o['default'] = v
-          })
-    var __importStar =
-      (exports && exports.__importStar) ||
-      function (mod) {
-        if (mod && mod.__esModule) return mod
-        var result = {}
-        if (mod != null) {
-          for (var k in mod)
-            if (k !== 'default' && Object.hasOwnProperty.call(mod, k))
-              __createBinding(result, mod, k)
         }
-        __setModuleDefault(result, mod)
-        return result
+        return this
       }
-    var __awaiter =
-      (exports && exports.__awaiter) ||
-      function (thisArg, _arguments, P, generator) {
-        function adopt(value) {
-          return value instanceof P
-            ? value
-            : new P(function (resolve) {
-                resolve(value)
-              })
+      _optionEx(config, flags, description, fn, defaultValue) {
+        const option = this.createOption(flags, description)
+        option.makeOptionMandatory(!!config.mandatory)
+        if (typeof fn === 'function') {
+          option.default(defaultValue).argParser(fn)
+        } else if (fn instanceof RegExp) {
+          const regex = fn
+          fn = (val, def) => {
+            const m = regex.exec(val)
+            return m ? m[0] : def
+          }
+          option.default(defaultValue).argParser(fn)
+        } else {
+          option.default(fn)
         }
-        return new (P || (P = Promise))(function (resolve, reject) {
-          function fulfilled(value) {
-            try {
-              step(generator.next(value))
-            } catch (e) {
-              reject(e)
+        return this.addOption(option)
+      }
+      option(flags, description, fn, defaultValue) {
+        return this._optionEx({}, flags, description, fn, defaultValue)
+      }
+      requiredOption(flags, description, fn, defaultValue) {
+        return this._optionEx({ mandatory: true }, flags, description, fn, defaultValue)
+      }
+      combineFlagAndOptionalValue(combine = true) {
+        this._combineFlagAndOptionalValue = !!combine
+        return this
+      }
+      allowUnknownOption(allowUnknown = true) {
+        this._allowUnknownOption = !!allowUnknown
+        return this
+      }
+      allowExcessArguments(allowExcess = true) {
+        this._allowExcessArguments = !!allowExcess
+        return this
+      }
+      enablePositionalOptions(positional = true) {
+        this._enablePositionalOptions = !!positional
+        return this
+      }
+      passThroughOptions(passThrough = true) {
+        this._passThroughOptions = !!passThrough
+        if (!!this.parent && passThrough && !this.parent._enablePositionalOptions) {
+          throw new Error(
+            'passThroughOptions can not be used without turning on enablePositionalOptions for parent command(s)'
+          )
+        }
+        return this
+      }
+      storeOptionsAsProperties(storeAsProperties = true) {
+        this._storeOptionsAsProperties = !!storeAsProperties
+        if (this.options.length) {
+          throw new Error('call .storeOptionsAsProperties() before adding options')
+        }
+        return this
+      }
+      getOptionValue(key) {
+        if (this._storeOptionsAsProperties) {
+          return this[key]
+        }
+        return this._optionValues[key]
+      }
+      setOptionValue(key, value) {
+        if (this._storeOptionsAsProperties) {
+          this[key] = value
+        } else {
+          this._optionValues[key] = value
+        }
+        return this
+      }
+      setOptionValueWithSource(key, value, source) {
+        this.setOptionValue(key, value)
+        this._optionValueSources[key] = source
+        return this
+      }
+      getOptionValueSource(key) {
+        return this._optionValueSources[key]
+      }
+      _prepareUserArgs(argv, parseOptions) {
+        if (argv !== void 0 && !Array.isArray(argv)) {
+          throw new Error('first parameter to parse must be array or undefined')
+        }
+        parseOptions = parseOptions || {}
+        if (argv === void 0) {
+          argv = process.argv
+          if (process.versions && process.versions.electron) {
+            parseOptions.from = 'electron'
+          }
+        }
+        this.rawArgs = argv.slice()
+        let userArgs
+        switch (parseOptions.from) {
+          case void 0:
+          case 'node':
+            this._scriptPath = argv[1]
+            userArgs = argv.slice(2)
+            break
+          case 'electron':
+            if (process.defaultApp) {
+              this._scriptPath = argv[1]
+              userArgs = argv.slice(2)
+            } else {
+              userArgs = argv.slice(1)
             }
-          }
-          function rejected(value) {
-            try {
-              step(generator['throw'](value))
-            } catch (e) {
-              reject(e)
-            }
-          }
-          function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected)
-          }
-          step((generator = generator.apply(thisArg, _arguments || [])).next())
-        })
+            break
+          case 'user':
+            userArgs = argv.slice(0)
+            break
+          default:
+            throw new Error(`unexpected parse option { from: '${parseOptions.from}' }`)
+        }
+        if (!this._scriptPath && require.main) {
+          this._scriptPath = require.main.filename
+        }
+        this._name =
+          this._name ||
+          (this._scriptPath && path.basename(this._scriptPath, path.extname(this._scriptPath)))
+        return userArgs
       }
-    Object.defineProperty(exports, '__esModule', { value: true })
-    exports.getIDToken =
-      exports.getState =
-      exports.saveState =
-      exports.group =
-      exports.endGroup =
-      exports.startGroup =
-      exports.info =
-      exports.notice =
-      exports.warning =
-      exports.error =
-      exports.debug =
-      exports.isDebug =
-      exports.setFailed =
-      exports.setCommandEcho =
-      exports.setOutput =
-      exports.getBooleanInput =
-      exports.getMultilineInput =
-      exports.getInput =
-      exports.addPath =
-      exports.setSecret =
-      exports.exportVariable =
-      exports.ExitCode =
-        void 0
-    var command_1 = require_command()
-    var file_command_1 = require_file_command()
-    var utils_1 = require_utils()
-    var os = __importStar(require('os'))
-    var path = __importStar(require('path'))
-    var oidc_utils_1 = require_oidc_utils()
-    var ExitCode
-    ;(function (ExitCode2) {
-      ExitCode2[(ExitCode2['Success'] = 0)] = 'Success'
-      ExitCode2[(ExitCode2['Failure'] = 1)] = 'Failure'
-    })((ExitCode = exports.ExitCode || (exports.ExitCode = {})))
-    function exportVariable(name, val) {
-      const convertedVal = utils_1.toCommandValue(val)
-      process.env[name] = convertedVal
-      const filePath = process.env['GITHUB_ENV'] || ''
-      if (filePath) {
-        const delimiter = '_GitHubActionsFileCommandDelimeter_'
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`
-        file_command_1.issueCommand('ENV', commandValue)
-      } else {
-        command_1.issueCommand('set-env', { name }, convertedVal)
+      parse(argv, parseOptions) {
+        const userArgs = this._prepareUserArgs(argv, parseOptions)
+        this._parseCommand([], userArgs)
+        return this
       }
-    }
-    exports.exportVariable = exportVariable
-    function setSecret(secret) {
-      command_1.issueCommand('add-mask', {}, secret)
-    }
-    exports.setSecret = setSecret
-    function addPath(inputPath) {
-      const filePath = process.env['GITHUB_PATH'] || ''
-      if (filePath) {
-        file_command_1.issueCommand('PATH', inputPath)
-      } else {
-        command_1.issueCommand('add-path', {}, inputPath)
+      async parseAsync(argv, parseOptions) {
+        const userArgs = this._prepareUserArgs(argv, parseOptions)
+        await this._parseCommand([], userArgs)
+        return this
       }
-      process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`
-    }
-    exports.addPath = addPath
-    function getInput(name, options) {
-      const val = process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || ''
-      if (options && options.required && !val) {
-        throw new Error(`Input required and not supplied: ${name}`)
-      }
-      if (options && options.trimWhitespace === false) {
-        return val
-      }
-      return val.trim()
-    }
-    exports.getInput = getInput
-    function getMultilineInput(name, options) {
-      const inputs = getInput(name, options)
-        .split('\n')
-        .filter((x) => x !== '')
-      return inputs
-    }
-    exports.getMultilineInput = getMultilineInput
-    function getBooleanInput(name, options) {
-      const trueValue = ['true', 'True', 'TRUE']
-      const falseValue = ['false', 'False', 'FALSE']
-      const val = getInput(name, options)
-      if (trueValue.includes(val)) return true
-      if (falseValue.includes(val)) return false
-      throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
-Support boolean input list: \`true | True | TRUE | false | False | FALSE\``)
-    }
-    exports.getBooleanInput = getBooleanInput
-    function setOutput(name, value) {
-      process.stdout.write(os.EOL)
-      command_1.issueCommand('set-output', { name }, value)
-    }
-    exports.setOutput = setOutput
-    function setCommandEcho(enabled) {
-      command_1.issue('echo', enabled ? 'on' : 'off')
-    }
-    exports.setCommandEcho = setCommandEcho
-    function setFailed(message) {
-      process.exitCode = ExitCode.Failure
-      error(message)
-    }
-    exports.setFailed = setFailed
-    function isDebug() {
-      return process.env['RUNNER_DEBUG'] === '1'
-    }
-    exports.isDebug = isDebug
-    function debug(message) {
-      command_1.issueCommand('debug', {}, message)
-    }
-    exports.debug = debug
-    function error(message, properties = {}) {
-      command_1.issueCommand(
-        'error',
-        utils_1.toCommandProperties(properties),
-        message instanceof Error ? message.toString() : message
-      )
-    }
-    exports.error = error
-    function warning(message, properties = {}) {
-      command_1.issueCommand(
-        'warning',
-        utils_1.toCommandProperties(properties),
-        message instanceof Error ? message.toString() : message
-      )
-    }
-    exports.warning = warning
-    function notice(message, properties = {}) {
-      command_1.issueCommand(
-        'notice',
-        utils_1.toCommandProperties(properties),
-        message instanceof Error ? message.toString() : message
-      )
-    }
-    exports.notice = notice
-    function info(message) {
-      process.stdout.write(message + os.EOL)
-    }
-    exports.info = info
-    function startGroup(name) {
-      command_1.issue('group', name)
-    }
-    exports.startGroup = startGroup
-    function endGroup() {
-      command_1.issue('endgroup')
-    }
-    exports.endGroup = endGroup
-    function group(name, fn) {
-      return __awaiter(this, void 0, void 0, function* () {
-        startGroup(name)
-        let result
+      _executeSubCommand(subcommand, args) {
+        args = args.slice()
+        let launchWithNode = false
+        const sourceExt = ['.js', '.ts', '.tsx', '.mjs', '.cjs']
+        this._checkForMissingMandatoryOptions()
+        let scriptPath = this._scriptPath
+        if (!scriptPath && require.main) {
+          scriptPath = require.main.filename
+        }
+        let baseDir
         try {
-          result = yield fn()
-        } finally {
-          endGroup()
+          const resolvedLink = fs2.realpathSync(scriptPath)
+          baseDir = path.dirname(resolvedLink)
+        } catch (e) {
+          baseDir = '.'
         }
+        let bin = path.basename(scriptPath, path.extname(scriptPath)) + '-' + subcommand._name
+        if (subcommand._executableFile) {
+          bin = subcommand._executableFile
+        }
+        const localBin = path.join(baseDir, bin)
+        if (fs2.existsSync(localBin)) {
+          bin = localBin
+        } else {
+          sourceExt.forEach((ext) => {
+            if (fs2.existsSync(`${localBin}${ext}`)) {
+              bin = `${localBin}${ext}`
+            }
+          })
+        }
+        launchWithNode = sourceExt.includes(path.extname(bin))
+        let proc
+        if (process.platform !== 'win32') {
+          if (launchWithNode) {
+            args.unshift(bin)
+            args = incrementNodeInspectorPort(process.execArgv).concat(args)
+            proc = childProcess.spawn(process.argv[0], args, { stdio: 'inherit' })
+          } else {
+            proc = childProcess.spawn(bin, args, { stdio: 'inherit' })
+          }
+        } else {
+          args.unshift(bin)
+          args = incrementNodeInspectorPort(process.execArgv).concat(args)
+          proc = childProcess.spawn(process.execPath, args, { stdio: 'inherit' })
+        }
+        const signals = ['SIGUSR1', 'SIGUSR2', 'SIGTERM', 'SIGINT', 'SIGHUP']
+        signals.forEach((signal) => {
+          process.on(signal, () => {
+            if (proc.killed === false && proc.exitCode === null) {
+              proc.kill(signal)
+            }
+          })
+        })
+        const exitCallback = this._exitCallback
+        if (!exitCallback) {
+          proc.on('close', process.exit.bind(process))
+        } else {
+          proc.on('close', () => {
+            exitCallback(
+              new CommanderError(
+                process.exitCode || 0,
+                'commander.executeSubCommandAsync',
+                '(close)'
+              )
+            )
+          })
+        }
+        proc.on('error', (err) => {
+          if (err.code === 'ENOENT') {
+            const executableMissing = `'${bin}' does not exist
+ - if '${subcommand._name}' is not meant to be an executable command, remove description parameter from '.command()' and use '.description()' instead
+ - if the default executable name is not suitable, use the executableFile option to supply a custom name`
+            throw new Error(executableMissing)
+          } else if (err.code === 'EACCES') {
+            throw new Error(`'${bin}' not executable`)
+          }
+          if (!exitCallback) {
+            process.exit(1)
+          } else {
+            const wrappedError = new CommanderError(
+              1,
+              'commander.executeSubCommandAsync',
+              '(error)'
+            )
+            wrappedError.nestedError = err
+            exitCallback(wrappedError)
+          }
+        })
+        this.runningCommand = proc
+      }
+      _dispatchSubcommand(commandName, operands, unknown) {
+        const subCommand = this._findCommand(commandName)
+        if (!subCommand) this.help({ error: true })
+        if (subCommand._executableHandler) {
+          this._executeSubCommand(subCommand, operands.concat(unknown))
+        } else {
+          return subCommand._parseCommand(operands, unknown)
+        }
+      }
+      _checkNumberOfArguments() {
+        this._args.forEach((arg, i) => {
+          if (arg.required && this.args[i] == null) {
+            this.missingArgument(arg.name())
+          }
+        })
+        if (this._args.length > 0 && this._args[this._args.length - 1].variadic) {
+          return
+        }
+        if (this.args.length > this._args.length) {
+          this._excessArguments(this.args)
+        }
+      }
+      _processArguments() {
+        const myParseArg = (argument, value, previous) => {
+          let parsedValue = value
+          if (value !== null && argument.parseArg) {
+            try {
+              parsedValue = argument.parseArg(value, previous)
+            } catch (err) {
+              if (err.code === 'commander.invalidArgument') {
+                const message = `error: command-argument value '${value}' is invalid for argument '${argument.name()}'. ${
+                  err.message
+                }`
+                this._displayError(err.exitCode, err.code, message)
+              }
+              throw err
+            }
+          }
+          return parsedValue
+        }
+        this._checkNumberOfArguments()
+        const processedArgs = []
+        this._args.forEach((declaredArg, index) => {
+          let value = declaredArg.defaultValue
+          if (declaredArg.variadic) {
+            if (index < this.args.length) {
+              value = this.args.slice(index)
+              if (declaredArg.parseArg) {
+                value = value.reduce((processed, v) => {
+                  return myParseArg(declaredArg, v, processed)
+                }, declaredArg.defaultValue)
+              }
+            } else if (value === void 0) {
+              value = []
+            }
+          } else if (index < this.args.length) {
+            value = this.args[index]
+            if (declaredArg.parseArg) {
+              value = myParseArg(declaredArg, value, declaredArg.defaultValue)
+            }
+          }
+          processedArgs[index] = value
+        })
+        this.processedArgs = processedArgs
+      }
+      _chainOrCall(promise, fn) {
+        if (promise && promise.then && typeof promise.then === 'function') {
+          return promise.then(() => fn())
+        }
+        return fn()
+      }
+      _chainOrCallHooks(promise, event) {
+        let result = promise
+        const hooks = []
+        getCommandAndParents(this)
+          .reverse()
+          .filter((cmd) => cmd._lifeCycleHooks[event] !== void 0)
+          .forEach((hookedCommand) => {
+            hookedCommand._lifeCycleHooks[event].forEach((callback) => {
+              hooks.push({ hookedCommand, callback })
+            })
+          })
+        if (event === 'postAction') {
+          hooks.reverse()
+        }
+        hooks.forEach((hookDetail) => {
+          result = this._chainOrCall(result, () => {
+            return hookDetail.callback(hookDetail.hookedCommand, this)
+          })
+        })
         return result
+      }
+      _parseCommand(operands, unknown) {
+        const parsed = this.parseOptions(unknown)
+        this._parseOptionsEnv()
+        operands = operands.concat(parsed.operands)
+        unknown = parsed.unknown
+        this.args = operands.concat(unknown)
+        if (operands && this._findCommand(operands[0])) {
+          return this._dispatchSubcommand(operands[0], operands.slice(1), unknown)
+        }
+        if (this._hasImplicitHelpCommand() && operands[0] === this._helpCommandName) {
+          if (operands.length === 1) {
+            this.help()
+          }
+          return this._dispatchSubcommand(operands[1], [], [this._helpLongFlag])
+        }
+        if (this._defaultCommandName) {
+          outputHelpIfRequested(this, unknown)
+          return this._dispatchSubcommand(this._defaultCommandName, operands, unknown)
+        }
+        if (
+          this.commands.length &&
+          this.args.length === 0 &&
+          !this._actionHandler &&
+          !this._defaultCommandName
+        ) {
+          this.help({ error: true })
+        }
+        outputHelpIfRequested(this, parsed.unknown)
+        this._checkForMissingMandatoryOptions()
+        const checkForUnknownOptions = () => {
+          if (parsed.unknown.length > 0) {
+            this.unknownOption(parsed.unknown[0])
+          }
+        }
+        const commandEvent = `command:${this.name()}`
+        if (this._actionHandler) {
+          checkForUnknownOptions()
+          this._processArguments()
+          let actionResult
+          actionResult = this._chainOrCallHooks(actionResult, 'preAction')
+          actionResult = this._chainOrCall(actionResult, () =>
+            this._actionHandler(this.processedArgs)
+          )
+          if (this.parent) this.parent.emit(commandEvent, operands, unknown)
+          actionResult = this._chainOrCallHooks(actionResult, 'postAction')
+          return actionResult
+        }
+        if (this.parent && this.parent.listenerCount(commandEvent)) {
+          checkForUnknownOptions()
+          this._processArguments()
+          this.parent.emit(commandEvent, operands, unknown)
+        } else if (operands.length) {
+          if (this._findCommand('*')) {
+            return this._dispatchSubcommand('*', operands, unknown)
+          }
+          if (this.listenerCount('command:*')) {
+            this.emit('command:*', operands, unknown)
+          } else if (this.commands.length) {
+            this.unknownCommand()
+          } else {
+            checkForUnknownOptions()
+            this._processArguments()
+          }
+        } else if (this.commands.length) {
+          checkForUnknownOptions()
+          this.help({ error: true })
+        } else {
+          checkForUnknownOptions()
+          this._processArguments()
+        }
+      }
+      _findCommand(name) {
+        if (!name) return void 0
+        return this.commands.find((cmd) => cmd._name === name || cmd._aliases.includes(name))
+      }
+      _findOption(arg) {
+        return this.options.find((option) => option.is(arg))
+      }
+      _checkForMissingMandatoryOptions() {
+        for (let cmd = this; cmd; cmd = cmd.parent) {
+          cmd.options.forEach((anOption) => {
+            if (anOption.mandatory && cmd.getOptionValue(anOption.attributeName()) === void 0) {
+              cmd.missingMandatoryOptionValue(anOption)
+            }
+          })
+        }
+      }
+      parseOptions(argv) {
+        const operands = []
+        const unknown = []
+        let dest = operands
+        const args = argv.slice()
+        function maybeOption(arg) {
+          return arg.length > 1 && arg[0] === '-'
+        }
+        let activeVariadicOption = null
+        while (args.length) {
+          const arg = args.shift()
+          if (arg === '--') {
+            if (dest === unknown) dest.push(arg)
+            dest.push(...args)
+            break
+          }
+          if (activeVariadicOption && !maybeOption(arg)) {
+            this.emit(`option:${activeVariadicOption.name()}`, arg)
+            continue
+          }
+          activeVariadicOption = null
+          if (maybeOption(arg)) {
+            const option = this._findOption(arg)
+            if (option) {
+              if (option.required) {
+                const value = args.shift()
+                if (value === void 0) this.optionMissingArgument(option)
+                this.emit(`option:${option.name()}`, value)
+              } else if (option.optional) {
+                let value = null
+                if (args.length > 0 && !maybeOption(args[0])) {
+                  value = args.shift()
+                }
+                this.emit(`option:${option.name()}`, value)
+              } else {
+                this.emit(`option:${option.name()}`)
+              }
+              activeVariadicOption = option.variadic ? option : null
+              continue
+            }
+          }
+          if (arg.length > 2 && arg[0] === '-' && arg[1] !== '-') {
+            const option = this._findOption(`-${arg[1]}`)
+            if (option) {
+              if (option.required || (option.optional && this._combineFlagAndOptionalValue)) {
+                this.emit(`option:${option.name()}`, arg.slice(2))
+              } else {
+                this.emit(`option:${option.name()}`)
+                args.unshift(`-${arg.slice(2)}`)
+              }
+              continue
+            }
+          }
+          if (/^--[^=]+=/.test(arg)) {
+            const index = arg.indexOf('=')
+            const option = this._findOption(arg.slice(0, index))
+            if (option && (option.required || option.optional)) {
+              this.emit(`option:${option.name()}`, arg.slice(index + 1))
+              continue
+            }
+          }
+          if (maybeOption(arg)) {
+            dest = unknown
+          }
+          if (
+            (this._enablePositionalOptions || this._passThroughOptions) &&
+            operands.length === 0 &&
+            unknown.length === 0
+          ) {
+            if (this._findCommand(arg)) {
+              operands.push(arg)
+              if (args.length > 0) unknown.push(...args)
+              break
+            } else if (arg === this._helpCommandName && this._hasImplicitHelpCommand()) {
+              operands.push(arg)
+              if (args.length > 0) operands.push(...args)
+              break
+            } else if (this._defaultCommandName) {
+              unknown.push(arg)
+              if (args.length > 0) unknown.push(...args)
+              break
+            }
+          }
+          if (this._passThroughOptions) {
+            dest.push(arg)
+            if (args.length > 0) dest.push(...args)
+            break
+          }
+          dest.push(arg)
+        }
+        return { operands, unknown }
+      }
+      opts() {
+        if (this._storeOptionsAsProperties) {
+          const result = {}
+          const len = this.options.length
+          for (let i = 0; i < len; i++) {
+            const key = this.options[i].attributeName()
+            result[key] = key === this._versionOptionName ? this._version : this[key]
+          }
+          return result
+        }
+        return this._optionValues
+      }
+      _displayError(exitCode, code, message) {
+        this._outputConfiguration.outputError(
+          `${message}
+`,
+          this._outputConfiguration.writeErr
+        )
+        if (typeof this._showHelpAfterError === 'string') {
+          this._outputConfiguration.writeErr(`${this._showHelpAfterError}
+`)
+        } else if (this._showHelpAfterError) {
+          this._outputConfiguration.writeErr('\n')
+          this.outputHelp({ error: true })
+        }
+        this._exit(exitCode, code, message)
+      }
+      _parseOptionsEnv() {
+        this.options.forEach((option) => {
+          if (option.envVar && option.envVar in process.env) {
+            const optionKey = option.attributeName()
+            if (
+              this.getOptionValue(optionKey) === void 0 ||
+              ['default', 'config', 'env'].includes(this.getOptionValueSource(optionKey))
+            ) {
+              if (option.required || option.optional) {
+                this.emit(`optionEnv:${option.name()}`, process.env[option.envVar])
+              } else {
+                this.emit(`optionEnv:${option.name()}`)
+              }
+            }
+          }
+        })
+      }
+      missingArgument(name) {
+        const message = `error: missing required argument '${name}'`
+        this._displayError(1, 'commander.missingArgument', message)
+      }
+      optionMissingArgument(option) {
+        const message = `error: option '${option.flags}' argument missing`
+        this._displayError(1, 'commander.optionMissingArgument', message)
+      }
+      missingMandatoryOptionValue(option) {
+        const message = `error: required option '${option.flags}' not specified`
+        this._displayError(1, 'commander.missingMandatoryOptionValue', message)
+      }
+      unknownOption(flag) {
+        if (this._allowUnknownOption) return
+        let suggestion = ''
+        if (flag.startsWith('--') && this._showSuggestionAfterError) {
+          let candidateFlags = []
+          let command = this
+          do {
+            const moreFlags = command
+              .createHelp()
+              .visibleOptions(command)
+              .filter((option) => option.long)
+              .map((option) => option.long)
+            candidateFlags = candidateFlags.concat(moreFlags)
+            command = command.parent
+          } while (command && !command._enablePositionalOptions)
+          suggestion = suggestSimilar(flag, candidateFlags)
+        }
+        const message = `error: unknown option '${flag}'${suggestion}`
+        this._displayError(1, 'commander.unknownOption', message)
+      }
+      _excessArguments(receivedArgs) {
+        if (this._allowExcessArguments) return
+        const expected = this._args.length
+        const s = expected === 1 ? '' : 's'
+        const forSubcommand = this.parent ? ` for '${this.name()}'` : ''
+        const message = `error: too many arguments${forSubcommand}. Expected ${expected} argument${s} but got ${receivedArgs.length}.`
+        this._displayError(1, 'commander.excessArguments', message)
+      }
+      unknownCommand() {
+        const unknownName = this.args[0]
+        let suggestion = ''
+        if (this._showSuggestionAfterError) {
+          const candidateNames = []
+          this.createHelp()
+            .visibleCommands(this)
+            .forEach((command) => {
+              candidateNames.push(command.name())
+              if (command.alias()) candidateNames.push(command.alias())
+            })
+          suggestion = suggestSimilar(unknownName, candidateNames)
+        }
+        const message = `error: unknown command '${unknownName}'${suggestion}`
+        this._displayError(1, 'commander.unknownCommand', message)
+      }
+      version(str, flags, description) {
+        if (str === void 0) return this._version
+        this._version = str
+        flags = flags || '-V, --version'
+        description = description || 'output the version number'
+        const versionOption = this.createOption(flags, description)
+        this._versionOptionName = versionOption.attributeName()
+        this.options.push(versionOption)
+        this.on('option:' + versionOption.name(), () => {
+          this._outputConfiguration.writeOut(`${str}
+`)
+          this._exit(0, 'commander.version', str)
+        })
+        return this
+      }
+      description(str, argsDescription) {
+        if (str === void 0 && argsDescription === void 0) return this._description
+        this._description = str
+        if (argsDescription) {
+          this._argsDescription = argsDescription
+        }
+        return this
+      }
+      alias(alias) {
+        if (alias === void 0) return this._aliases[0]
+        let command = this
+        if (
+          this.commands.length !== 0 &&
+          this.commands[this.commands.length - 1]._executableHandler
+        ) {
+          command = this.commands[this.commands.length - 1]
+        }
+        if (alias === command._name) throw new Error("Command alias can't be the same as its name")
+        command._aliases.push(alias)
+        return this
+      }
+      aliases(aliases) {
+        if (aliases === void 0) return this._aliases
+        aliases.forEach((alias) => this.alias(alias))
+        return this
+      }
+      usage(str) {
+        if (str === void 0) {
+          if (this._usage) return this._usage
+          const args = this._args.map((arg) => {
+            return humanReadableArgName(arg)
+          })
+          return []
+            .concat(
+              this.options.length || this._hasHelpOption ? '[options]' : [],
+              this.commands.length ? '[command]' : [],
+              this._args.length ? args : []
+            )
+            .join(' ')
+        }
+        this._usage = str
+        return this
+      }
+      name(str) {
+        if (str === void 0) return this._name
+        this._name = str
+        return this
+      }
+      helpInformation(contextOptions) {
+        const helper = this.createHelp()
+        if (helper.helpWidth === void 0) {
+          helper.helpWidth =
+            contextOptions && contextOptions.error
+              ? this._outputConfiguration.getErrHelpWidth()
+              : this._outputConfiguration.getOutHelpWidth()
+        }
+        return helper.formatHelp(this, helper)
+      }
+      _getHelpContext(contextOptions) {
+        contextOptions = contextOptions || {}
+        const context = { error: !!contextOptions.error }
+        let write
+        if (context.error) {
+          write = (arg) => this._outputConfiguration.writeErr(arg)
+        } else {
+          write = (arg) => this._outputConfiguration.writeOut(arg)
+        }
+        context.write = contextOptions.write || write
+        context.command = this
+        return context
+      }
+      outputHelp(contextOptions) {
+        let deprecatedCallback
+        if (typeof contextOptions === 'function') {
+          deprecatedCallback = contextOptions
+          contextOptions = void 0
+        }
+        const context = this._getHelpContext(contextOptions)
+        getCommandAndParents(this)
+          .reverse()
+          .forEach((command) => command.emit('beforeAllHelp', context))
+        this.emit('beforeHelp', context)
+        let helpInformation = this.helpInformation(context)
+        if (deprecatedCallback) {
+          helpInformation = deprecatedCallback(helpInformation)
+          if (typeof helpInformation !== 'string' && !Buffer.isBuffer(helpInformation)) {
+            throw new Error('outputHelp callback must return a string or a Buffer')
+          }
+        }
+        context.write(helpInformation)
+        this.emit(this._helpLongFlag)
+        this.emit('afterHelp', context)
+        getCommandAndParents(this).forEach((command) => command.emit('afterAllHelp', context))
+      }
+      helpOption(flags, description) {
+        if (typeof flags === 'boolean') {
+          this._hasHelpOption = flags
+          return this
+        }
+        this._helpFlags = flags || this._helpFlags
+        this._helpDescription = description || this._helpDescription
+        const helpFlags = splitOptionFlags(this._helpFlags)
+        this._helpShortFlag = helpFlags.shortFlag
+        this._helpLongFlag = helpFlags.longFlag
+        return this
+      }
+      help(contextOptions) {
+        this.outputHelp(contextOptions)
+        let exitCode = process.exitCode || 0
+        if (
+          exitCode === 0 &&
+          contextOptions &&
+          typeof contextOptions !== 'function' &&
+          contextOptions.error
+        ) {
+          exitCode = 1
+        }
+        this._exit(exitCode, 'commander.help', '(outputHelp)')
+      }
+      addHelpText(position, text) {
+        const allowedValues = ['beforeAll', 'before', 'after', 'afterAll']
+        if (!allowedValues.includes(position)) {
+          throw new Error(`Unexpected value for position to addHelpText.
+Expecting one of '${allowedValues.join("', '")}'`)
+        }
+        const helpEvent = `${position}Help`
+        this.on(helpEvent, (context) => {
+          let helpStr
+          if (typeof text === 'function') {
+            helpStr = text({ error: context.error, command: context.command })
+          } else {
+            helpStr = text
+          }
+          if (helpStr) {
+            context.write(`${helpStr}
+`)
+          }
+        })
+        return this
+      }
+    }
+    function outputHelpIfRequested(cmd, args) {
+      const helpOption =
+        cmd._hasHelpOption &&
+        args.find((arg) => arg === cmd._helpLongFlag || arg === cmd._helpShortFlag)
+      if (helpOption) {
+        cmd.outputHelp()
+        cmd._exit(0, 'commander.helpDisplayed', '(outputHelp)')
+      }
+    }
+    function incrementNodeInspectorPort(args) {
+      return args.map((arg) => {
+        if (!arg.startsWith('--inspect')) {
+          return arg
+        }
+        let debugOption
+        let debugHost = '127.0.0.1'
+        let debugPort = '9229'
+        let match
+        if ((match = arg.match(/^(--inspect(-brk)?)$/)) !== null) {
+          debugOption = match[1]
+        } else if ((match = arg.match(/^(--inspect(-brk|-port)?)=([^:]+)$/)) !== null) {
+          debugOption = match[1]
+          if (/^\d+$/.test(match[3])) {
+            debugPort = match[3]
+          } else {
+            debugHost = match[3]
+          }
+        } else if ((match = arg.match(/^(--inspect(-brk|-port)?)=([^:]+):(\d+)$/)) !== null) {
+          debugOption = match[1]
+          debugHost = match[3]
+          debugPort = match[4]
+        }
+        if (debugOption && debugPort !== '0') {
+          return `${debugOption}=${debugHost}:${parseInt(debugPort) + 1}`
+        }
+        return arg
       })
     }
-    exports.group = group
-    function saveState(name, value) {
-      command_1.issueCommand('save-state', { name }, value)
+    function getCommandAndParents(startCommand) {
+      const result = []
+      for (let command = startCommand; command; command = command.parent) {
+        result.push(command)
+      }
+      return result
     }
-    exports.saveState = saveState
-    function getState(name) {
-      return process.env[`STATE_${name}`] || ''
-    }
-    exports.getState = getState
-    function getIDToken(aud) {
-      return __awaiter(this, void 0, void 0, function* () {
-        return yield oidc_utils_1.OidcClient.getIDToken(aud)
-      })
-    }
-    exports.getIDToken = getIDToken
+    exports.Command = Command2
+  },
+})
+
+// node_modules/commander/index.js
+var require_commander = __commonJS({
+  'node_modules/commander/index.js'(exports, module2) {
+    var { Argument } = require_argument()
+    var { Command: Command2 } = require_command()
+    var { CommanderError, InvalidArgumentError } = require_error()
+    var { Help } = require_help()
+    var { Option } = require_option()
+    exports = module2.exports = new Command2()
+    exports.program = exports
+    exports.Argument = Argument
+    exports.Command = Command2
+    exports.CommanderError = CommanderError
+    exports.Help = Help
+    exports.InvalidArgumentError = InvalidArgumentError
+    exports.InvalidOptionArgumentError = InvalidArgumentError
+    exports.Option = Option
   },
 })
 
@@ -1744,7 +1960,7 @@ var require_glob_parent = __commonJS({
 })
 
 // node_modules/braces/lib/utils.js
-var require_utils2 = __commonJS({
+var require_utils = __commonJS({
   'node_modules/braces/lib/utils.js'(exports) {
     'use strict'
     exports.isInteger = (num) => {
@@ -1824,7 +2040,7 @@ var require_utils2 = __commonJS({
 var require_stringify = __commonJS({
   'node_modules/braces/lib/stringify.js'(exports, module2) {
     'use strict'
-    var utils = require_utils2()
+    var utils = require_utils()
     module2.exports = (ast, options = {}) => {
       let stringify = (node, parent = {}) => {
         let invalidBlock = options.escapeInvalid && utils.isInvalidBrace(parent)
@@ -2279,7 +2495,7 @@ var require_compile = __commonJS({
   'node_modules/braces/lib/compile.js'(exports, module2) {
     'use strict'
     var fill = require_fill_range()
-    var utils = require_utils2()
+    var utils = require_utils()
     var compile = (ast, options = {}) => {
       let walk = (node, parent = {}) => {
         let invalidBlock = utils.isInvalidBrace(parent)
@@ -2331,7 +2547,7 @@ var require_expand = __commonJS({
     'use strict'
     var fill = require_fill_range()
     var stringify = require_stringify()
-    var utils = require_utils2()
+    var utils = require_utils()
     var append = (queue = '', stash = '', enclose = false) => {
       let result = []
       queue = [].concat(queue)
@@ -2913,7 +3129,7 @@ var require_constants2 = __commonJS({
 })
 
 // node_modules/picomatch/lib/utils.js
-var require_utils3 = __commonJS({
+var require_utils2 = __commonJS({
   'node_modules/picomatch/lib/utils.js'(exports) {
     'use strict'
     var path = require('path')
@@ -2977,7 +3193,7 @@ var require_utils3 = __commonJS({
 var require_scan = __commonJS({
   'node_modules/picomatch/lib/scan.js'(exports, module2) {
     'use strict'
-    var utils = require_utils3()
+    var utils = require_utils2()
     var {
       CHAR_ASTERISK,
       CHAR_AT,
@@ -3298,7 +3514,7 @@ var require_parse2 = __commonJS({
   'node_modules/picomatch/lib/parse.js'(exports, module2) {
     'use strict'
     var constants = require_constants2()
-    var utils = require_utils3()
+    var utils = require_utils2()
     var {
       MAX_LENGTH,
       POSIX_REGEX_SOURCE,
@@ -4091,7 +4307,7 @@ var require_picomatch = __commonJS({
     var path = require('path')
     var scan = require_scan()
     var parse = require_parse2()
-    var utils = require_utils3()
+    var utils = require_utils2()
     var constants = require_constants2()
     var isObject = (val) => val && typeof val === 'object' && !Array.isArray(val)
     var picomatch = (glob, options, returnState = false) => {
@@ -4242,7 +4458,7 @@ var require_micromatch = __commonJS({
     var util = require('util')
     var braces = require_braces()
     var picomatch = require_picomatch2()
-    var utils = require_utils3()
+    var utils = require_utils2()
     var isEmptyString = (val) => val === '' || val === './'
     var micromatch = (list, patterns, options) => {
       patterns = [].concat(patterns)
@@ -4723,7 +4939,7 @@ var require_string = __commonJS({
 })
 
 // node_modules/fast-glob/out/utils/index.js
-var require_utils4 = __commonJS({
+var require_utils3 = __commonJS({
   'node_modules/fast-glob/out/utils/index.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
@@ -4765,7 +4981,7 @@ var require_tasks = __commonJS({
       exports.convertPatternsToTasks =
       exports.generate =
         void 0
-    var utils = require_utils4()
+    var utils = require_utils3()
     function generate(patterns, settings) {
       const positivePatterns = getPositivePatterns(patterns)
       const negativePatterns = getNegativePatternsAsPositive(patterns, settings.ignore)
@@ -5129,7 +5345,7 @@ var require_fs3 = __commonJS({
 })
 
 // node_modules/@nodelib/fs.scandir/out/utils/index.js
-var require_utils5 = __commonJS({
+var require_utils4 = __commonJS({
   'node_modules/@nodelib/fs.scandir/out/utils/index.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
@@ -5164,7 +5380,7 @@ var require_async2 = __commonJS({
     var fsStat = require_out()
     var rpl = require_run_parallel()
     var constants_1 = require_constants3()
-    var utils = require_utils5()
+    var utils = require_utils4()
     var common = require_common()
     function read(directory, settings, callback) {
       if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
@@ -5273,7 +5489,7 @@ var require_sync2 = __commonJS({
     exports.readdir = exports.readdirWithFileTypes = exports.read = void 0
     var fsStat = require_out()
     var constants_1 = require_constants3()
-    var utils = require_utils5()
+    var utils = require_utils4()
     var common = require_common()
     function read(directory, settings) {
       if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
@@ -6090,7 +6306,7 @@ var require_reader2 = __commonJS({
     Object.defineProperty(exports, '__esModule', { value: true })
     var path = require('path')
     var fsStat = require_out()
-    var utils = require_utils4()
+    var utils = require_utils3()
     var Reader = class {
       constructor(_settings) {
         this._settings = _settings
@@ -6188,7 +6404,7 @@ var require_matcher = __commonJS({
   'node_modules/fast-glob/out/providers/matchers/matcher.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var utils = require_utils4()
+    var utils = require_utils3()
     var Matcher = class {
       constructor(_patterns, _settings, _micromatchOptions) {
         this._patterns = _patterns
@@ -6282,7 +6498,7 @@ var require_deep = __commonJS({
   'node_modules/fast-glob/out/providers/filters/deep.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var utils = require_utils4()
+    var utils = require_utils3()
     var partial_1 = require_partial()
     var DeepFilter = class {
       constructor(_settings, _micromatchOptions) {
@@ -6352,7 +6568,7 @@ var require_entry = __commonJS({
   'node_modules/fast-glob/out/providers/filters/entry.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var utils = require_utils4()
+    var utils = require_utils3()
     var EntryFilter = class {
       constructor(_settings, _micromatchOptions) {
         this._settings = _settings
@@ -6415,11 +6631,11 @@ var require_entry = __commonJS({
 })
 
 // node_modules/fast-glob/out/providers/filters/error.js
-var require_error = __commonJS({
+var require_error2 = __commonJS({
   'node_modules/fast-glob/out/providers/filters/error.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var utils = require_utils4()
+    var utils = require_utils3()
     var ErrorFilter = class {
       constructor(_settings) {
         this._settings = _settings
@@ -6440,7 +6656,7 @@ var require_entry2 = __commonJS({
   'node_modules/fast-glob/out/providers/transformers/entry.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var utils = require_utils4()
+    var utils = require_utils3()
     var EntryTransformer = class {
       constructor(_settings) {
         this._settings = _settings
@@ -6475,7 +6691,7 @@ var require_provider = __commonJS({
     var path = require('path')
     var deep_1 = require_deep()
     var entry_1 = require_entry()
-    var error_1 = require_error()
+    var error_1 = require_error2()
     var entry_2 = require_entry2()
     var Provider = class {
       constructor(_settings) {
@@ -6740,7 +6956,7 @@ var require_out4 = __commonJS({
     var stream_1 = require_stream4()
     var sync_1 = require_sync6()
     var settings_1 = require_settings4()
-    var utils = require_utils4()
+    var utils = require_utils3()
     async function FastGlob(source, options) {
       assertPatternsInput(source)
       const works = getWorks(source, async_1.default, options)
@@ -6799,8 +7015,8 @@ var require_out4 = __commonJS({
   },
 })
 
-// src/action/index.ts
-var import_core = __toESM(require_core(), 1)
+// src/bin/one-report-publisher.ts
+var import_commander = __toESM(require_commander(), 1)
 
 // node_modules/@cucumber/ci-environment/dist/esm/src/CiEnvironments.js
 var CiEnvironments = [
@@ -7216,13 +7432,16 @@ function vercelAuthenticator(url, vercelPassword) {
     })
 }
 
-// src/action/index.ts
+// src/bin/one-report-publisher.ts
 var import_url2 = require('url')
+var program = new import_commander.Command()
+program.requiredOption('-o, --organization-id <id>', 'OneReport organization id')
+program.requiredOption('-p, --password <password>', 'OneReport password')
+program.requiredOption('-r, --reports <glob>', 'Glob to the files to publish')
+program.option('-u, --url <url>', 'OneReport URL', 'https://one-report.vercel.app')
 async function main() {
-  const organizationId = import_core.default.getInput('organization-id')
-  const password = import_core.default.getInput('password')
-  const globs = import_core.default.getMultilineInput('reports')
-  const baseUrl = import_core.default.getInput('url')
+  program.parse(process.argv)
+  const { organizationId, password, reports: globs, url: baseUrl } = program.opts()
   const responseBodies = await publish(
     globs,
     organizationId,
@@ -7239,14 +7458,15 @@ async function main() {
 }
 main()
   .then((reportUrls) => {
-    import_core.default.setOutput('report-urls', reportUrls)
-    import_core.default.startGroup('Report URLs')
+    console.log('Report URLs')
     for (const reportUrl of reportUrls) {
-      import_core.default.info(reportUrl)
+      console.log(`- ${reportUrl}`)
     }
-    import_core.default.endGroup()
   })
-  .catch((error) => import_core.default.setFailed(error.message))
+  .catch((error) => {
+    console.error(error.stack)
+    process.exit(1)
+  })
 /*!
  * fill-range <https://github.com/jonschlinkert/fill-range>
  *

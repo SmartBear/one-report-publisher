@@ -8,7 +8,7 @@ inputs:
     description: 'OneReport password'
     required: true
   reports:
-    description: 'Globs to the JUnit XML/Cucumber JSON files to publish'
+    description: 'Globs to the files to publish'
     required: true
   url:
     description: 'OneReport URL'

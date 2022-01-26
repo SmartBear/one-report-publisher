@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a command-line, making it possible to run with `npx @smartbear/one-report-publisher`
+
 ## [0.0.10] - 2022-01-26
 
 ### Added
