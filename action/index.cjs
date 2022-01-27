@@ -7097,6 +7097,12 @@ var contentTypes = {
   '.zip': 'application/zip',
 }
 async function publish(globs, organizationId, baseUrl, env, authenticate) {
+  if (!Array.isArray(globs)) {
+    throw new Error('globs must be an array')
+  }
+  if (globs.length === 0) {
+    throw new Error('globs cannot be empty')
+  }
   const authHeaders = await authenticate()
   const url = new import_url.URL(
     `/api/organization/${encodeURIComponent(organizationId)}/execution`,

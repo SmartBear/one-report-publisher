@@ -7314,6 +7314,12 @@ var contentTypes = {
   '.zip': 'application/zip',
 }
 async function publish(globs, organizationId, baseUrl, env, authenticate) {
+  if (!Array.isArray(globs)) {
+    throw new Error('globs must be an array')
+  }
+  if (globs.length === 0) {
+    throw new Error('globs cannot be empty')
+  }
   const authHeaders = await authenticate()
   const url = new import_url.URL(
     `/api/organization/${encodeURIComponent(organizationId)}/execution`,
@@ -7438,7 +7444,7 @@ var import_url2 = require('url')
 var program = new import_commander.Command()
 program.requiredOption('-o, --organization-id <id>', 'OneReport organization id')
 program.requiredOption('-p, --password <password>', 'OneReport password')
-program.requiredOption('-r, --reports <glob>', 'Glob to the files to publish')
+program.requiredOption('-r, --reports <glob...>', 'Glob to the files to publish')
 program.option('-u, --url <url>', 'OneReport URL', 'https://one-report.vercel.app')
 async function main() {
   program.parse(process.argv)
