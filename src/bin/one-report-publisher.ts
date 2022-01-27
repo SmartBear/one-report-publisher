@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { OneReportResponseBody, publish, vercelAuthenticator } from 'src/index.js'
 import { URL } from 'url'
+
+import { OneReportResponseBody, publish, vercelAuthenticator } from '../../src/index.js'
 
 const program = new Command()
 program.requiredOption('-o, --organization-id <id>', 'OneReport organization id')
 program.requiredOption('-p, --password <password>', 'OneReport password')
-program.requiredOption('-r, --reports <glob>', 'Glob to the files to publish')
+program.requiredOption('-r, --reports <glob...>', 'Glob to the files to publish')
 program.option('-u, --url <url>', 'OneReport URL', 'https://one-report.vercel.app')
 
 async function main() {
