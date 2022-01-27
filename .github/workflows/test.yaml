@@ -25,7 +25,7 @@ jobs:
       - run: npm ci
       - run: npm test
 
-      - name: Publish Results to OneReport
+      - name: Publish Results to OneReport (GitHub Action)
         if: ${{ always() }}
         # uses: smartbear/one-report-publisher@v1.0.0
         uses: ./
@@ -37,6 +37,8 @@ jobs:
           organization-id: 559fa0f2-1343-43a9-b843-90644305ee07
           password: ${{ secrets.ONE_REPORT_PASSWORD }}
           reports: tmp/tests/*.{json,xml}
+      - name: Publish Results to OneReport (CLI)
+        run: node bin/one-report-publisher.cjs --organization-id 559fa0f2-1343-43a9-b843-90644305ee07 --password ${{ secrets.ONE_REPORT_PASSWORD }} --reports "tmp/tests/*.{json,xml}"
 
       - run: npm run eslint
       - run: npm run build
