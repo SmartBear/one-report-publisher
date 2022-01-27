@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.14] - 2022-01-27
+
 ### Fixed
 
 - Expand `~` in report globs [#3](https://github.com/SmartBear/one-report-publisher/pull/2)
@@ -90,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First release
 
-[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.0.13...HEAD
+[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.0.14...HEAD
+[0.0.14]: https://github.com/smartbear/one-report-publisher/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/smartbear/one-report-publisher/compare/v0.0.12...v0.0.13
 [0.0.12]: https://github.com/smartbear/one-report-publisher/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/smartbear/one-report-publisher/compare/v0.0.10...v0.0.11

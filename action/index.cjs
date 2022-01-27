@@ -113,11 +113,11 @@ var require_command = __commonJS({
       }
     Object.defineProperty(exports, '__esModule', { value: true })
     exports.issue = exports.issueCommand = void 0
-    var os = __importStar(require('os'))
+    var os2 = __importStar(require('os'))
     var utils_1 = require_utils()
     function issueCommand(command, properties, message) {
       const cmd = new Command(command, properties, message)
-      process.stdout.write(cmd.toString() + os.EOL)
+      process.stdout.write(cmd.toString() + os2.EOL)
     }
     exports.issueCommand = issueCommand
     function issue(name, message = '') {
@@ -221,7 +221,7 @@ var require_file_command = __commonJS({
     Object.defineProperty(exports, '__esModule', { value: true })
     exports.issueCommand = void 0
     var fs2 = __importStar(require('fs'))
-    var os = __importStar(require('os'))
+    var os2 = __importStar(require('os'))
     var utils_1 = require_utils()
     function issueCommand(command, message) {
       const filePath = process.env[`GITHUB_${command}`]
@@ -231,7 +231,7 @@ var require_file_command = __commonJS({
       if (!fs2.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`)
       }
-      fs2.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+      fs2.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os2.EOL}`, {
         encoding: 'utf8',
       })
     }
@@ -1306,7 +1306,7 @@ var require_core = __commonJS({
     var command_1 = require_command()
     var file_command_1 = require_file_command()
     var utils_1 = require_utils()
-    var os = __importStar(require('os'))
+    var os2 = __importStar(require('os'))
     var path = __importStar(require('path'))
     var oidc_utils_1 = require_oidc_utils()
     var ExitCode
@@ -1320,7 +1320,7 @@ var require_core = __commonJS({
       const filePath = process.env['GITHUB_ENV'] || ''
       if (filePath) {
         const delimiter = '_GitHubActionsFileCommandDelimeter_'
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`
+        const commandValue = `${name}<<${delimiter}${os2.EOL}${convertedVal}${os2.EOL}${delimiter}`
         file_command_1.issueCommand('ENV', commandValue)
       } else {
         command_1.issueCommand('set-env', { name }, convertedVal)
@@ -1370,7 +1370,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``)
     }
     exports.getBooleanInput = getBooleanInput
     function setOutput(name, value) {
-      process.stdout.write(os.EOL)
+      process.stdout.write(os2.EOL)
       command_1.issueCommand('set-output', { name }, value)
     }
     exports.setOutput = setOutput
@@ -1416,7 +1416,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``)
     }
     exports.notice = notice
     function info(message) {
-      process.stdout.write(message + os.EOL)
+      process.stdout.write(message + os2.EOL)
     }
     exports.info = info
     function startGroup(name) {
@@ -6675,8 +6675,8 @@ var require_settings4 = __commonJS({
     Object.defineProperty(exports, '__esModule', { value: true })
     exports.DEFAULT_FILE_SYSTEM_ADAPTER = void 0
     var fs2 = require('fs')
-    var os = require('os')
-    var CPU_COUNT = Math.max(os.cpus().length, 1)
+    var os2 = require('os')
+    var CPU_COUNT = Math.max(os2.cpus().length, 1)
     exports.DEFAULT_FILE_SYSTEM_ADAPTER = {
       lstat: fs2.lstat,
       lstatSync: fs2.lstatSync,
@@ -7070,7 +7070,6 @@ function detect(ciEnvironment, env) {
 var src_default = detectCiEnvironment
 
 // src/publish.ts
-var import_fast_glob = __toESM(require_out4(), 1)
 var import_fs = __toESM(require('fs'), 1)
 var import_http = __toESM(require('http'), 1)
 var import_https = __toESM(require('https'), 1)
@@ -7078,6 +7077,19 @@ var import_path = require('path')
 var import_stream = require('stream')
 var import_url = require('url')
 var import_util = require('util')
+
+// src/manyglob.ts
+var import_fast_glob = __toESM(require_out4(), 1)
+var os = __toESM(require('os'), 1)
+async function manyglob(globs) {
+  return (
+    await Promise.all(
+      globs.reduce((prev, glob) => {
+        return prev.concat((0, import_fast_glob.default)(glob.replace(/^~/, os.homedir())))
+      }, [])
+    )
+  ).flatMap((paths) => paths)
+}
 
 // src/readStream.ts
 async function readStream(req) {
@@ -7110,14 +7122,7 @@ async function publish(globs, organizationId, baseUrl, env, authenticate) {
     baseUrl
   )
   const ciEnv = src_default(env)
-  const paths = (
-    await Promise.all(
-      globs.reduce((prev, glob) => {
-        return prev.concat((0, import_fast_glob.default)(glob))
-      }, [])
-    )
-  )
-    .flatMap((paths2) => paths2)
+  const paths = (await manyglob(globs))
     .filter((path) => extensions.includes((0, import_path.extname)(path)))
     .sort()
   if (paths.length === 0) {
