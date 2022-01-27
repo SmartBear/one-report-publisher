@@ -40,6 +40,12 @@ export async function publish<ResponseBody>(
   env: Env,
   authenticate: Authenticate
 ): Promise<readonly ResponseBody[]> {
+  if (!Array.isArray(globs)) {
+    throw new Error('globs must be an array')
+  }
+  if (globs.length === 0) {
+    throw new Error('globs cannot be empty')
+  }
   const authHeaders = await authenticate()
 
   const url = new URL(`/api/organization/${encodeURIComponent(organizationId)}/execution`, baseUrl)
