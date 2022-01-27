@@ -6801,6 +6801,7 @@ var require_out4 = __commonJS({
 
 // src/action/index.ts
 var import_core = __toESM(require_core(), 1)
+var import_url2 = require('url')
 
 // node_modules/@cucumber/ci-environment/dist/esm/src/CiEnvironments.js
 var CiEnvironments = [
@@ -7223,7 +7224,6 @@ function vercelAuthenticator(url, vercelPassword) {
 }
 
 // src/action/index.ts
-var import_url2 = require('url')
 async function main() {
   const organizationId = import_core.default.getInput('organization-id')
   const password = import_core.default.getInput('password')

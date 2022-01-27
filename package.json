@@ -24,8 +24,7 @@
     "build:cjs": "tsc --build tsconfig.build-cjs.json && cp package.cjs.json dist/cjs/package.json",
     "build:esm": "tsc --build tsconfig.build-esm.json",
     "build:action": "esbuild src/action/index.ts --bundle --platform=node --outfile=action/index.cjs",
-    "build:cli": "esbuild src/bin/one-report-publisher.ts --bundle --platform=node --outfile=bin/one-report-publisher.cjs",
-    "build": "npm run build:cjs && npm run build:esm && npm run build:action && npm run build:cli",
+    "build": "npm run build:cjs && npm run build:esm && npm run build:action",
     "test": "npm run mocha:esm && npm run mocha:cjs",
     "mocha:esm": "mocha",
     "mocha:cjs": "npm run build:cjs && mocha --config .mocharc-cjs.cjs dist/cjs/test",
@@ -80,6 +79,7 @@
   "dependencies": {
     "@cucumber/ci-environment": "9.0.0",
     "commander": "8.3.0",
-    "fast-glob": "3.2.11"
+    "fast-glob": "3.2.11",
+    "source-map-support": "0.5.21"
   }
 }

@@ -1,6 +1,7 @@
 import core from '@actions/core'
-import { OneReportResponseBody, publish, vercelAuthenticator } from 'src/index.js'
 import { URL } from 'url'
+
+import { OneReportResponseBody, publish, vercelAuthenticator } from '../../src/index.js'
 
 async function main() {
   const organizationId = core.getInput('organization-id')

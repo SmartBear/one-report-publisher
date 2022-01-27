@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { OneReportResponseBody, publish, vercelAuthenticator } from 'src/index.js'
 import { URL } from 'url'
+
+import { OneReportResponseBody, publish, vercelAuthenticator } from '../../src/index.js'
 
 const program = new Command()
 program.requiredOption('-o, --organization-id <id>', 'OneReport organization id')
