@@ -1,5 +1,4 @@
 import ciEnvironment, { CiEnvironment, Env } from '@cucumber/ci-environment'
-import fg from 'fast-glob'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
@@ -8,6 +7,7 @@ import { pipeline } from 'stream'
 import { URL } from 'url'
 import { promisify } from 'util'
 
+import { manyglob } from './manyglob.js'
 import { readStream } from './readStream.js'
 import { Authenticate } from './types.js'
 
@@ -52,14 +52,7 @@ export async function publish<ResponseBody>(
 
   const ciEnv = ciEnvironment(env)
 
-  const paths = (
-    await Promise.all(
-      globs.reduce<readonly Promise<string[]>[]>((prev, glob) => {
-        return prev.concat(fg(glob))
-      }, [])
-    )
-  )
-    .flatMap((paths) => paths)
+  const paths = (await manyglob(globs))
     .filter((path) => extensions.includes(extname(path) as Extension))
     .sort()
 
