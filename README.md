@@ -11,29 +11,57 @@ The tool supports the following file formats:
 - Cucumber Messages
 - Zip files (containing any of the above)
 
-The tool will also send Git metadata to OneReport:
+If the publisher is executed on a [supported CI server](https://github.com/cucumber/ci-environment#supported-ci-servers),
+it will also send the following git metadata along with the test results:
 
 - Repository URL
 - Commit SHA
 - Current Branch
 - Current Tag (if available)
 
-The Git metadata is detected from environment variables defined by the CI server. See [cucumber/ci-environment](https://github.com/cucumber/ci-environment#readme)
-for details about [supported CI servers](https://github.com/cucumber/ci-environment#supported-ci-servers).
+## GitHub Actions
 
-## Command Line
+Add a step _after_ all tests have run. The `if: ${{ always() }}` ensures results are published even if a previous test
+step failed.
 
-The command-line tool can be launched with the Node.js `npx` command:
+```yml
+- name: 'Publish to OneReport'
+  if: ${{ always() }}
+  uses: smartbear/one-report-publisher@v0.0.14
+  with:
+    organization-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
+    password: ${{ secrets.ONE_REPORT_PASSWORD }}
+    reports: ./reports/**/*.{xml,json,ndjson,zip}
+```
+
+## CircleCI
+
+Add a step _after_ all tests have run. You have to make sure the command is running in a docker image that has Node.js
+installed (for example [cimg/node](https://circleci.com/developer/images/image/cimg/node)).
+
+```yml
+- run:
+    name: Publish test results to OneReport
+    command: |
+      npx @smartbear/one-report-publisher@0.0.14 \
+        --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
+        --password ${ONE_REPORT_PASSWORD} \
+        --reports ./reports/**/*.{xml,json,ndjson,zip}
+```
+
+## Command Line Reference
+
+The command-line tool can be used in any CI pipeline that has the `npx` command available (it needs to have Node.js installed).
 
 ```
-npx @smartbear/one-report-publisher@v0.0.13 --help
+npx @smartbear/one-report-publisher@v0.0.14 --help
 
 Usage: one-report-publisher [options]
 
 Options:
   -o, --organization-id <id>  OneReport organization id
   -p, --password <password>   OneReport password
-  -r, --reports <glob>        Glob to the files to publish
+  -r, --reports <glob...>     Glob to the files to publish
   -u, --url <url>             OneReport URL (default: "https://one-report.vercel.app")
   -h, --help                  display help for command
 ```
@@ -41,20 +69,8 @@ Options:
 Example:
 
 ```
-npx @smartbear/one-report-publisher@0.0.13 --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F --password ${ONE_REPORT_PASSWORD} --reports "./reports/**/*.{xml,json,ndjson,zip}"
-```
-
-The command-line tool can be used in any CI pipeline that has the `npx` command available
-
-## GitHub Actions
-
-The GitHub Action can be used as follows:
-
-```yml
-- name: 'Publish to OneReport'
-  uses: smartbear/one-report-publisher@v0.0.13
-  with:
-    organization-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
-    password: ${{ secrets.ONE_REPORT_PASSWORD }}
-    reports: ./reports/**/*.{xml,json,ndjson,zip}
+npx @smartbear/one-report-publisher@0.0.14 \
+  --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
+  --password ${ONE_REPORT_PASSWORD} \
+  --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
