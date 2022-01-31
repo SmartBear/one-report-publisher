@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2022-01-31
+
 ### Added
 
 - Zip non `.zip` files by default. This can be overriden by specifying `zip: false` (GitHub Action) or `--no-zip` (Command Line)
@@ -96,7 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First release
 
-[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.0.14...HEAD
+[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/smartbear/one-report-publisher/compare/v0.0.14...v0.1.0
 [0.0.14]: https://github.com/smartbear/one-report-publisher/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/smartbear/one-report-publisher/compare/v0.0.12...v0.0.13
 [0.0.12]: https://github.com/smartbear/one-report-publisher/compare/v0.0.11...v0.0.12

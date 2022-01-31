@@ -1,6 +1,6 @@
 {
   "name": "@smartbear/one-report-publisher",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "description": "Publish Test Results to SmartBear OneReport",
   "type": "module",
   "main": "dist/cjs/src/index.js",
@@ -54,11 +54,11 @@
   "devDependencies": {
     "@actions/core": "1.6.0",
     "@types/mocha": "9.1.0",
-    "@types/node": "17.0.12",
+    "@types/node": "17.0.13",
     "@typescript-eslint/eslint-plugin": "5.10.1",
     "@typescript-eslint/parser": "5.10.1",
     "esbuild": "0.14.14",
-    "eslint": "8.7.0",
+    "eslint": "8.8.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-node": "11.1.0",
@@ -80,7 +80,7 @@
     "@cucumber/ci-environment": "9.0.0",
     "@types/adm-zip": "0.4.34",
     "adm-zip": "0.5.9",
-    "commander": "8.3.0",
+    "commander": "9.0.0",
     "fast-glob": "3.2.11",
     "source-map-support": "0.5.21"
   }
