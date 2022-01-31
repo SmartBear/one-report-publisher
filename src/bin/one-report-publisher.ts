@@ -13,7 +13,7 @@ program.option('--no-zip', 'Do not zip non .zip files', false)
 
 async function main() {
   program.parse(process.argv)
-  const { organizationId, password, reports: globs, url: baseUrl, zip: noZip } = program.opts()
+  const { organizationId, password, reports: globs, url: baseUrl, noZip } = program.opts()
 
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
