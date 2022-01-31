@@ -63,6 +63,7 @@ Options:
   -p, --password <password>   OneReport password
   -r, --reports <glob...>     Glob to the files to publish
   -u, --url <url>             OneReport URL (default: "https://one-report.vercel.app")
+  -z, --zip                   Zip non .zip files (default: true)
   -h, --help                  display help for command
 ```
 
