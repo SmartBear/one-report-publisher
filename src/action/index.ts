@@ -8,9 +8,11 @@ async function main() {
   const password = core.getInput('password')
   const globs = core.getMultilineInput('reports')
   const baseUrl = core.getInput('url')
+  const zip = core.getBooleanInput('zip')
 
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
+    zip,
     organizationId,
     baseUrl,
     process.env,

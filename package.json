@@ -78,6 +78,8 @@
   },
   "dependencies": {
     "@cucumber/ci-environment": "9.0.0",
+    "@types/adm-zip": "0.4.34",
+    "adm-zip": "0.5.9",
     "commander": "8.3.0",
     "fast-glob": "3.2.11",
     "source-map-support": "0.5.21"

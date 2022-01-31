@@ -62,7 +62,7 @@ describe('publish', () => {
     })
   })
 
-  it('publishes files from glob', async () => {
+  it('publishes files from glob without zipping', async () => {
     const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {
@@ -75,6 +75,7 @@ describe('publish', () => {
 
     const responseBodies = await publish<TestResponseBody>(
       ['test/fixtures/*.{xml,json,ndjson,zip}'],
+      false,
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
@@ -134,9 +135,6 @@ describe('publish', () => {
         body: await readFile('test/fixtures/bundled.zip'),
       },
     ]
-    // Requests are sent in parallel, so we don't know what request hit the server first.
-    const sortByContentType = (a: ServerRequest, b: ServerRequest) =>
-      a.headers['content-type']!.localeCompare(b.headers['content-type']!)
     const sortedServerRequests = serverRequests.sort(sortByContentType)
     const sortedExpectedServerRequests = expectedServerRequests.sort(sortByContentType)
 
@@ -159,4 +157,66 @@ describe('publish', () => {
 
     assert.deepStrictEqual(responseBodies, expectedResponseBodies)
   })
+
+  it('publishes files from glob with zipping', async () => {
+    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+
+    const fakeEnv: Env = {}
+
+    const responseBodies = await publish<TestResponseBody>(
+      ['test/fixtures/*.{xml,json,ndjson,zip}'],
+      true,
+      organizationId,
+      `http://localhost:${port}`,
+      fakeEnv,
+      () => Promise.resolve({})
+    )
+    const expectedServerRequests: Omit<ServerRequest, 'body'>[] = [
+      {
+        url: `/api/organization/${organizationId}/execution`,
+        headers: {
+          'content-type': 'application/zip',
+          connection: 'close',
+          host: `localhost:${port}`,
+        },
+      },
+      {
+        url: `/api/organization/${organizationId}/execution`,
+        headers: {
+          'content-type': 'application/zip',
+          connection: 'close',
+          host: `localhost:${port}`,
+        },
+      },
+    ]
+    const sortedServerRequests: Omit<ServerRequest, 'body'>[] = serverRequests
+      .sort(sortByContentType)
+      .map((req) => {
+        const headers = JSON.parse(JSON.stringify(req.headers))
+        delete headers['content-length']
+        return {
+          url: req.url,
+          headers,
+        }
+      })
+    const sortedExpectedServerRequests = expectedServerRequests.sort(sortByContentType)
+
+    assert.deepStrictEqual(sortedServerRequests, sortedExpectedServerRequests)
+
+    const expectedResponseBodies: TestResponseBody[] = [
+      {
+        hello: 'world',
+      },
+      {
+        hello: 'world',
+      },
+    ]
+
+    assert.deepStrictEqual(responseBodies, expectedResponseBodies)
+  })
 })
+
+// Requests are sent in parallel, so we don't know what request hit the server first.
+function sortByContentType(a: ServerRequest, b: ServerRequest) {
+  return a.headers['content-type']!.localeCompare(b.headers['content-type']!)
+}
