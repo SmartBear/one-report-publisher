@@ -10,6 +10,7 @@ import { promisify } from 'util'
 import { manyglob } from './manyglob.js'
 import { readStream } from './readStream.js'
 import { Authenticate } from './types.js'
+import { zipPaths } from './zipPaths.js'
 
 const lstat = promisify(fs.lstat)
 
@@ -27,6 +28,7 @@ const contentTypes: Record<Extension, string> = {
  * Publishes test results to OneReport
  *
  * @param globs a list of globs pointing to JUnit XML and Cucumber JSON files
+ * @param zip if true, compress all non .zip files into a zip file before publishing
  * @param organizationId the Organization ID on OneReport
  * @param baseUrl the base URL of OneReport (e.g. https://one-report.vercel.app/)
  * @param env the local environment, e.g. process.env (used to detect Git info from env vars set by CI)
@@ -35,6 +37,7 @@ const contentTypes: Record<Extension, string> = {
  */
 export async function publish<ResponseBody>(
   globs: readonly string[],
+  zip: boolean,
   organizationId: string,
   baseUrl: string,
   env: Env,
@@ -60,7 +63,11 @@ export async function publish<ResponseBody>(
     throw new Error(`No report files found. Please check your globs: ${JSON.stringify(globs)}`)
   }
 
-  return Promise.all<ResponseBody>(paths.map((path) => publishFile(path, url, ciEnv, authHeaders)))
+  const publishPaths = zip ? await zipPaths(paths) : paths
+
+  return Promise.all<ResponseBody>(
+    publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders))
+  )
 }
 
 async function publishFile<ResponseBody>(

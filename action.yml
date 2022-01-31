@@ -14,6 +14,10 @@ inputs:
     description: 'OneReport URL'
     required: false
     default: 'https://one-report.vercel.app'
+  zip:
+    description: 'If true, compress all non .zip files into a zip file before publishing'
+    required: false
+    default: 'true'
 outputs:
   report-urls:
     description: 'Report URLs'

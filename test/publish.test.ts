@@ -75,6 +75,7 @@ describe('publish', () => {
 
     const responseBodies = await publish<TestResponseBody>(
       ['test/fixtures/*.{xml,json,ndjson,zip}'],
+      false,
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,

@@ -20,6 +20,7 @@ describe('oneReportPublish', () => {
     const baseUrl = `https://one-report.vercel.app`
     const responseBodies = await publish<OneReportResponseBody>(
       ['test/fixtures/*.{xml,json}'],
+      true,
       process.env.ONE_REPORT_TEST_ORGANIZATION_ID,
       baseUrl,
       process.env,
