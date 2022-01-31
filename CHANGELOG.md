@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Zip non `.zip` files by default. This can be overriden by specifying `zip: false` (GitHub Action) or `--no-zip` (Command Line)
+
 ## [0.0.14] - 2022-01-27
 
 ### Fixed
