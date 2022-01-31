@@ -9,7 +9,7 @@ import { manyglob } from '../src/manyglob.js'
 import { zipPaths } from '../src/zipPaths.js'
 const readFile = promisify(fs.readFile)
 
-describe('zip', () => {
+describe('zipPaths', () => {
   it('zips non .zip files into a temporary file', async () => {
     const paths = (await manyglob(['test/fixtures/*.{zip,ndjson,json,xml}'])).slice().sort()
     const zippedPaths = await zipPaths(paths)
