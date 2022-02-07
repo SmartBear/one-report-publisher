@@ -9,7 +9,7 @@ program.requiredOption('-o, --organization-id <id>', 'OneReport organization id'
 program.requiredOption('-u, --username <username>', 'OneReport username')
 program.requiredOption('-p, --password <password>', 'OneReport password')
 program.requiredOption('-r, --reports <glob...>', 'Glob to the files to publish')
-program.option('-u, --url <url>', 'OneReport URL', 'https://one-report.vercel.app')
+program.option('--url <url>', 'OneReport URL', 'https://one-report.vercel.app')
 program.option('--no-zip', 'Do not zip non .zip files', false)
 
 async function main() {

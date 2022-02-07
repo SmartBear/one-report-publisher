@@ -27,9 +27,10 @@ step failed.
 ```yml
 - name: 'Publish to OneReport'
   if: ${{ always() }}
-  uses: smartbear/one-report-publisher@v0.1.0
+  uses: smartbear/one-report-publisher@v0.2.0
   with:
     organization-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
+    username: anyone
     password: ${{ secrets.ONE_REPORT_PASSWORD }}
     reports: ./reports/**/*.{xml,json,ndjson,zip}
 ```
@@ -43,8 +44,9 @@ installed (for example [cimg/node](https://circleci.com/developer/images/image/c
 - run:
     name: Publish test results to OneReport
     command: |
-      npx @smartbear/one-report-publisher@0.1.0 \
+      npx @smartbear/one-report-publisher@0.2.0 \
         --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
+        --username anyone \
         --password ${ONE_REPORT_PASSWORD} \
         --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
@@ -54,15 +56,16 @@ installed (for example [cimg/node](https://circleci.com/developer/images/image/c
 The command-line tool can be used in any CI pipeline that has the `npx` command available (it needs to have Node.js installed).
 
 ```
-npx @smartbear/one-report-publisher@v0.1.0 --help
+npx @smartbear/one-report-publisher@v0.2.0 --help
 
 Usage: one-report-publisher [options]
 
 Options:
   -o, --organization-id <id>  OneReport organization id
+  -u, --username <username>   OneReport username
   -p, --password <password>   OneReport password
   -r, --reports <glob...>     Glob to the files to publish
-  -u, --url <url>             OneReport URL (default: "https://one-report.vercel.app")
+  --url <url>                 OneReport URL (default: "https://one-report.vercel.app")
   --no-zip                    Do not zip non .zip files
   -h, --help                  display help for command
 ```
@@ -70,7 +73,7 @@ Options:
 Example:
 
 ```
-npx @smartbear/one-report-publisher@0.1.0 \
+npx @smartbear/one-report-publisher@0.2.0 \
   --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
   --password ${ONE_REPORT_PASSWORD} \
   --reports ./reports/**/*.{xml,json,ndjson,zip}

@@ -7,14 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- The GitHub Action must specify `username`
-- The CLI must specify `--username`
+## [0.2.0] - 2022-02-07
 
 ### Added
 
 - Basic Auth authentication has been added
+
+### Changed
+
+- The GitHub Action must specify `username`
+- The CLI must specify `--username`
+- The CLI shortopt `-u` is an alias for `--username` (and not `--url` as it was in previous versions)
 
 ### Removed
 
@@ -111,7 +114,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First release
 
-[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/smartbear/one-report-publisher/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/smartbear/one-report-publisher/compare/v0.0.14...v0.1.0
 [0.0.14]: https://github.com/smartbear/one-report-publisher/compare/v0.0.13...v0.0.14
 [0.0.13]: https://github.com/smartbear/one-report-publisher/compare/v0.0.12...v0.0.13
