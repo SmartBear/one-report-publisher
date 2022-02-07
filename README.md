@@ -75,6 +75,7 @@ Example:
 ```
 npx @smartbear/one-report-publisher@0.2.0 \
   --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
+  --username anyone \
   --password ${ONE_REPORT_PASSWORD} \
   --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
