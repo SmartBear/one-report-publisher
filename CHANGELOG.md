@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The GitHub Action must specify `username`
+- The CLI must specify `--username`
+
+### Added
+
+- Basic Auth authentication has been added
+
+### Removed
+
+- Vercel authentication (password only) has been removed
+
 ## [0.1.0] - 2022-01-31
 
 ### Added

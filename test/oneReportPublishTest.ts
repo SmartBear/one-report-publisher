@@ -1,6 +1,6 @@
 import assert from 'assert'
 
-import { OneReportResponseBody, publish, vercelAuthenticator } from '../src/index.js'
+import { basicAuthAuthenticator, OneReportResponseBody, publish } from '../src/index.js'
 
 describe('oneReportPublish', () => {
   it('publishes to one-report.vercel.app', async () => {
@@ -24,7 +24,7 @@ describe('oneReportPublish', () => {
       process.env.ONE_REPORT_TEST_ORGANIZATION_ID,
       baseUrl,
       process.env,
-      vercelAuthenticator(baseUrl, process.env.ONE_REPORT_PASSWORD)
+      basicAuthAuthenticator('anyone', process.env.ONE_REPORT_PASSWORD)
     )
 
     assert.strictEqual(responseBodies.length, 2)
