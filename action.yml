@@ -4,6 +4,9 @@ inputs:
   organization-id:
     description: 'OneReport organization id'
     required: true
+  username:
+    description: 'OneReport username'
+    required: true
   password:
     description: 'OneReport password'
     required: true

@@ -1,10 +1,11 @@
 import core from '@actions/core'
 import { URL } from 'url'
 
-import { OneReportResponseBody, publish, vercelAuthenticator } from '../../src/index.js'
+import { basicAuthAuthenticator, OneReportResponseBody, publish } from '../../src/index.js'
 
 async function main() {
   const organizationId = core.getInput('organization-id')
+  const username = core.getInput('username')
   const password = core.getInput('password')
   const globs = core.getMultilineInput('reports')
   const baseUrl = core.getInput('url')
@@ -16,7 +17,7 @@ async function main() {
     organizationId,
     baseUrl,
     process.env,
-    vercelAuthenticator(baseUrl, password)
+    basicAuthAuthenticator(username, password)
   )
 
   return responseBodies.map((body) =>

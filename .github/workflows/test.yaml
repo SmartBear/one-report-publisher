@@ -35,10 +35,11 @@ jobs:
           # to print the report URLs, which contain the organization-id.
           # This is OK - the repository-id isn't sensitive information.
           organization-id: 559fa0f2-1343-43a9-b843-90644305ee07
+          username: 'anyone'
           password: ${{ secrets.ONE_REPORT_PASSWORD }}
           reports: tmp/tests/*.{json,xml}
       - name: Publish Results to OneReport (CLI)
-        run: node bin/one-report-publisher.cjs --organization-id 559fa0f2-1343-43a9-b843-90644305ee07 --password ${{ secrets.ONE_REPORT_PASSWORD }} --reports "tmp/tests/*.{json,xml}"
+        run: node bin/one-report-publisher.cjs --organization-id 559fa0f2-1343-43a9-b843-90644305ee07 --username anyone --password ${{ secrets.ONE_REPORT_PASSWORD }} --reports "tmp/tests/*.{json,xml}"
 
       - run: npm run eslint
       - run: npm run build

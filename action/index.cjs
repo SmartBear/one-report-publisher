@@ -303,7 +303,7 @@ var require_tunnel = __commonJS({
     var net = require('net')
     var tls = require('tls')
     var http2 = require('http')
-    var https3 = require('https')
+    var https2 = require('https')
     var events = require('events')
     var assert = require('assert')
     var util = require('util')
@@ -325,12 +325,12 @@ var require_tunnel = __commonJS({
     }
     function httpOverHttps(options) {
       var agent = new TunnelingAgent(options)
-      agent.request = https3.request
+      agent.request = https2.request
       return agent
     }
     function httpsOverHttps(options) {
       var agent = new TunnelingAgent(options)
-      agent.request = https3.request
+      agent.request = https2.request
       agent.createSocket = createSecureSocket
       agent.defaultPort = 443
       return agent
@@ -538,7 +538,7 @@ var require_http_client = __commonJS({
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
     var http2 = require('http')
-    var https3 = require('https')
+    var https2 = require('https')
     var pm = require_proxy()
     var tunnel
     var HttpCodes
@@ -885,7 +885,7 @@ var require_http_client = __commonJS({
         const info = {}
         info.parsedUrl = requestUrl
         const usingSsl = info.parsedUrl.protocol === 'https:'
-        info.httpModule = usingSsl ? https3 : http2
+        info.httpModule = usingSsl ? https2 : http2
         const defaultPort = usingSsl ? 443 : 80
         info.options = {}
         info.options.host = info.parsedUrl.hostname
@@ -970,11 +970,11 @@ var require_http_client = __commonJS({
         }
         if (this._keepAlive && !agent) {
           const options = { keepAlive: this._keepAlive, maxSockets }
-          agent = usingSsl ? new https3.Agent(options) : new http2.Agent(options)
+          agent = usingSsl ? new https2.Agent(options) : new http2.Agent(options)
           this._agent = agent
         }
         if (!agent) {
-          agent = usingSsl ? https3.globalAgent : http2.globalAgent
+          agent = usingSsl ? https2.globalAgent : http2.globalAgent
         }
         if (usingSsl && this._ignoreSslError) {
           agent.options = Object.assign(agent.options || {}, {
@@ -8911,6 +8911,14 @@ var require_adm_zip = __commonJS({
 var import_core = __toESM(require_core(), 1)
 var import_url2 = require('url')
 
+// src/basicAuthAuthenticator.ts
+function basicAuthAuthenticator(username, password) {
+  return () =>
+    Promise.resolve({
+      Authorization: `Basic ${Buffer.from(`${username}:${password}`, 'utf-8').toString('base64')}`,
+    })
+}
+
 // node_modules/@cucumber/ci-environment/dist/esm/src/CiEnvironments.js
 var CiEnvironments = [
   {
@@ -9354,36 +9362,10 @@ POST ${url.toString()} -d @${path}
   })
 }
 
-// src/vercelAuthenticator.ts
-var import_https2 = __toESM(require('https'), 1)
-function vercelAuthenticator(url, vercelPassword) {
-  return () =>
-    new Promise((resolve, reject) => {
-      const req = import_https2.default.request(
-        url,
-        {
-          method: 'POST',
-        },
-        (res) => {
-          const setCookie = res.headers['set-cookie']
-          if (!setCookie || setCookie.length === 0) return reject(new Error('No cookie'))
-          const parts = setCookie[0].split(';').filter((s) => !!s.trim())
-          if (parts.length === 0) return reject(new Error(`Bad cookie: ${setCookie[0]}`))
-          const cookie = parts[0]
-          return resolve({
-            Cookie: cookie,
-          })
-        }
-      )
-      req.on('error', reject)
-      req.write(`_vercel_password=${vercelPassword}`)
-      req.end()
-    })
-}
-
 // src/action/index.ts
 async function main() {
   const organizationId = import_core.default.getInput('organization-id')
+  const username = import_core.default.getInput('username')
   const password = import_core.default.getInput('password')
   const globs = import_core.default.getMultilineInput('reports')
   const baseUrl = import_core.default.getInput('url')
@@ -9394,7 +9376,7 @@ async function main() {
     organizationId,
     baseUrl,
     process.env,
-    vercelAuthenticator(baseUrl, password)
+    basicAuthAuthenticator(username, password)
   )
   return responseBodies.map((body) =>
     new import_url2.URL(
