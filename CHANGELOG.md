@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2022-02-09
+
 ### Added
 
 - Add new `--max-time <seconds>` option
@@ -119,7 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First release
 
-[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/smartbear/one-report-publisher/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/smartbear/one-report-publisher/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/smartbear/one-report-publisher/compare/v0.0.14...v0.1.0
 [0.0.14]: https://github.com/smartbear/one-report-publisher/compare/v0.0.13...v0.0.14

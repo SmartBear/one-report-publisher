@@ -9382,6 +9382,7 @@ var ignoreError = import_core.default.getBooleanInput('ignore-error')
 var baseUrl = import_core.default.getInput('url')
 var zip = import_core.default.getBooleanInput('zip')
 async function main() {
+  const requestTimeout = maxTime ? +maxTime * 1e3 : void 0
   const responseBodies = await publish(
     globs,
     zip,
@@ -9389,7 +9390,7 @@ async function main() {
     baseUrl,
     process.env,
     basicAuthAuthenticator(username, password),
-    maxTime ? +maxTime * 1e3 : void 0
+    requestTimeout
   )
   return responseBodies.map((body) =>
     new import_url2.URL(
