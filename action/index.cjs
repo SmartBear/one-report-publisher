@@ -1050,9 +1050,9 @@ var require_auth = __commonJS({
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
     var BasicCredentialHandler = class {
-      constructor(username, password) {
-        this.username = username
-        this.password = password
+      constructor(username2, password2) {
+        this.username = username2
+        this.password = password2
       }
       prepareRequest(options) {
         options.headers['Authorization'] =
@@ -1964,7 +1964,7 @@ var require_to_regex_range = __commonJS({
       if (start === stop) {
         return { pattern: start, count: [], digits: 0 }
       }
-      let zipped = zip(start, stop)
+      let zipped = zip2(start, stop)
       let digits = zipped.length
       let pattern = ''
       let count = 0
@@ -2024,7 +2024,7 @@ var require_to_regex_range = __commonJS({
       }
       return result
     }
-    function zip(a, b) {
+    function zip2(a, b) {
       let arr = []
       for (let i = 0; i < a.length; i++) arr.push([a[i], b[i]])
       return arr
@@ -8912,10 +8912,12 @@ var import_core = __toESM(require_core(), 1)
 var import_url2 = require('url')
 
 // src/basicAuthAuthenticator.ts
-function basicAuthAuthenticator(username, password) {
+function basicAuthAuthenticator(username2, password2) {
   return () =>
     Promise.resolve({
-      Authorization: `Basic ${Buffer.from(`${username}:${password}`, 'utf-8').toString('base64')}`,
+      Authorization: `Basic ${Buffer.from(`${username2}:${password2}`, 'utf-8').toString(
+        'base64'
+      )}`,
     })
 }
 
@@ -9197,10 +9199,10 @@ var import_util2 = require('util')
 // src/manyglob.ts
 var import_fast_glob = __toESM(require_out4(), 1)
 var os = __toESM(require('os'), 1)
-async function manyglob(globs) {
+async function manyglob(globs2) {
   return (
     await Promise.all(
-      globs.reduce((prev, glob) => {
+      globs2.reduce((prev, glob) => {
         return prev.concat((0, import_fast_glob.default)(glob.replace(/^~/, os.homedir())))
       }, [])
     )
@@ -9269,29 +9271,31 @@ var contentTypes = {
   '.ndjson': 'application/x-ndjson',
   '.zip': 'application/zip',
 }
-async function publish(globs, zip, organizationId, baseUrl, env, authenticate) {
-  if (!Array.isArray(globs)) {
+async function publish(globs2, zip2, organizationId2, baseUrl2, env, authenticate, requestTimeout) {
+  if (!Array.isArray(globs2)) {
     throw new Error('globs must be an array')
   }
-  if (globs.length === 0) {
+  if (globs2.length === 0) {
     throw new Error('globs cannot be empty')
   }
   const authHeaders = await authenticate()
   const url = new import_url.URL(
-    `/api/organization/${encodeURIComponent(organizationId)}/execution`,
-    baseUrl
+    `/api/organization/${encodeURIComponent(organizationId2)}/execution`,
+    baseUrl2
   )
   const ciEnv = src_default(env)
-  const paths = (await manyglob(globs))
+  const paths = (await manyglob(globs2))
     .filter((path) => extensions.includes((0, import_path2.extname)(path)))
     .sort()
   if (paths.length === 0) {
-    throw new Error(`No report files found. Please check your globs: ${JSON.stringify(globs)}`)
+    throw new Error(`No report files found. Please check your globs: ${JSON.stringify(globs2)}`)
   }
-  const publishPaths = zip ? await zipPaths(paths) : paths
-  return Promise.all(publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders)))
+  const publishPaths = zip2 ? await zipPaths(paths) : paths
+  return Promise.all(
+    publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders, requestTimeout))
+  )
 }
-async function publishFile(path, url, ciEnv, authHeaders) {
+async function publishFile(path, url, ciEnv, authHeaders, requestTimeout) {
   return new Promise((resolve, reject) => {
     lstat(path)
       .then((stat) => {
@@ -9348,7 +9352,13 @@ POST ${url.toString()} -d @${path}
               .catch(reject)
           }
         )
+        if (requestTimeout) {
+          req.setTimeout(requestTimeout)
+        }
         req.on('error', reject)
+        req.on('timeout', () =>
+          reject(new Error(`request to ${url.toString()} timed out after ${requestTimeout}ms`))
+        )
         const file = import_fs2.default.createReadStream(path)
         ;(0, import_stream.pipeline)(file, req, (err) => {
           try {
@@ -9363,20 +9373,23 @@ POST ${url.toString()} -d @${path}
 }
 
 // src/action/index.ts
+var organizationId = import_core.default.getInput('organization-id')
+var username = import_core.default.getInput('username')
+var password = import_core.default.getInput('password')
+var globs = import_core.default.getMultilineInput('reports')
+var maxTime = import_core.default.getInput('max-time')
+var ignoreError = import_core.default.getBooleanInput('ignore-error')
+var baseUrl = import_core.default.getInput('url')
+var zip = import_core.default.getBooleanInput('zip')
 async function main() {
-  const organizationId = import_core.default.getInput('organization-id')
-  const username = import_core.default.getInput('username')
-  const password = import_core.default.getInput('password')
-  const globs = import_core.default.getMultilineInput('reports')
-  const baseUrl = import_core.default.getInput('url')
-  const zip = import_core.default.getBooleanInput('zip')
   const responseBodies = await publish(
     globs,
     zip,
     organizationId,
     baseUrl,
     process.env,
-    basicAuthAuthenticator(username, password)
+    basicAuthAuthenticator(username, password),
+    maxTime ? +maxTime * 1e3 : void 0
   )
   return responseBodies.map((body) =>
     new import_url2.URL(
@@ -9394,7 +9407,13 @@ main()
     }
     import_core.default.endGroup()
   })
-  .catch((error) => import_core.default.setFailed(error.message))
+  .catch((error) => {
+    if (ignoreError) {
+      import_core.default.info(error.message)
+    } else {
+      import_core.default.setFailed(error.message)
+    }
+  })
 /*!
  * fill-range <https://github.com/jonschlinkert/fill-range>
  *

@@ -33,6 +33,7 @@ const contentTypes: Record<Extension, string> = {
  * @param baseUrl the base URL of OneReport (e.g. https://one-report.vercel.app/)
  * @param env the local environment, e.g. process.env (used to detect Git info from env vars set by CI)
  * @param authenticate a function that returns HTTP request headers for authentication (such as {Cookie: ...})
+ * @param requestTimeout timeout (in milliseconds) for each HTTP request
  * @return an array of ResponseBody constructed by parsing the response of each request as JSON
  */
 export async function publish<ResponseBody>(
@@ -41,7 +42,8 @@ export async function publish<ResponseBody>(
   organizationId: string,
   baseUrl: string,
   env: Env,
-  authenticate: Authenticate
+  authenticate: Authenticate,
+  requestTimeout: number | undefined
 ): Promise<readonly ResponseBody[]> {
   if (!Array.isArray(globs)) {
     throw new Error('globs must be an array')
@@ -66,7 +68,7 @@ export async function publish<ResponseBody>(
   const publishPaths = zip ? await zipPaths(paths) : paths
 
   return Promise.all<ResponseBody>(
-    publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders))
+    publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders, requestTimeout))
   )
 }
 
@@ -74,7 +76,8 @@ async function publishFile<ResponseBody>(
   path: string,
   url: URL,
   ciEnv: CiEnvironment | undefined,
-  authHeaders: http.OutgoingHttpHeaders
+  authHeaders: http.OutgoingHttpHeaders,
+  requestTimeout?: number
 ): Promise<ResponseBody> {
   return new Promise<ResponseBody>((resolve, reject) => {
     lstat(path)
@@ -99,6 +102,7 @@ async function publishFile<ResponseBody>(
           ...(ciEnv?.git?.tag ? { 'OneReport-Tag': ciEnv.git.tag } : {}),
           ...authHeaders,
         }
+
         const req = h.request(
           url.toString(),
           {
@@ -133,7 +137,14 @@ POST ${url.toString()} -d @${path}
           }
         )
 
+        if (requestTimeout) {
+          req.setTimeout(requestTimeout)
+        }
+
         req.on('error', reject)
+        req.on('timeout', () =>
+          reject(new Error(`request to ${url.toString()} timed out after ${requestTimeout}ms`))
+        )
 
         const file = fs.createReadStream(path)
 

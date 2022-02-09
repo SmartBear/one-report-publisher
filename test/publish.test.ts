@@ -25,8 +25,10 @@ describe('publish', () => {
   let serverRequests: ServerRequest[]
   let server: http.Server
   let port: number
+  let serverLatency: number
 
   beforeEach(async () => {
+    serverLatency = 0
     port = await new Promise<number>((resolve) => {
       server = http.createServer((req, res) => {
         readStream(req)
@@ -41,7 +43,7 @@ describe('publish', () => {
             const responseBody: TestResponseBody = {
               hello: 'world',
             }
-            res.end(JSON.stringify(responseBody))
+            setTimeout(() => res.end(JSON.stringify(responseBody)), serverLatency)
           })
           .catch((err) => {
             res.statusCode = 500
@@ -62,6 +64,31 @@ describe('publish', () => {
     })
   })
 
+  it('times out after specified timeout', async () => {
+    serverLatency = 10
+    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+
+    const fakeEnv: Env = {
+      GITHUB_SERVER_URL: 'https://github.com',
+      GITHUB_REPOSITORY: 'SmartBear/one-report-publisher',
+      GITHUB_RUN_ID: '154666429',
+      GITHUB_SHA: 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
+      GITHUB_REF: 'refs/heads/main',
+    }
+
+    await assert.rejects(
+      publish<TestResponseBody>(
+        ['test/fixtures/*.xml'],
+        false,
+        organizationId,
+        `http://localhost:${port}`,
+        fakeEnv,
+        () => Promise.resolve({}),
+        1
+      )
+    )
+  })
+
   it('publishes files from glob without zipping', async () => {
     const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
@@ -79,7 +106,8 @@ describe('publish', () => {
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
-      () => Promise.resolve({})
+      () => Promise.resolve({}),
+      undefined
     )
     const expectedServerRequests: ServerRequest[] = [
       {
@@ -169,7 +197,8 @@ describe('publish', () => {
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
-      () => Promise.resolve({})
+      () => Promise.resolve({}),
+      undefined
     )
     const expectedServerRequests: Omit<ServerRequest, 'body'>[] = [
       {
