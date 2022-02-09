@@ -19,6 +19,7 @@ inputs:
   ignore-error:
     description: 'Exit with 0 even if a timeout or error occurred'
     required: false
+    default: 'false'
   url:
     description: 'OneReport URL'
     required: false
