@@ -24,7 +24,8 @@ describe('oneReportPublish', () => {
       process.env.ONE_REPORT_TEST_ORGANIZATION_ID,
       baseUrl,
       process.env,
-      basicAuthAuthenticator('anyone', process.env.ONE_REPORT_PASSWORD)
+      basicAuthAuthenticator('anyone', process.env.ONE_REPORT_PASSWORD),
+      undefined
     )
 
     assert.strictEqual(responseBodies.length, 2)
