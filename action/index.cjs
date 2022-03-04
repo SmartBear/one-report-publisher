@@ -9122,9 +9122,9 @@ function getValue(env, variable) {
 }
 
 // node_modules/@cucumber/ci-environment/dist/esm/src/detectCiEnvironment.js
-function detectCiEnvironment(env, fileReader = import_fs.readFileSync) {
+function detectCiEnvironment(env) {
   for (const ciEnvironment of CiEnvironments) {
-    const detected = detect(ciEnvironment, env, fileReader)
+    const detected = detect(ciEnvironment, env)
     if (detected) {
       return detected
     }
@@ -9141,9 +9141,9 @@ function removeUserInfoFromUrl(value) {
     return value
   }
 }
-function detectGit(ciEnvironment, env, syncFileReader) {
+function detectGit(ciEnvironment, env) {
   var _a, _b, _c
-  const revision = detectRevision(ciEnvironment, env, syncFileReader)
+  const revision = detectRevision(ciEnvironment, env)
   if (!revision) {
     return void 0
   }
@@ -9167,30 +9167,35 @@ function detectGit(ciEnvironment, env, syncFileReader) {
     branch && { branch }
   )
 }
-function detectRevision(ciEnvironment, env, syncFileReader) {
-  var _a
+function detectRevision(ciEnvironment, env) {
+  var _a, _b, _c
   if (env.GITHUB_EVENT_NAME === 'pull_request') {
     if (!env.GITHUB_EVENT_PATH) throw new Error('GITHUB_EVENT_PATH not set')
-    const json = syncFileReader(env.GITHUB_EVENT_PATH).toString()
+    const json = (0, import_fs.readFileSync)(env.GITHUB_EVENT_PATH, 'utf-8')
     const event = JSON.parse(json)
-    if (!('after' in event)) {
-      throw new Error(`No after property in ${env.GITHUB_EVENT_PATH}:
+    const revision =
+      (_b = (_a = event.pull_request) === null || _a === void 0 ? void 0 : _a.head) === null ||
+      _b === void 0
+        ? void 0
+        : _b.sha
+    if (!revision) {
+      throw new Error(`Could not find .pull_request.head.sha in ${env.GITHUB_EVENT_PATH}:
 ${JSON.stringify(event, null, 2)}`)
     }
-    return event.after
+    return revision
   }
   return evaluateVariableExpression(
-    (_a = ciEnvironment.git) === null || _a === void 0 ? void 0 : _a.revision,
+    (_c = ciEnvironment.git) === null || _c === void 0 ? void 0 : _c.revision,
     env
   )
 }
-function detect(ciEnvironment, env, syncFileReader) {
+function detect(ciEnvironment, env) {
   const url = evaluateVariableExpression(ciEnvironment.url, env)
   if (url === void 0) {
     return void 0
   }
   const buildNumber = evaluateVariableExpression(ciEnvironment.buildNumber, env)
-  const git = detectGit(ciEnvironment, env, syncFileReader)
+  const git = detectGit(ciEnvironment, env)
   return Object.assign(
     {
       name: ciEnvironment.name,
