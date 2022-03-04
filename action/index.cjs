@@ -8921,6 +8921,9 @@ function basicAuthAuthenticator(username2, password2) {
     })
 }
 
+// node_modules/@cucumber/ci-environment/dist/esm/src/detectCiEnvironment.js
+var import_fs = require('fs')
+
 // node_modules/@cucumber/ci-environment/dist/esm/src/CiEnvironments.js
 var CiEnvironments = [
   {
@@ -9004,7 +9007,7 @@ var CiEnvironments = [
     git: {
       remote: '${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git',
       revision: '${GITHUB_SHA}',
-      branch: '${GITHUB_REF/refs/heads/(.*)/\\1}',
+      branch: '${GITHUB_HEAD_REF}',
       tag: '${GITHUB_REF/refs/tags/(.*)/\\1}',
     },
   },
@@ -9119,9 +9122,9 @@ function getValue(env, variable) {
 }
 
 // node_modules/@cucumber/ci-environment/dist/esm/src/detectCiEnvironment.js
-function detectCiEnvironment(env) {
+function detectCiEnvironment(env, fileReader = import_fs.readFileSync) {
   for (const ciEnvironment of CiEnvironments) {
-    const detected = detect(ciEnvironment, env)
+    const detected = detect(ciEnvironment, env, fileReader)
     if (detected) {
       return detected
     }
@@ -9138,28 +9141,25 @@ function removeUserInfoFromUrl(value) {
     return value
   }
 }
-function detectGit(ciEnvironment, env) {
-  var _a, _b, _c, _d
-  const revision = evaluateVariableExpression(
-    (_a = ciEnvironment.git) === null || _a === void 0 ? void 0 : _a.revision,
-    env
-  )
+function detectGit(ciEnvironment, env, syncFileReader) {
+  var _a, _b, _c
+  const revision = detectRevision(ciEnvironment, env, syncFileReader)
   if (!revision) {
     return void 0
   }
   const remote = evaluateVariableExpression(
-    (_b = ciEnvironment.git) === null || _b === void 0 ? void 0 : _b.remote,
+    (_a = ciEnvironment.git) === null || _a === void 0 ? void 0 : _a.remote,
     env
   )
   if (!remote) {
     return void 0
   }
   const tag = evaluateVariableExpression(
-    (_c = ciEnvironment.git) === null || _c === void 0 ? void 0 : _c.tag,
+    (_b = ciEnvironment.git) === null || _b === void 0 ? void 0 : _b.tag,
     env
   )
   const branch = evaluateVariableExpression(
-    (_d = ciEnvironment.git) === null || _d === void 0 ? void 0 : _d.branch,
+    (_c = ciEnvironment.git) === null || _c === void 0 ? void 0 : _c.branch,
     env
   )
   return Object.assign(
@@ -9167,13 +9167,30 @@ function detectGit(ciEnvironment, env) {
     branch && { branch }
   )
 }
-function detect(ciEnvironment, env) {
+function detectRevision(ciEnvironment, env, syncFileReader) {
+  var _a
+  if (env.GITHUB_EVENT_NAME === 'pull_request') {
+    if (!env.GITHUB_EVENT_PATH) throw new Error('GITHUB_EVENT_PATH not set')
+    const json = syncFileReader(env.GITHUB_EVENT_PATH).toString()
+    const event = JSON.parse(json)
+    if (!('after' in event)) {
+      throw new Error(`No after property in ${env.GITHUB_EVENT_PATH}:
+${JSON.stringify(event, null, 2)}`)
+    }
+    return event.after
+  }
+  return evaluateVariableExpression(
+    (_a = ciEnvironment.git) === null || _a === void 0 ? void 0 : _a.revision,
+    env
+  )
+}
+function detect(ciEnvironment, env, syncFileReader) {
   const url = evaluateVariableExpression(ciEnvironment.url, env)
   if (url === void 0) {
     return void 0
   }
   const buildNumber = evaluateVariableExpression(ciEnvironment.buildNumber, env)
-  const git = detectGit(ciEnvironment, env)
+  const git = detectGit(ciEnvironment, env, syncFileReader)
   return Object.assign(
     {
       name: ciEnvironment.name,
@@ -9188,7 +9205,7 @@ function detect(ciEnvironment, env) {
 var src_default = detectCiEnvironment
 
 // src/publish.ts
-var import_fs2 = __toESM(require('fs'), 1)
+var import_fs3 = __toESM(require('fs'), 1)
 var import_http = __toESM(require('http'), 1)
 var import_https = __toESM(require('https'), 1)
 var import_path2 = require('path')
@@ -9220,15 +9237,15 @@ async function readStream(req) {
 
 // src/zipPaths.ts
 var import_adm_zip = __toESM(require_adm_zip(), 1)
-var import_fs = __toESM(require('fs'), 1)
+var import_fs2 = __toESM(require('fs'), 1)
 var os2 = __toESM(require('os'), 1)
 var import_path = require('path')
 var import_util = require('util')
-var readFile = (0, import_util.promisify)(import_fs.default.readFile)
-var writeFile = (0, import_util.promisify)(import_fs.default.writeFile)
-var mkdtemp = (0, import_util.promisify)(import_fs.default.mkdtemp)
-var realpath = (0, import_util.promisify)(import_fs.default.realpath)
-var rm = (0, import_util.promisify)(import_fs.default.rm)
+var readFile = (0, import_util.promisify)(import_fs2.default.readFile)
+var writeFile = (0, import_util.promisify)(import_fs2.default.writeFile)
+var mkdtemp = (0, import_util.promisify)(import_fs2.default.mkdtemp)
+var realpath = (0, import_util.promisify)(import_fs2.default.realpath)
+var rm = (0, import_util.promisify)(import_fs2.default.rm)
 async function zipPaths(paths) {
   const nonZips = paths.filter((path) => (0, import_path.extname)(path) !== '.zip')
   const zips = paths.filter((path) => (0, import_path.extname)(path) === '.zip')
@@ -9263,7 +9280,7 @@ async function withTempDir(fn, remove) {
 }
 
 // src/publish.ts
-var lstat = (0, import_util2.promisify)(import_fs2.default.lstat)
+var lstat = (0, import_util2.promisify)(import_fs3.default.lstat)
 var extensions = ['.xml', '.json', '.ndjson', '.zip']
 var contentTypes = {
   '.xml': 'text/xml',
@@ -9359,7 +9376,7 @@ POST ${url.toString()} -d @${path}
         req.on('timeout', () =>
           reject(new Error(`request to ${url.toString()} timed out after ${requestTimeout}ms`))
         )
-        const file = import_fs2.default.createReadStream(path)
+        const file = import_fs3.default.createReadStream(path)
         ;(0, import_stream.pipeline)(file, req, (err) => {
           try {
             if (err) return reject(err)

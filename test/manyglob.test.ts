@@ -8,7 +8,7 @@ import { manyglob } from '../src/manyglob.js'
 
 const mkdir = promisify(fs.mkdir)
 const writeFile = promisify(fs.writeFile)
-const rmdir = promisify(fs.rmdir)
+const rm = promisify(fs.rm)
 
 describe('manyglob', () => {
   it('lists many files', async () => {
@@ -26,7 +26,7 @@ describe('manyglob', () => {
       const paths = await manyglob([`~/${tmp}/*.txt`])
       assert.deepStrictEqual(paths, [wanted])
     } finally {
-      await rmdir(homeTmp, { recursive: true })
+      await rm(homeTmp, { recursive: true })
     }
   })
 })
