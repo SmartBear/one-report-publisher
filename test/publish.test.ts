@@ -97,7 +97,7 @@ describe('publish', () => {
       GITHUB_REPOSITORY: 'SmartBear/one-report-publisher',
       GITHUB_RUN_ID: '154666429',
       GITHUB_SHA: 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
-      GITHUB_REF: 'refs/heads/main',
+      GITHUB_HEAD_REF: 'main',
     }
 
     const responseBodies = await publish<TestResponseBody>(
