@@ -77,7 +77,7 @@
     "test": "test"
   },
   "dependencies": {
-    "@cucumber/ci-environment": "9.0.1",
+    "@cucumber/ci-environment": "9.0.2",
     "@types/adm-zip": "0.4.34",
     "adm-zip": "0.5.9",
     "commander": "9.0.0",
