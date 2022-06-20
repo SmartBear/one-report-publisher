@@ -5,12 +5,12 @@ import { URL } from 'url'
 import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
 const program = new Command()
+program.requiredOption('-u, --url <url>', 'OneReport URL')
 program.requiredOption('-o, --organization-id <id>', 'OneReport organization id')
 program.requiredOption('-t, --token <token>', 'OneReport token')
 program.requiredOption('-r, --reports <glob...>', 'Glob to the files to publish')
 program.option('-m, --max-time <seconds>', 'Max time for each request')
 program.option('-i, --ignore-error', 'Exit with 0 even if a timeout or error occurred')
-program.option('--url <url>', 'OneReport URL', 'https://one-report.vercel.app')
 program.option('--no-zip', 'Do not zip non .zip files', false)
 
 program.parse(process.argv)
