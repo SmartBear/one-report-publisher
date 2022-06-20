@@ -111,7 +111,7 @@ describe('publish', () => {
     )
     const expectedServerRequests: ServerRequest[] = [
       {
-        url: `/api/organization/${organizationId}/execution`,
+        url: `/api/organization/${organizationId}/test-cycle`,
         headers: {
           'content-type': 'application/json',
           'content-length': String((await lstat('test/fixtures/cucumber.json')).size),
@@ -124,7 +124,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/cucumber.json'),
       },
       {
-        url: `/api/organization/${organizationId}/execution`,
+        url: `/api/organization/${organizationId}/test-cycle`,
         headers: {
           'content-type': 'text/xml',
           'content-length': String((await lstat('test/fixtures/junit.xml')).size),
@@ -137,7 +137,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/junit.xml'),
       },
       {
-        url: `/api/organization/${organizationId}/execution`,
+        url: `/api/organization/${organizationId}/test-cycle`,
         headers: {
           'content-type': 'application/x-ndjson',
           'content-length': String((await lstat('test/fixtures/cucumber.ndjson')).size),
@@ -150,7 +150,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/cucumber.ndjson'),
       },
       {
-        url: `/api/organization/${organizationId}/execution`,
+        url: `/api/organization/${organizationId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           'content-length': String((await lstat('test/fixtures/bundled.zip')).size),
@@ -202,7 +202,7 @@ describe('publish', () => {
     )
     const expectedServerRequests: Omit<ServerRequest, 'body'>[] = [
       {
-        url: `/api/organization/${organizationId}/execution`,
+        url: `/api/organization/${organizationId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',
@@ -210,7 +210,7 @@ describe('publish', () => {
         },
       },
       {
-        url: `/api/organization/${organizationId}/execution`,
+        url: `/api/organization/${organizationId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',

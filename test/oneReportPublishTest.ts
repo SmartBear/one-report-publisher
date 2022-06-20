@@ -14,13 +14,17 @@ describe('oneReportPublish', () => {
       console.error('WARNING - not testing OneReport publishing. Set ONE_REPORT_TOKEN to test it')
       return
     }
+    if (!process.env.ONE_REPORT_URL) {
+      console.error('WARNING - not testing OneReport publishing. Set ONE_REPORT_URL to test it')
+      return
+    }
 
-    const baseUrl = `https://one-report.vercel.app`
+    const oneReportUrl = process.env.ONE_REPORT_URL
     const responseBodies = await publish<OneReportResponseBody>(
       ['test/fixtures/*.{xml,json}'],
       true,
       process.env.ONE_REPORT_TEST_ORGANIZATION_ID,
-      baseUrl,
+      oneReportUrl,
       process.env,
       tokenAuthenticator(process.env.ONE_REPORT_TOKEN),
       undefined

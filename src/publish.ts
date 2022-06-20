@@ -53,7 +53,7 @@ export async function publish<ResponseBody>(
   }
   const authHeaders = await authenticate()
 
-  const url = new URL(`/api/organization/${encodeURIComponent(organizationId)}/execution`, baseUrl)
+  const url = new URL(`/api/organization/${encodeURIComponent(organizationId)}/test-cycle`, baseUrl)
 
   const ciEnv = ciEnvironment(env)
 

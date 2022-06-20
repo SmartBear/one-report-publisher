@@ -9412,7 +9412,7 @@ async function main() {
   )
   return responseBodies.map((body) =>
     new import_url2.URL(
-      `/organization/${organizationId}/executions/${body.testSetExecutionId}`,
+      `/organization/${organizationId}/test-cycles/${body.testSetExecutionId}`,
       baseUrl
     ).toString()
   )
