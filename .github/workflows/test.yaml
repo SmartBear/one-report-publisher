@@ -36,11 +36,11 @@ jobs:
           # GitHub Actions masks all secrets from the output. We need to be able
           # to print the report URLs, which contain the organization-id.
           # This is OK - the organization-id isn't sensitive information.
-          organization-id: $ONE_REPORT_ORGANIZATION_ID
+          organization-id: ${{ env.ONE_REPORT_ORGANIZATION_ID }}
           token: ${{ secrets.ONE_REPORT_TOKEN }}
           reports: tmp/tests/*.{json,xml}
       - name: Publish Results to OneReport (CLI)
-        run: node bin/one-report-publisher.cjs --organization-id $ONE_REPORT_ORGANIZATION_ID --token ${{ secrets.ONE_REPORT_TOKEN }} --reports "tmp/tests/*.{json,xml}"
+        run: node bin/one-report-publisher.cjs --organization-id ${{ env.ONE_REPORT_ORGANIZATION_ID }} --token ${{ secrets.ONE_REPORT_TOKEN }} --reports "tmp/tests/*.{json,xml}"
 
       - run: npm run eslint
       - run: npm run build
