@@ -30,8 +30,7 @@ step failed.
   uses: smartbear/one-report-publisher@v0.3.2
   with:
     organization-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
-    username: anyone
-    password: ${{ secrets.ONE_REPORT_PASSWORD }}
+    token: ${{ secrets.ONE_REPORT_TOKEN }}
     reports: ./reports/**/*.{xml,json,ndjson,zip}
 ```
 
@@ -48,8 +47,7 @@ installed (for example [cimg/node](https://circleci.com/developer/images/image/c
     command: |
       npx @smartbear/one-report-publisher@0.3.2 \
         --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
-        --username anyone \
-        --password ${ONE_REPORT_PASSWORD} \
+        --token ${ONE_REPORT_TOKEN} \
         --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
 
@@ -64,8 +62,7 @@ Usage: one-report-publisher [options]
 
 Options:
   -o, --organization-id <id>  OneReport organization id
-  -u, --username <username>   OneReport username
-  -p, --password <password>   OneReport password
+  -t, --token <token>         OneReport token
   -r, --reports <glob...>     Glob to the files to publish
   -m, --max-time <seconds>    Max time for each request
   -i, --ignore-error          Exit with 0 even if a timeout or error occurred
@@ -79,7 +76,6 @@ Example:
 ```
 npx @smartbear/one-report-publisher@0.3.2 \
   --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
-  --username anyone \
-  --password ${ONE_REPORT_PASSWORD} \
+  --token ${ONE_REPORT_TOKEN} \
   --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
