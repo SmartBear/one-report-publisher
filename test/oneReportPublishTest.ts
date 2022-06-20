@@ -1,19 +1,17 @@
 import assert from 'assert'
 
-import { basicAuthAuthenticator, OneReportResponseBody, publish } from '../src/index.js'
+import { OneReportResponseBody, publish, tokenAuthenticator } from '../src/index.js'
 
 describe('oneReportPublish', () => {
-  it('publishes to one-report.vercel.app', async () => {
+  it('publishes to production', async () => {
     if (!process.env.ONE_REPORT_TEST_ORGANIZATION_ID) {
       console.error(
         'WARNING - not testing OneReport publishing. Set ONE_REPORT_TEST_ORGANIZATION_ID to test it'
       )
       return
     }
-    if (!process.env.ONE_REPORT_PASSWORD) {
-      console.error(
-        'WARNING - not testing OneReport publishing. Set ONE_REPORT_PASSWORD to test it'
-      )
+    if (!process.env.ONE_REPORT_TOKEN) {
+      console.error('WARNING - not testing OneReport publishing. Set ONE_REPORT_TOKEN to test it')
       return
     }
 
@@ -24,7 +22,7 @@ describe('oneReportPublish', () => {
       process.env.ONE_REPORT_TEST_ORGANIZATION_ID,
       baseUrl,
       process.env,
-      basicAuthAuthenticator('anyone', process.env.ONE_REPORT_PASSWORD),
+      tokenAuthenticator(process.env.ONE_REPORT_TOKEN),
       undefined
     )
 

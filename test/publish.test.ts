@@ -83,7 +83,7 @@ describe('publish', () => {
         organizationId,
         `http://localhost:${port}`,
         fakeEnv,
-        () => Promise.resolve({}),
+        () => ({}),
         1
       )
     )
@@ -106,7 +106,7 @@ describe('publish', () => {
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
-      () => Promise.resolve({}),
+      () => ({}),
       undefined
     )
     const expectedServerRequests: ServerRequest[] = [
@@ -197,7 +197,7 @@ describe('publish', () => {
       organizationId,
       `http://localhost:${port}`,
       fakeEnv,
-      () => Promise.resolve({}),
+      () => ({}),
       undefined
     )
     const expectedServerRequests: Omit<ServerRequest, 'body'>[] = [

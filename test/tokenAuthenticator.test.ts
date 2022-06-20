@@ -1,17 +1,15 @@
 import https from 'https'
 
-import { basicAuthAuthenticator } from '../src/basicAuthAuthenticator.js'
+import { tokenAuthenticator } from '../src/tokenAuthenticator.js'
 
 describe('basicAuthAuthenticator', () => {
   it('does not return 401 if authentication is successful', async () => {
-    if (!process.env.ONE_REPORT_PASSWORD) {
-      console.error(
-        'WARNING - not testing basicAuthAuthenticator. Set ONE_REPORT_PASSWORD to test it'
-      )
+    if (!process.env.ONE_REPORT_TOKEN) {
+      console.error('WARNING - not testing basicAuthAuthenticator. Set ONE_REPORT_TOKEN to test it')
       return
     }
 
-    const authenticate = basicAuthAuthenticator('anyone', process.env.ONE_REPORT_PASSWORD)
+    const authenticate = tokenAuthenticator(process.env.ONE_REPORT_TOKEN)
 
     const headers = await authenticate()
     const organizationId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'
@@ -37,7 +35,7 @@ describe('basicAuthAuthenticator', () => {
   })
 
   it('returns 401 if authentication is unsuccessful', async () => {
-    const authenticate = basicAuthAuthenticator('anyone', 'bad-password')
+    const authenticate = tokenAuthenticator('bad-token')
 
     const headers = await authenticate()
     const organizationId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'

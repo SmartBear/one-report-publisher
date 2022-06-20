@@ -2,12 +2,11 @@
 import { Command } from 'commander'
 import { URL } from 'url'
 
-import { basicAuthAuthenticator, OneReportResponseBody, publish } from '../../src/index.js'
+import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
 const program = new Command()
 program.requiredOption('-o, --organization-id <id>', 'OneReport organization id')
-program.requiredOption('-u, --username <username>', 'OneReport username')
-program.requiredOption('-p, --password <password>', 'OneReport password')
+program.requiredOption('-t, --token <token>', 'OneReport token')
 program.requiredOption('-r, --reports <glob...>', 'Glob to the files to publish')
 program.option('-m, --max-time <seconds>', 'Max time for each request')
 program.option('-i, --ignore-error', 'Exit with 0 even if a timeout or error occurred')
@@ -17,8 +16,7 @@ program.option('--no-zip', 'Do not zip non .zip files', false)
 program.parse(process.argv)
 const {
   organizationId,
-  username,
-  password,
+  token,
   reports: globs,
   maxTime,
   ignoreError,
@@ -34,7 +32,7 @@ async function main() {
     organizationId,
     baseUrl,
     process.env,
-    basicAuthAuthenticator(username, password),
+    tokenAuthenticator(token),
     requestTimeout
   )
 

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed basic auth to JWT token authentication [OR-7](https://smartbear.atlassian.net/browse/OR-7?atlOrigin=eyJpIjoiYmNiNDhjZTliYWMwNDBjZGFjZDAzYWU1YmFiM2Q3ZmUiLCJwIjoiaiJ9)
+
 ## [0.3.2] - 2022-03-04
 
 ## [0.3.1] - 2022-03-04
