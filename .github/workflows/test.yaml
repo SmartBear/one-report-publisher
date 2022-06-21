@@ -13,7 +13,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      ONE_REPORT_ORGANIZATION_ID: 'someid'
+      ONE_REPORT_ORGANIZATION_ID: ${{ secrets.ONE_REPORT_ORGANIZATION_ID }}
 
     steps:
       - name: set git core.autocrlf to 'input'
