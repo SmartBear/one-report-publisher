@@ -8911,13 +8911,6 @@ var require_adm_zip = __commonJS({
 var import_core = __toESM(require_core(), 1)
 var import_url2 = require('url')
 
-// src/tokenAuthenticator.ts
-function tokenAuthenticator(token2) {
-  return () => ({
-    Authorization: `Bearer ${token2}`,
-  })
-}
-
 // node_modules/@cucumber/ci-environment/dist/esm/src/detectCiEnvironment.js
 var import_fs = require('fs')
 
@@ -9388,6 +9381,13 @@ POST ${url.toString()} -d @${path}
         })
       })
       .catch(reject)
+  })
+}
+
+// src/tokenAuthenticator.ts
+function tokenAuthenticator(token2) {
+  return () => ({
+    Authorization: `Bearer ${token2}`,
   })
 }
 
