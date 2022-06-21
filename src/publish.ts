@@ -30,7 +30,7 @@ const contentTypes: Record<Extension, string> = {
  * @param globs a list of globs pointing to JUnit XML and Cucumber JSON files
  * @param zip if true, compress all non .zip files into a zip file before publishing
  * @param organizationId the Organization ID on OneReport
- * @param baseUrl the base URL of OneReport (e.g. https://one-report.vercel.app/)
+ * @param baseUrl the base URL of OneReport
  * @param env the local environment, e.g. process.env (used to detect Git info from env vars set by CI)
  * @param authenticate a function that returns HTTP request headers for authentication (such as {Cookie: ...})
  * @param requestTimeout timeout (in milliseconds) for each HTTP request

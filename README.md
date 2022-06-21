@@ -66,7 +66,7 @@ Options:
   -r, --reports <glob...>     Glob to the files to publish
   -m, --max-time <seconds>    Max time for each request
   -i, --ignore-error          Exit with 0 even if a timeout or error occurred
-  --url <url>                 OneReport URL (default: "https://one-report.vercel.app")
+  -u, --url <url>             OneReport URL
   --no-zip                    Do not zip non .zip files
   -h, --help                  display help for command
 ```

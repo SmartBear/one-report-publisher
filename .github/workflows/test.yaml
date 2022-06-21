@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ONE_REPORT_ORGANIZATION_ID: ${{ secrets.ONE_REPORT_ORGANIZATION_ID }}
+      ONE_REPORT_URL: ${{ secrets.ONE_REPORT_URL }}
 
     steps:
       - name: set git core.autocrlf to 'input'
@@ -39,8 +40,9 @@ jobs:
           organization-id: ${{ env.ONE_REPORT_ORGANIZATION_ID }}
           token: ${{ secrets.ONE_REPORT_TOKEN }}
           reports: tmp/tests/*.{json,xml}
+          url: ${{ env.ONE_REPORT_URL }}
       - name: Publish Results to OneReport (CLI)
-        run: node bin/one-report-publisher.cjs --organization-id ${{ env.ONE_REPORT_ORGANIZATION_ID }} --token ${{ secrets.ONE_REPORT_TOKEN }} --reports "tmp/tests/*.{json,xml}"
+        run: node bin/one-report-publisher.cjs --url ${{ env.ONE_REPORT_URL }} --organization-id ${{ env.ONE_REPORT_ORGANIZATION_ID }} --token ${{ secrets.ONE_REPORT_TOKEN }} --reports "tmp/tests/*.{json,xml}"
 
       - run: npm run eslint
       - run: npm run build
