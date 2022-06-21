@@ -24,10 +24,7 @@ async function main() {
   )
 
   return responseBodies.map((body) =>
-    new URL(
-      `/organization/${organizationId}/test-cycles/${body.testSetExecutionId}`,
-      baseUrl
-    ).toString()
+    new URL(`/organization/${organizationId}/test-cycles/${body.testCycleId}`, baseUrl).toString()
   )
 }
 

@@ -32,8 +32,7 @@ describe('oneReportPublish', () => {
 
     assert.strictEqual(responseBodies.length, 2)
     for (const responseBody of responseBodies) {
-      assert(responseBody.testSetExecutionId)
-      assert(responseBody.reportId)
+      assert(responseBody.testCycleId)
     }
   })
 })

@@ -9297,9 +9297,9 @@ async function publish(globs2, zip2, organizationId2, baseUrl2, env, authenticat
   if (globs2.length === 0) {
     throw new Error('globs cannot be empty')
   }
-  const authHeaders = await authenticate()
+  const authHeaders = authenticate()
   const url = new import_url.URL(
-    `/api/organization/${encodeURIComponent(organizationId2)}/execution`,
+    `/api/organization/${encodeURIComponent(organizationId2)}/test-cycle`,
     baseUrl2
   )
   const ciEnv = src_default(env)
@@ -9412,7 +9412,7 @@ async function main() {
   )
   return responseBodies.map((body) =>
     new import_url2.URL(
-      `/organization/${organizationId}/test-cycles/${body.testSetExecutionId}`,
+      `/organization/${organizationId}/test-cycles/${body.testCycleId}`,
       baseUrl
     ).toString()
   )

@@ -51,7 +51,7 @@ export async function publish<ResponseBody>(
   if (globs.length === 0) {
     throw new Error('globs cannot be empty')
   }
-  const authHeaders = await authenticate()
+  const authHeaders = authenticate()
 
   const url = new URL(`/api/organization/${encodeURIComponent(organizationId)}/test-cycle`, baseUrl)
 
