@@ -1,11 +1,10 @@
 import core from '@actions/core'
 import { URL } from 'url'
 
-import { basicAuthAuthenticator, OneReportResponseBody, publish } from '../../src/index.js'
+import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
 const organizationId = core.getInput('organization-id')
-const username = core.getInput('username')
-const password = core.getInput('password')
+const token = core.getInput('token')
 const globs = core.getMultilineInput('reports')
 const maxTime = core.getInput('max-time')
 const ignoreError = core.getBooleanInput('ignore-error')
@@ -20,15 +19,12 @@ async function main() {
     organizationId,
     baseUrl,
     process.env,
-    basicAuthAuthenticator(username, password),
+    tokenAuthenticator(token),
     requestTimeout
   )
 
   return responseBodies.map((body) =>
-    new URL(
-      `/organization/${organizationId}/executions/${body.testSetExecutionId}`,
-      baseUrl
-    ).toString()
+    new URL(`/organization/${organizationId}/test-cycles/${body.testCycleId}`, baseUrl).toString()
   )
 }
 

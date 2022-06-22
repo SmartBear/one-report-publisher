@@ -4,11 +4,8 @@ inputs:
   organization-id:
     description: 'OneReport organization id'
     required: true
-  username:
-    description: 'OneReport username'
-    required: true
-  password:
-    description: 'OneReport password'
+  token:
+    description: 'OneReport token'
     required: true
   reports:
     description: 'Globs to the files to publish'
@@ -22,8 +19,7 @@ inputs:
     default: 'false'
   url:
     description: 'OneReport URL'
-    required: false
-    default: 'https://one-report.vercel.app'
+    required: true
   zip:
     description: 'If true, compress all non .zip files into a zip file before publishing'
     required: false

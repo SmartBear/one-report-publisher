@@ -1050,9 +1050,9 @@ var require_auth = __commonJS({
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
     var BasicCredentialHandler = class {
-      constructor(username2, password2) {
-        this.username = username2
-        this.password = password2
+      constructor(username, password) {
+        this.username = username
+        this.password = password
       }
       prepareRequest(options) {
         options.headers['Authorization'] =
@@ -1067,8 +1067,8 @@ var require_auth = __commonJS({
     }
     exports.BasicCredentialHandler = BasicCredentialHandler
     var BearerCredentialHandler = class {
-      constructor(token) {
-        this.token = token
+      constructor(token2) {
+        this.token = token2
       }
       prepareRequest(options) {
         options.headers['Authorization'] = 'Bearer ' + this.token
@@ -1082,8 +1082,8 @@ var require_auth = __commonJS({
     }
     exports.BearerCredentialHandler = BearerCredentialHandler
     var PersonalAccessTokenCredentialHandler = class {
-      constructor(token) {
-        this.token = token
+      constructor(token2) {
+        this.token = token2
       }
       prepareRequest(options) {
         options.headers['Authorization'] =
@@ -1153,11 +1153,11 @@ var require_oidc_utils = __commonJS({
         )
       }
       static getRequestToken() {
-        const token = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN']
-        if (!token) {
+        const token2 = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN']
+        if (!token2) {
           throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_TOKEN env variable')
         }
-        return token
+        return token2
       }
       static getIDTokenUrl() {
         const runtimeUrl = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
@@ -2998,9 +2998,9 @@ var require_scan = __commonJS({
     var isPathSeparator = (code) => {
       return code === CHAR_FORWARD_SLASH || code === CHAR_BACKWARD_SLASH
     }
-    var depth = (token) => {
-      if (token.isPrefix !== true) {
-        token.depth = token.isGlobstar ? Infinity : 1
+    var depth = (token2) => {
+      if (token2.isPrefix !== true) {
+        token2.depth = token2.isGlobstar ? Infinity : 1
       }
     }
     var scan = (input, options) => {
@@ -3027,7 +3027,7 @@ var require_scan = __commonJS({
       let braces = 0
       let prev
       let code
-      let token = { value: '', depth: 0, isGlob: false }
+      let token2 = { value: '', depth: 0, isGlob: false }
       const eos = () => index >= length
       const peek = () => str.charCodeAt(index + 1)
       const advance = () => {
@@ -3038,7 +3038,7 @@ var require_scan = __commonJS({
         code = advance()
         let next
         if (code === CHAR_BACKWARD_SLASH) {
-          backslashes = token.backslashes = true
+          backslashes = token2.backslashes = true
           code = advance()
           if (code === CHAR_LEFT_CURLY_BRACE) {
             braceEscaped = true
@@ -3049,7 +3049,7 @@ var require_scan = __commonJS({
           braces++
           while (eos() !== true && (code = advance())) {
             if (code === CHAR_BACKWARD_SLASH) {
-              backslashes = token.backslashes = true
+              backslashes = token2.backslashes = true
               advance()
               continue
             }
@@ -3058,8 +3058,8 @@ var require_scan = __commonJS({
               continue
             }
             if (braceEscaped !== true && code === CHAR_DOT && (code = advance()) === CHAR_DOT) {
-              isBrace = token.isBrace = true
-              isGlob = token.isGlob = true
+              isBrace = token2.isBrace = true
+              isGlob = token2.isGlob = true
               finished = true
               if (scanToEnd === true) {
                 continue
@@ -3067,8 +3067,8 @@ var require_scan = __commonJS({
               break
             }
             if (braceEscaped !== true && code === CHAR_COMMA) {
-              isBrace = token.isBrace = true
-              isGlob = token.isGlob = true
+              isBrace = token2.isBrace = true
+              isGlob = token2.isGlob = true
               finished = true
               if (scanToEnd === true) {
                 continue
@@ -3079,7 +3079,7 @@ var require_scan = __commonJS({
               braces--
               if (braces === 0) {
                 braceEscaped = false
-                isBrace = token.isBrace = true
+                isBrace = token2.isBrace = true
                 finished = true
                 break
               }
@@ -3092,8 +3092,8 @@ var require_scan = __commonJS({
         }
         if (code === CHAR_FORWARD_SLASH) {
           slashes.push(index)
-          tokens.push(token)
-          token = { value: '', depth: 0, isGlob: false }
+          tokens.push(token2)
+          token2 = { value: '', depth: 0, isGlob: false }
           if (finished === true) continue
           if (prev === CHAR_DOT && index === start + 1) {
             start += 2
@@ -3110,8 +3110,8 @@ var require_scan = __commonJS({
             code === CHAR_QUESTION_MARK ||
             code === CHAR_EXCLAMATION_MARK
           if (isExtglobChar === true && peek() === CHAR_LEFT_PARENTHESES) {
-            isGlob = token.isGlob = true
-            isExtglob = token.isExtglob = true
+            isGlob = token2.isGlob = true
+            isExtglob = token2.isExtglob = true
             finished = true
             if (code === CHAR_EXCLAMATION_MARK && index === start) {
               negatedExtglob = true
@@ -3119,12 +3119,12 @@ var require_scan = __commonJS({
             if (scanToEnd === true) {
               while (eos() !== true && (code = advance())) {
                 if (code === CHAR_BACKWARD_SLASH) {
-                  backslashes = token.backslashes = true
+                  backslashes = token2.backslashes = true
                   code = advance()
                   continue
                 }
                 if (code === CHAR_RIGHT_PARENTHESES) {
-                  isGlob = token.isGlob = true
+                  isGlob = token2.isGlob = true
                   finished = true
                   break
                 }
@@ -3135,8 +3135,8 @@ var require_scan = __commonJS({
           }
         }
         if (code === CHAR_ASTERISK) {
-          if (prev === CHAR_ASTERISK) isGlobstar = token.isGlobstar = true
-          isGlob = token.isGlob = true
+          if (prev === CHAR_ASTERISK) isGlobstar = token2.isGlobstar = true
+          isGlob = token2.isGlob = true
           finished = true
           if (scanToEnd === true) {
             continue
@@ -3144,7 +3144,7 @@ var require_scan = __commonJS({
           break
         }
         if (code === CHAR_QUESTION_MARK) {
-          isGlob = token.isGlob = true
+          isGlob = token2.isGlob = true
           finished = true
           if (scanToEnd === true) {
             continue
@@ -3154,13 +3154,13 @@ var require_scan = __commonJS({
         if (code === CHAR_LEFT_SQUARE_BRACKET) {
           while (eos() !== true && (next = advance())) {
             if (next === CHAR_BACKWARD_SLASH) {
-              backslashes = token.backslashes = true
+              backslashes = token2.backslashes = true
               advance()
               continue
             }
             if (next === CHAR_RIGHT_SQUARE_BRACKET) {
-              isBracket = token.isBracket = true
-              isGlob = token.isGlob = true
+              isBracket = token2.isBracket = true
+              isGlob = token2.isGlob = true
               finished = true
               break
             }
@@ -3171,16 +3171,16 @@ var require_scan = __commonJS({
           break
         }
         if (opts.nonegate !== true && code === CHAR_EXCLAMATION_MARK && index === start) {
-          negated = token.negated = true
+          negated = token2.negated = true
           start++
           continue
         }
         if (opts.noparen !== true && code === CHAR_LEFT_PARENTHESES) {
-          isGlob = token.isGlob = true
+          isGlob = token2.isGlob = true
           if (scanToEnd === true) {
             while (eos() !== true && (code = advance())) {
               if (code === CHAR_LEFT_PARENTHESES) {
-                backslashes = token.backslashes = true
+                backslashes = token2.backslashes = true
                 code = advance()
                 continue
               }
@@ -3250,7 +3250,7 @@ var require_scan = __commonJS({
       if (opts.tokens === true) {
         state.maxDepth = 0
         if (!isPathSeparator(code)) {
-          tokens.push(token)
+          tokens.push(token2)
         }
         state.tokens = tokens
       }
@@ -3398,9 +3398,9 @@ var require_parse2 = __commonJS({
         state.consumed += value2
         state.index += num
       }
-      const append = (token) => {
-        state.output += token.output != null ? token.output : token.value
-        consume(token.value)
+      const append = (token2) => {
+        state.output += token2.output != null ? token2.output : token2.value
+        consume(token2.value)
       }
       const negate = () => {
         let count = 1
@@ -3452,32 +3452,32 @@ var require_parse2 = __commonJS({
         prev = tok
       }
       const extglobOpen = (type, value2) => {
-        const token = { ...EXTGLOB_CHARS[value2], conditions: 1, inner: '' }
-        token.prev = prev
-        token.parens = state.parens
-        token.output = state.output
-        const output = (opts.capture ? '(' : '') + token.open
+        const token2 = { ...EXTGLOB_CHARS[value2], conditions: 1, inner: '' }
+        token2.prev = prev
+        token2.parens = state.parens
+        token2.output = state.output
+        const output = (opts.capture ? '(' : '') + token2.open
         increment('parens')
         push({ type, value: value2, output: state.output ? '' : ONE_CHAR })
         push({ type: 'paren', extglob: true, value: advance(), output })
-        extglobs.push(token)
+        extglobs.push(token2)
       }
-      const extglobClose = (token) => {
-        let output = token.close + (opts.capture ? ')' : '')
+      const extglobClose = (token2) => {
+        let output = token2.close + (opts.capture ? ')' : '')
         let rest
-        if (token.type === 'negate') {
+        if (token2.type === 'negate') {
           let extglobStar = star
-          if (token.inner && token.inner.length > 1 && token.inner.includes('/')) {
+          if (token2.inner && token2.inner.length > 1 && token2.inner.includes('/')) {
             extglobStar = globstar(opts)
           }
           if (extglobStar !== star || eos() || /^\)+$/.test(remaining())) {
-            output = token.close = `)$))${extglobStar}`
+            output = token2.close = `)$))${extglobStar}`
           }
-          if (token.inner.includes('*') && (rest = remaining()) && /^\.[^\\/.]+$/.test(rest)) {
+          if (token2.inner.includes('*') && (rest = remaining()) && /^\.[^\\/.]+$/.test(rest)) {
             const expression = parse(rest, { ...options, fastpaths: false }).output
-            output = token.close = `)${expression})${extglobStar})`
+            output = token2.close = `)${expression})${extglobStar})`
           }
-          if (token.prev.type === 'bos') {
+          if (token2.prev.type === 'bos') {
             state.negatedExtglob = true
           }
         }
@@ -3950,18 +3950,18 @@ var require_parse2 = __commonJS({
           consume(value)
           continue
         }
-        const token = { type: 'star', value, output: star }
+        const token2 = { type: 'star', value, output: star }
         if (opts.bash === true) {
-          token.output = '.*?'
+          token2.output = '.*?'
           if (prev.type === 'bos' || prev.type === 'slash') {
-            token.output = nodot + token.output
+            token2.output = nodot + token2.output
           }
-          push(token)
+          push(token2)
           continue
         }
         if (prev && (prev.type === 'bracket' || prev.type === 'paren') && opts.regex === true) {
-          token.output = value
-          push(token)
+          token2.output = value
+          push(token2)
           continue
         }
         if (state.index === state.start || prev.type === 'slash' || prev.type === 'dot') {
@@ -3980,7 +3980,7 @@ var require_parse2 = __commonJS({
             prev.output += ONE_CHAR
           }
         }
-        push(token)
+        push(token2)
       }
       while (state.brackets > 0) {
         if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', ']'))
@@ -4002,10 +4002,10 @@ var require_parse2 = __commonJS({
       }
       if (state.backtrack === true) {
         state.output = ''
-        for (const token of state.tokens) {
-          state.output += token.output != null ? token.output : token.value
-          if (token.suffix) {
-            state.output += token.suffix
+        for (const token2 of state.tokens) {
+          state.output += token2.output != null ? token2.output : token2.value
+          if (token2.suffix) {
+            state.output += token2.suffix
           }
         }
       }
@@ -8911,16 +8911,6 @@ var require_adm_zip = __commonJS({
 var import_core = __toESM(require_core(), 1)
 var import_url2 = require('url')
 
-// src/basicAuthAuthenticator.ts
-function basicAuthAuthenticator(username2, password2) {
-  return () =>
-    Promise.resolve({
-      Authorization: `Basic ${Buffer.from(`${username2}:${password2}`, 'utf-8').toString(
-        'base64'
-      )}`,
-    })
-}
-
 // node_modules/@cucumber/ci-environment/dist/esm/src/detectCiEnvironment.js
 var import_fs = require('fs')
 
@@ -9300,9 +9290,9 @@ async function publish(globs2, zip2, organizationId2, baseUrl2, env, authenticat
   if (globs2.length === 0) {
     throw new Error('globs cannot be empty')
   }
-  const authHeaders = await authenticate()
+  const authHeaders = authenticate()
   const url = new import_url.URL(
-    `/api/organization/${encodeURIComponent(organizationId2)}/execution`,
+    `/api/organization/${encodeURIComponent(organizationId2)}/test-cycle`,
     baseUrl2
   )
   const ciEnv = src_default(env)
@@ -9394,10 +9384,16 @@ POST ${url.toString()} -d @${path}
   })
 }
 
+// src/tokenAuthenticator.ts
+function tokenAuthenticator(token2) {
+  return () => ({
+    Authorization: `Bearer ${token2}`,
+  })
+}
+
 // src/action/index.ts
 var organizationId = import_core.default.getInput('organization-id')
-var username = import_core.default.getInput('username')
-var password = import_core.default.getInput('password')
+var token = import_core.default.getInput('token')
 var globs = import_core.default.getMultilineInput('reports')
 var maxTime = import_core.default.getInput('max-time')
 var ignoreError = import_core.default.getBooleanInput('ignore-error')
@@ -9411,12 +9407,12 @@ async function main() {
     organizationId,
     baseUrl,
     process.env,
-    basicAuthAuthenticator(username, password),
+    tokenAuthenticator(token),
     requestTimeout
   )
   return responseBodies.map((body) =>
     new import_url2.URL(
-      `/organization/${organizationId}/executions/${body.testSetExecutionId}`,
+      `/organization/${organizationId}/test-cycles/${body.testCycleId}`,
       baseUrl
     ).toString()
   )

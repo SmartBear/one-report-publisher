@@ -1,0 +1,47 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "eslint.options": {
+      "extensions": [".ts", ".json", ".js"]
+    },
+    "eslint.validate": ["javascript", "typescript"],
+    "prettier.configPath": "./.prettierrc.json",
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/*.code-search": true,
+      "**/.history": true
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.updateImportsOnFileMove.enabled": "always"
+  },
+  "extensions": {
+    "recommendations": [
+      "hbenl.vscode-test-explorer",
+      "hbenl.vscode-mocha-test-adapter",
+      "usernamehw.errorlens",
+      "esbenp.prettier-vscode",
+      "maples7.terminal-inplace",
+      "yzhang.markdown-all-in-one",
+      "alefragnani.bookmarks",
+      "eamodio.gitlens",
+      "smulyono.reveal"
+    ]
+  }
+}
