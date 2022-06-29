@@ -19,7 +19,7 @@ program.option('--no-zip', 'Do not zip non .zip files', false)
 
 program.parse(process.argv)
 const {
-  organizationId,
+  organization,
   token,
   reports: globs,
   maxTime,
@@ -33,7 +33,7 @@ async function main() {
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
     !noZip,
-    organizationId,
+    organization,
     baseUrl,
     process.env,
     tokenAuthenticator(token),
@@ -41,7 +41,7 @@ async function main() {
   )
 
   return responseBodies.map((body) =>
-    new URL(`/organization/${organizationId}/test-cycles/${body.testCycleId}`, baseUrl).toString()
+    new URL(`/organization/${organization}/test-cycles/${body.testCycleId}`, baseUrl).toString()
   )
 }
 
