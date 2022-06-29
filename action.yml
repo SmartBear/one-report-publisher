@@ -1,19 +1,15 @@
 name: 'OneReport Publisher'
 description: 'Publish Test Results to SmartBear OneReport'
 inputs:
-  organization-id:
+  organization:
     description: 'OneReport organization id'
-    required: true
-    # TODO remove _ID
-    default: ${{ secrets.ONE_REPORT_ORGANIZATION_ID }}
+    required: false
   token:
     description: 'OneReport token'
-    required: true
-    default: ${{ secrets.ONE_REPORT_TOKEN }}
+    required: false
   url:
     description: 'OneReport URL'
-    required: true
-    default: ${{ secrets.ONE_REPORT_URL }}
+    required: false
   reports:
     description: 'Globs to the files to publish'
     required: true
