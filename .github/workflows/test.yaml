@@ -29,14 +29,14 @@ jobs:
       - run: npm ci
       - run: npm test
 
+      - name: Publish Results to OneReport (CLI)
+        run: node bin/one-report-publisher.cjs --reports "tmp/tests/*.{json,xml}"
       - name: Publish Results to OneReport (GitHub Action)
         if: ${{ always() }}
         # uses: smartbear/one-report-publisher@v1.0.0
         uses: ./
         with:
           reports: tmp/tests/*.{json,xml}
-      - name: Publish Results to OneReport (CLI)
-        run: node bin/one-report-publisher.cjs --reports "tmp/tests/*.{json,xml}"
 
       - run: npm run eslint
       - run: npm run build
