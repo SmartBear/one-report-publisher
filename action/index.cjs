@@ -9392,14 +9392,23 @@ function tokenAuthenticator(token2) {
 }
 
 // src/action/index.ts
-var organizationId = import_core.default.getInput('organization-id')
-var token = import_core.default.getInput('token')
+var organizationId =
+  import_core.default.getInput('organization') || process.env.ONE_REPORT_ORGANIZATION
+var token = import_core.default.getInput('token') || process.env.ONE_REPORT_TOKEN
+var baseUrl = import_core.default.getInput('url') || process.env.ONE_REPORT_URL
 var globs = import_core.default.getMultilineInput('reports')
 var maxTime = import_core.default.getInput('max-time')
 var ignoreError = import_core.default.getBooleanInput('ignore-error')
-var baseUrl = import_core.default.getInput('url')
 var zip = import_core.default.getBooleanInput('zip')
 async function main() {
+  if (!organizationId)
+    throw new Error(
+      "Please specify 'organization' or define the ONE_REPORT_ORGANIZATION environment variable"
+    )
+  if (!token)
+    throw new Error("Please specify 'token' or define the ONE_REPORT_TOKEN environment variable")
+  if (!baseUrl)
+    throw new Error("Please specify 'url' or define the ONE_REPORT_URL environment variable")
   const requestTimeout = maxTime ? +maxTime * 1e3 : void 0
   const responseBodies = await publish(
     globs,

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added the ability to pick up `ONE_REPORT_ORGANIZATION`, `ONE_REPORT_TOKEN`, `ONE_REPORT_URL` environment variables, so GitHub Action inputs or command-line options do not need to be specified.
+### Changed
+- Changed the `--organization-id` command-line option to `--organization`.
+- Changed the `organization-id` GitHub action input to `organization`.
+
 ## [0.4.0] - 2022-06-22
 ### Changed
 - Changed basic auth to JWT token authentication [OR-7](https://smartbear.atlassian.net/browse/OR-7?atlOrigin=eyJpIjoiYmNiNDhjZTliYWMwNDBjZGFjZDAzYWU1YmFiM2Q3ZmUiLCJwIjoiaiJ9)
