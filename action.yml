@@ -4,15 +4,16 @@ inputs:
   organization-id:
     description: 'OneReport organization id'
     required: true
-    default: ${{ env.ONE_REPORT_ORGANIZATION }}
+    # TODO remove _ID
+    default: ${{ secrets.ONE_REPORT_ORGANIZATION_ID }}
   token:
     description: 'OneReport token'
     required: true
-    default: ${{ env.ONE_REPORT_TOKEN }}
+    default: ${{ secrets.ONE_REPORT_TOKEN }}
   url:
     description: 'OneReport URL'
     required: true
-    default: ${{ env.ONE_REPORT_URL }}
+    default: ${{ secrets.ONE_REPORT_URL }}
   reports:
     description: 'Globs to the files to publish'
     required: true
