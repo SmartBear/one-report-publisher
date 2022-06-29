@@ -27,7 +27,7 @@ step failed.
 ```yml
 - name: 'Publish to OneReport'
   if: ${{ always() }}
-  uses: smartbear/one-report-publisher@v0.3.2
+  uses: smartbear/one-report-publisher@v0.5.0
   with:
     # Can be omitted if ONE_REPORT_ORGANIZATION is defined
     organization: F5222E06-BA05-4C82-949A-2FE537B6F59F
@@ -45,7 +45,7 @@ See [action.yml](./action.yml) for a full reference of available input options.
 The command-line tool can be used in any CI pipeline that has the `npx` command available (it needs to have Node.js installed).
 
 ```
-npx @smartbear/one-report-publisher@v0.3.2 --help
+npx @smartbear/one-report-publisher@v0.5.0 --help
 
 Usage: one-report-publisher [options]
 
@@ -63,7 +63,7 @@ Options:
 Example:
 
 ```
-npx @smartbear/one-report-publisher@0.3.2 \
+npx @smartbear/one-report-publisher@0.5.0 \
   --organization F5222E06-BA05-4C82-949A-2FE537B6F59F \
   --token ${ONE_REPORT_TOKEN} \
   --reports ./reports/**/*.{xml,json,ndjson,zip}
@@ -78,7 +78,7 @@ installed (for example [cimg/node](https://circleci.com/developer/images/image/c
 - run:
     name: Publish test results to OneReport
     command: |
-      npx @smartbear/one-report-publisher@0.3.2 \
+      npx @smartbear/one-report-publisher@0.5.0 \
         --organization F5222E06-BA05-4C82-949A-2FE537B6F59F \
         --token ${ONE_REPORT_TOKEN} \
         --reports ./reports/**/*.{xml,json,ndjson,zip}
