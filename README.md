@@ -29,27 +29,16 @@ step failed.
   if: ${{ always() }}
   uses: smartbear/one-report-publisher@v0.3.2
   with:
-    organization-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
+    # Can be omitted if ONE_REPORT_ORGANIZATION is defined
+    organization: F5222E06-BA05-4C82-949A-2FE537B6F59F
+    # Can be omitted if ONE_REPORT_TOKEN is defined
     token: ${{ secrets.ONE_REPORT_TOKEN }}
+    # Can be omitted if ONE_REPORT_URL is defined
+    url: ${{ env.ONE_REPORT_URL }}
     reports: ./reports/**/*.{xml,json,ndjson,zip}
 ```
 
 See [action.yml](./action.yml) for a full reference of available input options.
-
-## CircleCI
-
-Add a step _after_ all tests have run. You have to make sure the command is running in a docker image that has Node.js
-installed (for example [cimg/node](https://circleci.com/developer/images/image/cimg/node)).
-
-```yml
-- run:
-    name: Publish test results to OneReport
-    command: |
-      npx @smartbear/one-report-publisher@0.3.2 \
-        --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
-        --token ${ONE_REPORT_TOKEN} \
-        --reports ./reports/**/*.{xml,json,ndjson,zip}
-```
 
 ## Command Line Reference
 
@@ -61,21 +50,36 @@ npx @smartbear/one-report-publisher@v0.3.2 --help
 Usage: one-report-publisher [options]
 
 Options:
-  -o, --organization-id <id>  OneReport organization id
-  -t, --token <token>         OneReport token
-  -r, --reports <glob...>     Glob to the files to publish
-  -m, --max-time <seconds>    Max time for each request
-  -i, --ignore-error          Exit with 0 even if a timeout or error occurred
-  -u, --url <url>             OneReport URL
-  --no-zip                    Do not zip non .zip files
-  -h, --help                  display help for command
+  -u, --url <url>           OneReport URL. Defaults to $ONE_REPORT_URL
+  -o, --organization <id>   OneReport organization id. Defaults to $ONE_REPORT_ORGANIZATION
+  -t, --token <token>       OneReport token. Defaults to $ONE_REPORT_TOKEN
+  -r, --reports <glob...>   Glob to the files to publish
+  -m, --max-time <seconds>  Max time for each request
+  -i, --ignore-error        Exit with 0 even if a timeout or error occurred
+  --no-zip                  Do not zip non .zip files
+  -h, --help                display help for command
 ```
 
 Example:
 
 ```
 npx @smartbear/one-report-publisher@0.3.2 \
-  --organization-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
+  --organization F5222E06-BA05-4C82-949A-2FE537B6F59F \
   --token ${ONE_REPORT_TOKEN} \
   --reports ./reports/**/*.{xml,json,ndjson,zip}
+```
+
+## CircleCI
+
+Add a step _after_ all tests have run. You have to make sure the command is running in a docker image that has Node.js
+installed (for example [cimg/node](https://circleci.com/developer/images/image/cimg/node)).
+
+```yml
+- run:
+    name: Publish test results to OneReport
+    command: |
+      npx @smartbear/one-report-publisher@0.3.2 \
+        --organization F5222E06-BA05-4C82-949A-2FE537B6F59F \
+        --token ${ONE_REPORT_TOKEN} \
+        --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```

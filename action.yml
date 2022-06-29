@@ -2,31 +2,31 @@ name: 'OneReport Publisher'
 description: 'Publish Test Results to SmartBear OneReport'
 inputs:
   organization:
-    description: 'OneReport organization id'
+    description: 'OneReport organization id. Defaults to $ONE_REPORT_ORGANIZATION.'
     required: false
   token:
-    description: 'OneReport token'
+    description: 'OneReport token. Defaults to $ONE_REPORT_TOKEN.'
     required: false
   url:
-    description: 'OneReport URL'
+    description: 'OneReport URL. Defaults to $ONE_REPORT_URL.'
     required: false
   reports:
-    description: 'Globs to the files to publish'
+    description: 'Globs to the files to publish.'
     required: true
   max-time:
-    description: 'Max time for each request'
+    description: 'Max time for each request.'
     required: false
   ignore-error:
-    description: 'Exit with 0 even if a timeout or error occurred'
+    description: 'Exit with 0 even if a timeout or error occurred.'
     required: false
     default: 'false'
   zip:
-    description: 'If true, compress all non .zip files into a zip file before publishing'
+    description: 'If true, compress all non .zip files into a zip file before publishing.'
     required: false
     default: 'true'
 outputs:
   report-urls:
-    description: 'Report URLs'
+    description: 'Report URLs.'
 runs:
   using: 'node16'
   main: 'action/index.cjs'

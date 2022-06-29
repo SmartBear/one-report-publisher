@@ -5,13 +5,21 @@ import { URL } from 'url'
 import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
 const program = new Command()
-program.requiredOption('-u, --url <url>', 'OneReport URL', process.env.ONE_REPORT_URL)
+program.requiredOption(
+  '-u, --url <url>',
+  'OneReport URL. Defaults to $ONE_REPORT_URL',
+  process.env.ONE_REPORT_URL
+)
 program.requiredOption(
   '-o, --organization <id>',
-  'OneReport organization id',
+  'OneReport organization id. Defaults to $ONE_REPORT_ORGANIZATION',
   process.env.ONE_REPORT_ORGANIZATION
 )
-program.requiredOption('-t, --token <token>', 'OneReport token', process.env.ONE_REPORT_TOKEN)
+program.requiredOption(
+  '-t, --token <token>',
+  'OneReport token. Defaults to $ONE_REPORT_TOKEN',
+  process.env.ONE_REPORT_TOKEN
+)
 program.requiredOption('-r, --reports <glob...>', 'Glob to the files to publish')
 program.option('-m, --max-time <seconds>', 'Max time for each request')
 program.option('-i, --ignore-error', 'Exit with 0 even if a timeout or error occurred')
