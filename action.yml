@@ -4,9 +4,15 @@ inputs:
   organization-id:
     description: 'OneReport organization id'
     required: true
+    default: ${{ env.ONE_REPORT_ORGANIZATION }}
   token:
     description: 'OneReport token'
     required: true
+    default: ${{ env.ONE_REPORT_TOKEN }}
+  url:
+    description: 'OneReport URL'
+    required: true
+    default: ${{ env.ONE_REPORT_URL }}
   reports:
     description: 'Globs to the files to publish'
     required: true
@@ -17,9 +23,6 @@ inputs:
     description: 'Exit with 0 even if a timeout or error occurred'
     required: false
     default: 'false'
-  url:
-    description: 'OneReport URL'
-    required: true
   zip:
     description: 'If true, compress all non .zip files into a zip file before publishing'
     required: false
