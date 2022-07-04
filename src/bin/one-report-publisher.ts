@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { URL } from 'url'
 
 import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
@@ -48,17 +47,13 @@ async function main() {
     requestTimeout
   )
 
-  return responseBodies.map((body) =>
-    new URL(`/organization/${organization}/test-cycles/${body.testCycleId}`, baseUrl).toString()
-  )
+  return responseBodies.map((body) => body.testCycleId)
 }
 
 main()
-  .then((reportUrls) => {
-    console.log('Report URLs')
-    for (const reportUrl of reportUrls) {
-      console.log(`- ${reportUrl}`)
-    }
+  .then((testCycleIds) => {
+    console.log('Test Cycle Ids')
+    console.log(testCycleIds)
   })
   .catch((error) => {
     console.error(error.stack)

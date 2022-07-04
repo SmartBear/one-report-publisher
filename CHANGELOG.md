@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed the main response from report urls to test cycle ids
+- Changed the console output from report urls to array of test cycle ids
+
 ## [0.5.0] - 2022-06-29
 ### Added
 
