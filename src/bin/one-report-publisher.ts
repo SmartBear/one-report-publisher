@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { URL } from 'url'
 
 import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
