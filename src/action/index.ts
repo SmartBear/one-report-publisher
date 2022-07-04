@@ -1,5 +1,4 @@
 import core from '@actions/core'
-import { URL } from 'url'
 
 import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
@@ -34,20 +33,18 @@ async function main() {
     requestTimeout
   )
 
-  return responseBodies.map((body) =>
-    new URL(`/organization/${organizationId}/test-cycles/${body.testCycleId}`, baseUrl).toString()
-  )
+  return responseBodies.map((body) => body.testCycleId)
 }
 
 main()
-  .then((reportUrls) => {
-    // Set report URLs as output, in case someone wants to do something special with them
-    core.setOutput('report-urls', reportUrls)
+  .then((testCycleIds) => {
+    // Set test cycle ids as output, in case someone wants to do something special with them
+    core.setOutput('test-cycle-ids', testCycleIds)
 
-    // Also print each URL, for convenience
-    core.startGroup('Report URLs')
-    for (const reportUrl of reportUrls) {
-      core.info(reportUrl)
+    // Also print each test cycle id, for convenience
+    core.startGroup('Test Cycle Ids')
+    for (const testCycleId of testCycleIds) {
+      core.info(testCycleId)
     }
     core.endGroup()
   })
