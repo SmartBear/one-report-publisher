@@ -10,14 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed the main response from report urls to test cycle ids
 - Changed the console output from report urls to array of test cycle ids
+- Changed the `--organization` command-line option to `--project-id`.
+- Changed the `organization` GitHub action input to `project-id`.
+- Renamed the `ONE_REPORT_ORGANIZATION` environment variable to `ONE_REPORT_PROJECT_ID`
 
 ## [0.5.0] - 2022-06-29
-### Added
 
 ### Changed
 - Added the ability to pick up `ONE_REPORT_ORGANIZATION`, `ONE_REPORT_TOKEN`, `ONE_REPORT_URL` environment variables, so GitHub Action inputs or command-line options do not need to be specified.
-- Changed the `--project-id` command-line option to `--project`.
-- Changed the `project-id` GitHub action input to `project`.
+- Changed the `--organization-id` command-line option to `--organization`.
+- Changed the `organization-id` GitHub action input to `organization`.
 
 ## [0.4.0] - 2022-06-22
 ### Changed
