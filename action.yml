@@ -25,8 +25,8 @@ inputs:
     required: false
     default: 'true'
 outputs:
-  report-urls:
-    description: 'Report URLs.'
+  test-cycle-ids:
+    description: 'Test Cycle ids.'
 runs:
   using: 'node16'
   main: 'action/index.cjs'
