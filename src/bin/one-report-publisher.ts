@@ -10,9 +10,9 @@ program.requiredOption(
   process.env.ONE_REPORT_URL
 )
 program.requiredOption(
-  '-o, --organization <id>',
-  'OneReport organization id. Defaults to $ONE_REPORT_ORGANIZATION',
-  process.env.ONE_REPORT_ORGANIZATION
+  '-p, --project-id <id>',
+  'OneReport project id. Defaults to $ONE_REPORT_PROJECT_ID',
+  process.env.ONE_REPORT_PROJECT_ID
 )
 program.requiredOption(
   '-t, --token <token>',
@@ -25,22 +25,14 @@ program.option('-i, --ignore-error', 'Exit with 0 even if a timeout or error occ
 program.option('--no-zip', 'Do not zip non .zip files', false)
 
 program.parse(process.argv)
-const {
-  organization,
-  token,
-  reports: globs,
-  maxTime,
-  ignoreError,
-  url: baseUrl,
-  noZip,
-} = program.opts()
+const { project, token, reports: globs, maxTime, ignoreError, url: baseUrl, noZip } = program.opts()
 
 async function main() {
   const requestTimeout = maxTime ? +maxTime * 1000 : undefined
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
     !noZip,
-    organization,
+    project,
     baseUrl,
     process.env,
     tokenAuthenticator(token),

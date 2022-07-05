@@ -2,7 +2,7 @@ import core from '@actions/core'
 
 import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
 
-const organizationId = core.getInput('organization') || process.env.ONE_REPORT_ORGANIZATION
+const projectId = core.getInput('project-id') || process.env.ONE_REPORT_PROJECT_ID
 const token = core.getInput('token') || process.env.ONE_REPORT_TOKEN
 const baseUrl = core.getInput('url') || process.env.ONE_REPORT_URL
 const globs = core.getMultilineInput('reports')
@@ -11,9 +11,9 @@ const ignoreError = core.getBooleanInput('ignore-error')
 const zip = core.getBooleanInput('zip')
 
 async function main() {
-  if (!organizationId)
+  if (!projectId)
     throw new Error(
-      "Please specify 'organization' or define the ONE_REPORT_ORGANIZATION environment variable"
+      "Please specify 'project' or define the ONE_REPORT_PROJECT_ID environment variable"
     )
 
   if (!token)
@@ -26,7 +26,7 @@ async function main() {
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
     zip,
-    organizationId,
+    projectId,
     baseUrl,
     process.env,
     tokenAuthenticator(token),

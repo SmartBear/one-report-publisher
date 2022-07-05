@@ -19,9 +19,9 @@ if (!process.env.ONE_REPORT_URL) {
       const authenticate = tokenAuthenticator(process.env.ONE_REPORT_TOKEN)
 
       const headers = authenticate()
-      const organizationId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'
+      const projectId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'
       const url = new URL(
-        `/api/organization/${encodeURIComponent(organizationId404)}/test-cycle`,
+        `/api/project/${encodeURIComponent(projectId404)}/test-cycle`,
         oneReportUrl
       ).href
       await new Promise((resolve, reject) => {
@@ -47,9 +47,9 @@ if (!process.env.ONE_REPORT_URL) {
       const authenticate = tokenAuthenticator('not-a-valid-jwt')
 
       const headers = authenticate()
-      const organizationId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'
+      const projectId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'
       const url = new URL(
-        `/api/organization/${encodeURIComponent(organizationId404)}/test-cycle`,
+        `/api/project/${encodeURIComponent(projectId404)}/test-cycle`,
         oneReportUrl
       ).href
       await new Promise((resolve, reject) => {
@@ -73,9 +73,9 @@ if (!process.env.ONE_REPORT_URL) {
 
     it('returns 401 if Authorization header is not supplied', async () => {
       const headers = {}
-      const organizationId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'
+      const projectId404 = '5EEAFB69-A37F-4758-B76F-391C4937E7B4'
       const url = new URL(
-        `/api/organization/${encodeURIComponent(organizationId404)}/test-cycle`,
+        `/api/project/${encodeURIComponent(projectId404)}/test-cycle`,
         oneReportUrl
       ).href
       await new Promise((resolve, reject) => {

@@ -8909,7 +8909,6 @@ var require_adm_zip = __commonJS({
 
 // src/action/index.ts
 var import_core = __toESM(require_core(), 1)
-var import_url2 = require('url')
 
 // node_modules/@cucumber/ci-environment/dist/esm/src/detectCiEnvironment.js
 var import_fs = require('fs')
@@ -9283,7 +9282,7 @@ var contentTypes = {
   '.ndjson': 'application/x-ndjson',
   '.zip': 'application/zip',
 }
-async function publish(globs2, zip2, organizationId2, baseUrl2, env, authenticate, requestTimeout) {
+async function publish(globs2, zip2, projectId2, baseUrl2, env, authenticate, requestTimeout) {
   if (!Array.isArray(globs2)) {
     throw new Error('globs must be an array')
   }
@@ -9292,7 +9291,7 @@ async function publish(globs2, zip2, organizationId2, baseUrl2, env, authenticat
   }
   const authHeaders = authenticate()
   const url = new import_url.URL(
-    `/api/organization/${encodeURIComponent(organizationId2)}/test-cycle`,
+    `/api/project/${encodeURIComponent(projectId2)}/test-cycle`,
     baseUrl2
   )
   const ciEnv = src_default(env)
@@ -9392,8 +9391,7 @@ function tokenAuthenticator(token2) {
 }
 
 // src/action/index.ts
-var organizationId =
-  import_core.default.getInput('organization') || process.env.ONE_REPORT_ORGANIZATION
+var projectId = import_core.default.getInput('project-id') || process.env.ONE_REPORT_PROJECT_ID
 var token = import_core.default.getInput('token') || process.env.ONE_REPORT_TOKEN
 var baseUrl = import_core.default.getInput('url') || process.env.ONE_REPORT_URL
 var globs = import_core.default.getMultilineInput('reports')
@@ -9401,9 +9399,9 @@ var maxTime = import_core.default.getInput('max-time')
 var ignoreError = import_core.default.getBooleanInput('ignore-error')
 var zip = import_core.default.getBooleanInput('zip')
 async function main() {
-  if (!organizationId)
+  if (!projectId)
     throw new Error(
-      "Please specify 'organization' or define the ONE_REPORT_ORGANIZATION environment variable"
+      "Please specify 'project' or define the ONE_REPORT_PROJECT_ID environment variable"
     )
   if (!token)
     throw new Error("Please specify 'token' or define the ONE_REPORT_TOKEN environment variable")
@@ -9413,25 +9411,20 @@ async function main() {
   const responseBodies = await publish(
     globs,
     zip,
-    organizationId,
+    projectId,
     baseUrl,
     process.env,
     tokenAuthenticator(token),
     requestTimeout
   )
-  return responseBodies.map((body) =>
-    new import_url2.URL(
-      `/organization/${organizationId}/test-cycles/${body.testCycleId}`,
-      baseUrl
-    ).toString()
-  )
+  return responseBodies.map((body) => body.testCycleId)
 }
 main()
-  .then((reportUrls) => {
-    import_core.default.setOutput('report-urls', reportUrls)
-    import_core.default.startGroup('Report URLs')
-    for (const reportUrl of reportUrls) {
-      import_core.default.info(reportUrl)
+  .then((testCycleIds) => {
+    import_core.default.setOutput('test-cycle-ids', testCycleIds)
+    import_core.default.startGroup('Test Cycle Ids')
+    for (const testCycleId of testCycleIds) {
+      import_core.default.info(testCycleId)
     }
     import_core.default.endGroup()
   })

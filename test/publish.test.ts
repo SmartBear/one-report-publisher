@@ -66,7 +66,7 @@ describe('publish', () => {
 
   it('times out after specified timeout', async () => {
     serverLatency = 10
-    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+    const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {
       GITHUB_SERVER_URL: 'https://github.com',
@@ -80,7 +80,7 @@ describe('publish', () => {
       publish<TestResponseBody>(
         ['test/fixtures/*.xml'],
         false,
-        organizationId,
+        projectId,
         `http://localhost:${port}`,
         fakeEnv,
         () => ({}),
@@ -90,7 +90,7 @@ describe('publish', () => {
   })
 
   it('publishes files from glob without zipping', async () => {
-    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+    const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {
       GITHUB_SERVER_URL: 'https://github.com',
@@ -103,7 +103,7 @@ describe('publish', () => {
     const responseBodies = await publish<TestResponseBody>(
       ['test/fixtures/*.{xml,json,ndjson,zip}'],
       false,
-      organizationId,
+      projectId,
       `http://localhost:${port}`,
       fakeEnv,
       () => ({}),
@@ -111,7 +111,7 @@ describe('publish', () => {
     )
     const expectedServerRequests: ServerRequest[] = [
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/json',
           'content-length': String((await lstat('test/fixtures/cucumber.json')).size),
@@ -124,7 +124,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/cucumber.json'),
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'text/xml',
           'content-length': String((await lstat('test/fixtures/junit.xml')).size),
@@ -137,7 +137,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/junit.xml'),
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/x-ndjson',
           'content-length': String((await lstat('test/fixtures/cucumber.ndjson')).size),
@@ -150,7 +150,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/cucumber.ndjson'),
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           'content-length': String((await lstat('test/fixtures/bundled.zip')).size),
@@ -187,14 +187,14 @@ describe('publish', () => {
   })
 
   it('publishes files from glob with zipping', async () => {
-    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+    const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {}
 
     const responseBodies = await publish<TestResponseBody>(
       ['test/fixtures/*.{xml,json,ndjson,zip}'],
       true,
-      organizationId,
+      projectId,
       `http://localhost:${port}`,
       fakeEnv,
       () => ({}),
@@ -202,7 +202,7 @@ describe('publish', () => {
     )
     const expectedServerRequests: Omit<ServerRequest, 'body'>[] = [
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',
@@ -210,7 +210,7 @@ describe('publish', () => {
         },
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',

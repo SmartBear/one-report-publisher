@@ -4,9 +4,9 @@ import { OneReportResponseBody, publish, tokenAuthenticator } from '../src/index
 
 describe('oneReportPublish', () => {
   it('publishes to production', async () => {
-    if (!process.env.ONE_REPORT_TEST_ORGANIZATION_ID) {
+    if (!process.env.ONE_REPORT_TEST_PROJECT_ID) {
       console.error(
-        'WARNING - not testing OneReport publishing. Set ONE_REPORT_TEST_ORGANIZATION_ID to test it'
+        'WARNING - not testing OneReport publishing. Set ONE_REPORT_TEST_PROJECT_ID to test it'
       )
       return
     }
@@ -23,7 +23,7 @@ describe('oneReportPublish', () => {
     const responseBodies = await publish<OneReportResponseBody>(
       ['test/fixtures/*.{xml,json}'],
       true,
-      process.env.ONE_REPORT_TEST_ORGANIZATION_ID,
+      process.env.ONE_REPORT_TEST_PROJECT_ID,
       oneReportUrl,
       process.env,
       tokenAuthenticator(process.env.ONE_REPORT_TOKEN),

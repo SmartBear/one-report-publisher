@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Added the ability to pick up `ONE_REPORT_ORGANIZATION`, `ONE_REPORT_TOKEN`, `ONE_REPORT_URL` environment variables, so GitHub Action inputs or command-line options do not need to be specified.
-- Changed the `--organization-id` command-line option to `--organization`.
-- Changed the `organization-id` GitHub action input to `organization`.
+- Changed the `--project-id` command-line option to `--project`.
+- Changed the `project-id` GitHub action input to `project`.
 
 ## [0.4.0] - 2022-06-22
 ### Changed
