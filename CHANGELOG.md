@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- If an error is thrown it contains the response body
+
 ### Changed
 - Changed the main response from report urls to test cycle ids
 - Changed the console output from report urls to array of test cycle ids

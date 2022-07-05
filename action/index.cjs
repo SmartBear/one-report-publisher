@@ -9788,27 +9788,31 @@ async function publishFile(path, url, ciEnv, authHeaders, requestTimeout) {
             headers,
           },
           (res) => {
-            if (res.statusCode !== 201) {
-              return reject(
-                new Error(`Unexpected status code ${res.statusCode}
+            readStream(res)
+              .then((buffer) => buffer.toString('utf-8'))
+              .then((body) => {
+                if (res.statusCode !== 201) {
+                  return reject(
+                    new Error(`Unexpected status code ${res.statusCode}
 POST ${url.toString()} -d @${path}
 > ${Object.entries(headers)
-                  .map(([h2, v]) => `${h2}: ${v}`)
-                  .join('\n> ')}
+                      .map(([h2, v]) => `${h2}: ${v}`)
+                      .join('\n> ')}
 
 < ${Object.entries(res.headers)
-                  .map(([h2, v]) => `${h2}: ${v}`)
-                  .join('\n< ')}
+                      .map(([h2, v]) => `${h2}: ${v}`)
+                      .join('\n< ')}
+
+${body}
 `)
-              )
-            }
-            readStream(res)
-              .then((buffer) => {
-                try {
-                  const responseBody = JSON.parse(buffer.toString('utf-8'))
-                  return resolve(responseBody)
-                } catch (err) {
-                  reject(err)
+                  )
+                } else {
+                  try {
+                    const responseBody = JSON.parse(body)
+                    return resolve(responseBody)
+                  } catch (err) {
+                    reject(err)
+                  }
                 }
               })
               .catch(reject)

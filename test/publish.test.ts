@@ -44,6 +44,7 @@ describe('publish', () => {
             res.setHeader('Date', responseDate)
             if (!req.headers.authorization) {
               res.statusCode = 401
+              return res.end('You need to authenticate')
             } else {
               res.statusCode = 201
             }
@@ -289,7 +290,9 @@ POST http://localhost:${port}/api/project/32C46057-0AB6-44E8-8944-0246E0BEA96F/t
 
 < date: ${responseDate}
 < connection: close
-< content-length: 17
+< content-length: 24
+
+You need to authenticate
 `,
       }
     )
