@@ -9401,7 +9401,7 @@ var zip = import_core.default.getBooleanInput('zip')
 async function main() {
   if (!projectId)
     throw new Error(
-      "Please specify 'project' or define the ONE_REPORT_PROJECT_ID environment variable"
+      "Please specify 'project-id' or define the ONE_REPORT_PROJECT_ID environment variable"
     )
   if (!token)
     throw new Error("Please specify 'token' or define the ONE_REPORT_TOKEN environment variable")
