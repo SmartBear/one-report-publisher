@@ -2,7 +2,7 @@ module.exports = {
   loader: 'ts-node/esm',
   extension: ['ts'],
   recursive: true,
-  timeout: 5000,
+  timeout: 10000,
   // Write JUnit XML report when we're running in CI
   // ...(process.env.CI
   //   ? {

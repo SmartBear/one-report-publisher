@@ -7,7 +7,6 @@ import { promisify } from 'util'
 
 import { publish } from '../src/index.js'
 import { readStream } from '../src/readStream.js'
-import { tokenAuthenticator } from '../src/tokenAuthenticator.js'
 
 const readFile = promisify(fs.readFile)
 const lstat = promisify(fs.lstat)
@@ -27,9 +26,11 @@ describe('publish', () => {
   let server: http.Server
   let port: number
   let serverLatency: number
+  let errorDate: string
 
   beforeEach(async () => {
     serverLatency = 0
+    errorDate = new Date().toUTCString()
     port = await new Promise<number>((resolve) => {
       server = http.createServer((req, res) => {
         readStream(req)
@@ -52,6 +53,7 @@ describe('publish', () => {
           })
           .catch((err) => {
             res.statusCode = 500
+            res.setHeader('Date', errorDate)
             res.end(err.stack)
           })
       })
@@ -255,7 +257,7 @@ describe('publish', () => {
     assert.deepStrictEqual(responseBodies, expectedResponseBodies)
   })
 
-  it.only('prints response headers if response is not 201', async () => {
+  it('prints response headers if response is not 201', async () => {
     const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {
@@ -285,7 +287,7 @@ POST http://localhost:${port}/api/project/32C46057-0AB6-44E8-8944-0246E0BEA96F/t
 > OneReport-Revision: f7d967d6d4f7adc1d6657bda88f4e976c879d74c
 > OneReport-Branch: main
 
-< date: Tue, 05 Jul 2022 10:55:31 GMT
+< date: ${errorDate}
 < connection: close
 < content-length: 17
 `,
