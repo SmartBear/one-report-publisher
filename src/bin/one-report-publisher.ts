@@ -25,14 +25,22 @@ program.option('-i, --ignore-error', 'Exit with 0 even if a timeout or error occ
 program.option('--no-zip', 'Do not zip non .zip files', false)
 
 program.parse(process.argv)
-const { project, token, reports: globs, maxTime, ignoreError, url: baseUrl, noZip } = program.opts()
+const {
+  projectId,
+  token,
+  reports: globs,
+  maxTime,
+  ignoreError,
+  url: baseUrl,
+  noZip,
+} = program.opts()
 
 async function main() {
   const requestTimeout = maxTime ? +maxTime * 1000 : undefined
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
     !noZip,
-    project,
+    projectId,
     baseUrl,
     process.env,
     tokenAuthenticator(token),

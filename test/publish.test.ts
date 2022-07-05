@@ -26,11 +26,11 @@ describe('publish', () => {
   let server: http.Server
   let port: number
   let serverLatency: number
-  let errorDate: string
+  let responseDate: string
 
   beforeEach(async () => {
     serverLatency = 0
-    errorDate = new Date().toUTCString()
+    responseDate = new Date(Date.now() - 1000).toUTCString()
     port = await new Promise<number>((resolve) => {
       server = http.createServer((req, res) => {
         readStream(req)
@@ -41,6 +41,7 @@ describe('publish', () => {
               headers: req.headers,
               body,
             })
+            res.setHeader('Date', responseDate)
             if (!req.headers.authorization) {
               res.statusCode = 401
             } else {
@@ -53,7 +54,6 @@ describe('publish', () => {
           })
           .catch((err) => {
             res.statusCode = 500
-            res.setHeader('Date', errorDate)
             res.end(err.stack)
           })
       })
@@ -287,7 +287,7 @@ POST http://localhost:${port}/api/project/32C46057-0AB6-44E8-8944-0246E0BEA96F/t
 > OneReport-Revision: f7d967d6d4f7adc1d6657bda88f4e976c879d74c
 > OneReport-Branch: main
 
-< date: ${errorDate}
+< date: ${responseDate}
 < connection: close
 < content-length: 17
 `,
