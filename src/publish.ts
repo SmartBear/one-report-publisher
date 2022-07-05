@@ -29,7 +29,7 @@ const contentTypes: Record<Extension, string> = {
  *
  * @param globs a list of globs pointing to JUnit XML and Cucumber JSON files
  * @param zip if true, compress all non .zip files into a zip file before publishing
- * @param organizationId the Organization ID on OneReport
+ * @param projectId the Project ID on OneReport
  * @param baseUrl the base URL of OneReport
  * @param env the local environment, e.g. process.env (used to detect Git info from env vars set by CI)
  * @param authenticate a function that returns HTTP request headers for authentication (such as {Cookie: ...})
@@ -39,7 +39,7 @@ const contentTypes: Record<Extension, string> = {
 export async function publish<ResponseBody>(
   globs: readonly string[],
   zip: boolean,
-  organizationId: string,
+  projectId: string,
   baseUrl: string,
   env: Env,
   authenticate: Authenticate,
@@ -53,7 +53,7 @@ export async function publish<ResponseBody>(
   }
   const authHeaders = authenticate()
 
-  const url = new URL(`/api/organization/${encodeURIComponent(organizationId)}/test-cycle`, baseUrl)
+  const url = new URL(`/api/project/${encodeURIComponent(projectId)}/test-cycle`, baseUrl)
 
   const ciEnv = ciEnvironment(env)
 
@@ -110,27 +110,31 @@ async function publishFile<ResponseBody>(
             headers,
           },
           (res) => {
-            if (res.statusCode !== 201) {
-              return reject(
-                new Error(`Unexpected status code ${res.statusCode}
+            readStream(res)
+              .then((buffer) => buffer.toString('utf-8'))
+              .then((body) => {
+                if (res.statusCode !== 201) {
+                  return reject(
+                    new Error(`Unexpected status code ${res.statusCode}
 POST ${url.toString()} -d @${path}
 > ${Object.entries(headers)
-                  .map(([h, v]) => `${h}: ${v}`)
-                  .join('\n> ')}
+                      .map(([h, v]) => `${h}: ${v}`)
+                      .join('\n> ')}
 
 < ${Object.entries(res.headers)
-                  .map(([h, v]) => `${h}: ${v}`)
-                  .join('\n< ')}
+                      .map(([h, v]) => `${h}: ${v}`)
+                      .join('\n< ')}
+
+${body}
 `)
-              )
-            }
-            readStream(res)
-              .then((buffer) => {
-                try {
-                  const responseBody = JSON.parse(buffer.toString('utf-8')) as ResponseBody
-                  return resolve(responseBody)
-                } catch (err) {
-                  reject(err)
+                  )
+                } else {
+                  try {
+                    const responseBody = JSON.parse(body) as ResponseBody
+                    return resolve(responseBody)
+                  } catch (err) {
+                    reject(err)
+                  }
                 }
               })
               .catch(reject)

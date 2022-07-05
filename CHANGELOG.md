@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- If an error is thrown it contains the response body
+
 ### Changed
 - Changed the main response from report urls to test cycle ids
 - Changed the console output from report urls to array of test cycle ids
+- Changed the `--organization` command-line option to `--project-id`.
+- Changed the `organization` GitHub action input to `project-id`.
+- Renamed the `ONE_REPORT_ORGANIZATION` environment variable to `ONE_REPORT_PROJECT_ID`
 
 ## [0.5.0] - 2022-06-29
-### Added
 
 ### Changed
 - Added the ability to pick up `ONE_REPORT_ORGANIZATION`, `ONE_REPORT_TOKEN`, `ONE_REPORT_URL` environment variables, so GitHub Action inputs or command-line options do not need to be specified.

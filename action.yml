@@ -1,8 +1,8 @@
 name: 'OneReport Publisher'
 description: 'Publish Test Results to SmartBear OneReport'
 inputs:
-  organization:
-    description: 'OneReport organization id. Defaults to $ONE_REPORT_ORGANIZATION.'
+  project-id:
+    description: 'OneReport project id. Defaults to $ONE_REPORT_PROJECT_ID.'
     required: false
   token:
     description: 'OneReport token. Defaults to $ONE_REPORT_TOKEN.'

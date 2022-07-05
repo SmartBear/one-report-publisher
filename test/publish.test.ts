@@ -26,9 +26,11 @@ describe('publish', () => {
   let server: http.Server
   let port: number
   let serverLatency: number
+  let responseDate: string
 
   beforeEach(async () => {
     serverLatency = 0
+    responseDate = new Date(Date.now() - 1000).toUTCString()
     port = await new Promise<number>((resolve) => {
       server = http.createServer((req, res) => {
         readStream(req)
@@ -39,7 +41,13 @@ describe('publish', () => {
               headers: req.headers,
               body,
             })
-            res.statusCode = 201
+            res.setHeader('Date', responseDate)
+            if (!req.headers.authorization) {
+              res.statusCode = 401
+              return res.end('You need to authenticate')
+            } else {
+              res.statusCode = 201
+            }
             const responseBody: TestResponseBody = {
               hello: 'world',
             }
@@ -66,7 +74,7 @@ describe('publish', () => {
 
   it('times out after specified timeout', async () => {
     serverLatency = 10
-    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+    const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {
       GITHUB_SERVER_URL: 'https://github.com',
@@ -80,7 +88,7 @@ describe('publish', () => {
       publish<TestResponseBody>(
         ['test/fixtures/*.xml'],
         false,
-        organizationId,
+        projectId,
         `http://localhost:${port}`,
         fakeEnv,
         () => ({}),
@@ -90,7 +98,7 @@ describe('publish', () => {
   })
 
   it('publishes files from glob without zipping', async () => {
-    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+    const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {
       GITHUB_SERVER_URL: 'https://github.com',
@@ -103,15 +111,15 @@ describe('publish', () => {
     const responseBodies = await publish<TestResponseBody>(
       ['test/fixtures/*.{xml,json,ndjson,zip}'],
       false,
-      organizationId,
+      projectId,
       `http://localhost:${port}`,
       fakeEnv,
-      () => ({}),
+      () => ({ Authorization: 'Bearer goodToken' }),
       undefined
     )
     const expectedServerRequests: ServerRequest[] = [
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/json',
           'content-length': String((await lstat('test/fixtures/cucumber.json')).size),
@@ -120,11 +128,12 @@ describe('publish', () => {
           'onereport-sourcecontrol': 'https://github.com/SmartBear/one-report-publisher.git',
           'onereport-revision': 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
           'onereport-branch': 'main',
+          authorization: 'Bearer goodToken',
         },
         body: await readFile('test/fixtures/cucumber.json'),
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'text/xml',
           'content-length': String((await lstat('test/fixtures/junit.xml')).size),
@@ -133,11 +142,12 @@ describe('publish', () => {
           'onereport-sourcecontrol': 'https://github.com/SmartBear/one-report-publisher.git',
           'onereport-revision': 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
           'onereport-branch': 'main',
+          authorization: 'Bearer goodToken',
         },
         body: await readFile('test/fixtures/junit.xml'),
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/x-ndjson',
           'content-length': String((await lstat('test/fixtures/cucumber.ndjson')).size),
@@ -146,11 +156,12 @@ describe('publish', () => {
           'onereport-sourcecontrol': 'https://github.com/SmartBear/one-report-publisher.git',
           'onereport-revision': 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
           'onereport-branch': 'main',
+          authorization: 'Bearer goodToken',
         },
         body: await readFile('test/fixtures/cucumber.ndjson'),
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           'content-length': String((await lstat('test/fixtures/bundled.zip')).size),
@@ -159,6 +170,7 @@ describe('publish', () => {
           'onereport-sourcecontrol': 'https://github.com/SmartBear/one-report-publisher.git',
           'onereport-revision': 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
           'onereport-branch': 'main',
+          authorization: 'Bearer goodToken',
         },
         body: await readFile('test/fixtures/bundled.zip'),
       },
@@ -187,34 +199,36 @@ describe('publish', () => {
   })
 
   it('publishes files from glob with zipping', async () => {
-    const organizationId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+    const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
 
     const fakeEnv: Env = {}
 
     const responseBodies = await publish<TestResponseBody>(
       ['test/fixtures/*.{xml,json,ndjson,zip}'],
       true,
-      organizationId,
+      projectId,
       `http://localhost:${port}`,
       fakeEnv,
-      () => ({}),
+      () => ({ Authorization: 'Bearer goodToken' }),
       undefined
     )
     const expectedServerRequests: Omit<ServerRequest, 'body'>[] = [
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',
           host: `localhost:${port}`,
+          authorization: 'Bearer goodToken',
         },
       },
       {
-        url: `/api/organization/${organizationId}/test-cycle`,
+        url: `/api/project/${projectId}/test-cycle`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',
           host: `localhost:${port}`,
+          authorization: 'Bearer goodToken',
         },
       },
     ]
@@ -242,6 +256,46 @@ describe('publish', () => {
     ]
 
     assert.deepStrictEqual(responseBodies, expectedResponseBodies)
+  })
+
+  it('prints response headers if response is not 201', async () => {
+    const projectId = '32C46057-0AB6-44E8-8944-0246E0BEA96F'
+
+    const fakeEnv: Env = {
+      GITHUB_SERVER_URL: 'https://github.com',
+      GITHUB_REPOSITORY: 'SmartBear/one-report-publisher',
+      GITHUB_RUN_ID: '154666429',
+      GITHUB_SHA: 'f7d967d6d4f7adc1d6657bda88f4e976c879d74c',
+      GITHUB_HEAD_REF: 'main',
+    }
+    await assert.rejects(
+      () =>
+        publish<TestResponseBody>(
+          ['test/fixtures/*.xml'],
+          false,
+          projectId,
+          `http://localhost:${port}`,
+          fakeEnv,
+          () => ({}),
+          undefined
+        ),
+      {
+        message: `Unexpected status code 401
+POST http://localhost:${port}/api/project/32C46057-0AB6-44E8-8944-0246E0BEA96F/test-cycle -d @test/fixtures/junit.xml
+> Content-Type: text/xml
+> Content-Length: 359
+> OneReport-SourceControl: https://github.com/SmartBear/one-report-publisher.git
+> OneReport-Revision: f7d967d6d4f7adc1d6657bda88f4e976c879d74c
+> OneReport-Branch: main
+
+< date: ${responseDate}
+< connection: close
+< content-length: 24
+
+You need to authenticate
+`,
+      }
+    )
   })
 })
 

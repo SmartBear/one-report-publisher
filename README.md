@@ -29,8 +29,8 @@ step failed.
   if: ${{ always() }}
   uses: smartbear/one-report-publisher@v0.5.0
   with:
-    # Can be omitted if ONE_REPORT_ORGANIZATION is defined
-    organization: F5222E06-BA05-4C82-949A-2FE537B6F59F
+    # Can be omitted if ONE_REPORT_PROJECT_ID is defined
+    project-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
     # Can be omitted if ONE_REPORT_TOKEN is defined
     token: ${{ secrets.ONE_REPORT_TOKEN }}
     # Can be omitted if ONE_REPORT_URL is defined
@@ -51,7 +51,7 @@ Usage: one-report-publisher [options]
 
 Options:
   -u, --url <url>           OneReport URL. Defaults to $ONE_REPORT_URL
-  -o, --organization <id>   OneReport organization id. Defaults to $ONE_REPORT_ORGANIZATION
+  -p, --project-id <id>     OneReport project id. Defaults to $ONE_REPORT_PROJECT_ID
   -t, --token <token>       OneReport token. Defaults to $ONE_REPORT_TOKEN
   -r, --reports <glob...>   Glob to the files to publish
   -m, --max-time <seconds>  Max time for each request
@@ -64,7 +64,7 @@ Example:
 
 ```
 npx @smartbear/one-report-publisher@0.5.0 \
-  --organization F5222E06-BA05-4C82-949A-2FE537B6F59F \
+  --project-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
   --token ${ONE_REPORT_TOKEN} \
   --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
@@ -79,7 +79,7 @@ installed (for example [cimg/node](https://circleci.com/developer/images/image/c
     name: Publish test results to OneReport
     command: |
       npx @smartbear/one-report-publisher@0.5.0 \
-        --organization F5222E06-BA05-4C82-949A-2FE537B6F59F \
+        --project-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
         --token ${ONE_REPORT_TOKEN} \
         --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
