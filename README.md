@@ -31,8 +31,8 @@ step failed.
   with:
     # Can be omitted if ONE_REPORT_PROJECT_ID is defined
     project-id: F5222E06-BA05-4C82-949A-2FE537B6F59F
-    # Can be omitted if ONE_REPORT_TOKEN is defined
-    token: ${{ secrets.ONE_REPORT_TOKEN }}
+    # Can be omitted if ONE_REPORT_REFRESH_TOKEN is defined
+    refresh-token: ${{ secrets.ONE_REPORT_REFRESH_TOKEN }}
     # Can be omitted if ONE_REPORT_URL is defined
     url: ${{ env.ONE_REPORT_URL }}
     reports: ./reports/**/*.{xml,json,ndjson,zip}
@@ -50,14 +50,14 @@ npx @smartbear/one-report-publisher@v0.6.0 --help
 Usage: one-report-publisher [options]
 
 Options:
-  -u, --url <url>           OneReport URL. Defaults to $ONE_REPORT_URL
-  -p, --project-id <id>     OneReport project id. Defaults to $ONE_REPORT_PROJECT_ID
-  -t, --token <token>       OneReport token. Defaults to $ONE_REPORT_TOKEN
-  -r, --reports <glob...>   Glob to the files to publish
-  -m, --max-time <seconds>  Max time for each request
-  -i, --ignore-error        Exit with 0 even if a timeout or error occurred
-  --no-zip                  Do not zip non .zip files
-  -h, --help                display help for command
+  -u, --url <url>                      OneReport URL. Defaults to $ONE_REPORT_URL
+  -p, --project-id <id>                OneReport project id. Defaults to $ONE_REPORT_PROJECT_ID
+  -t, --refresh-token <refresh-token>  OneReport refresh-token. Defaults to $ONE_REPORT_REFRESH_TOKEN
+  -r, --reports <glob...>              Glob to the files to publish
+  -m, --max-time <seconds>             Max time for each request
+  -i, --ignore-error                   Exit with 0 even if a timeout or error occurred
+  --no-zip                             Do not zip non .zip files
+  -h, --help                           display help for command
 ```
 
 Example:
@@ -65,7 +65,7 @@ Example:
 ```
 npx @smartbear/one-report-publisher@0.6.0 \
   --project-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
-  --token ${ONE_REPORT_TOKEN} \
+  --refresh-token ${ONE_REPORT_REFRESH_TOKEN} \
   --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```
 
@@ -80,6 +80,6 @@ installed (for example [cimg/node](https://circleci.com/developer/images/image/c
     command: |
       npx @smartbear/one-report-publisher@0.6.0 \
         --project-id F5222E06-BA05-4C82-949A-2FE537B6F59F \
-        --token ${ONE_REPORT_TOKEN} \
+        --refresh-token ${ONE_REPORT_REFRESH_TOKEN} \
         --reports ./reports/**/*.{xml,json,ndjson,zip}
 ```

@@ -298,8 +298,8 @@ var require_tunnel = __commonJS({
     'use strict'
     var net = require('net')
     var tls = require('tls')
-    var http2 = require('http')
-    var https2 = require('https')
+    var http3 = require('http')
+    var https3 = require('https')
     var events = require('events')
     var assert = require('assert')
     var util = require('util')
@@ -309,24 +309,24 @@ var require_tunnel = __commonJS({
     exports.httpsOverHttps = httpsOverHttps
     function httpOverHttp(options) {
       var agent = new TunnelingAgent(options)
-      agent.request = http2.request
+      agent.request = http3.request
       return agent
     }
     function httpsOverHttp(options) {
       var agent = new TunnelingAgent(options)
-      agent.request = http2.request
+      agent.request = http3.request
       agent.createSocket = createSecureSocket
       agent.defaultPort = 443
       return agent
     }
     function httpOverHttps(options) {
       var agent = new TunnelingAgent(options)
-      agent.request = https2.request
+      agent.request = https3.request
       return agent
     }
     function httpsOverHttps(options) {
       var agent = new TunnelingAgent(options)
-      agent.request = https2.request
+      agent.request = https3.request
       agent.createSocket = createSecureSocket
       agent.defaultPort = 443
       return agent
@@ -335,7 +335,7 @@ var require_tunnel = __commonJS({
       var self = this
       self.options = options || {}
       self.proxyOptions = self.options.proxy || {}
-      self.maxSockets = self.options.maxSockets || http2.Agent.defaultMaxSockets
+      self.maxSockets = self.options.maxSockets || http3.Agent.defaultMaxSockets
       self.requests = []
       self.sockets = []
       self.on('free', function onFree(socket, host, port, localAddress) {
@@ -611,8 +611,8 @@ var require_lib = __commonJS({
       exports.Headers =
       exports.HttpCodes =
         void 0
-    var http2 = __importStar(require('http'))
-    var https2 = __importStar(require('https'))
+    var http3 = __importStar(require('http'))
+    var https3 = __importStar(require('https'))
     var pm = __importStar(require_proxy())
     var tunnel = __importStar(require_tunnel2())
     var HttpCodes
@@ -1001,7 +1001,7 @@ var require_lib = __commonJS({
         const info = {}
         info.parsedUrl = requestUrl
         const usingSsl = info.parsedUrl.protocol === 'https:'
-        info.httpModule = usingSsl ? https2 : http2
+        info.httpModule = usingSsl ? https3 : http3
         const defaultPort = usingSsl ? 443 : 80
         info.options = {}
         info.options.host = info.parsedUrl.hostname
@@ -1053,7 +1053,7 @@ var require_lib = __commonJS({
         const usingSsl = parsedUrl.protocol === 'https:'
         let maxSockets = 100
         if (this.requestOptions) {
-          maxSockets = this.requestOptions.maxSockets || http2.globalAgent.maxSockets
+          maxSockets = this.requestOptions.maxSockets || http3.globalAgent.maxSockets
         }
         if (proxyUrl && proxyUrl.hostname) {
           const agentOptions = {
@@ -1081,11 +1081,11 @@ var require_lib = __commonJS({
         }
         if (this._keepAlive && !agent) {
           const options = { keepAlive: this._keepAlive, maxSockets }
-          agent = usingSsl ? new https2.Agent(options) : new http2.Agent(options)
+          agent = usingSsl ? new https3.Agent(options) : new http3.Agent(options)
           this._agent = agent
         }
         if (!agent) {
-          agent = usingSsl ? https2.globalAgent : http2.globalAgent
+          agent = usingSsl ? https3.globalAgent : http3.globalAgent
         }
         if (usingSsl && this._ignoreSslError) {
           agent.options = Object.assign(agent.options || {}, {
@@ -1227,8 +1227,8 @@ var require_auth = __commonJS({
     }
     exports.BasicCredentialHandler = BasicCredentialHandler
     var BearerCredentialHandler = class {
-      constructor(token2) {
-        this.token = token2
+      constructor(token) {
+        this.token = token
       }
       prepareRequest(options) {
         if (!options.headers) {
@@ -1247,8 +1247,8 @@ var require_auth = __commonJS({
     }
     exports.BearerCredentialHandler = BearerCredentialHandler
     var PersonalAccessTokenCredentialHandler = class {
-      constructor(token2) {
-        this.token = token2
+      constructor(token) {
+        this.token = token
       }
       prepareRequest(options) {
         if (!options.headers) {
@@ -1324,11 +1324,11 @@ var require_oidc_utils = __commonJS({
         )
       }
       static getRequestToken() {
-        const token2 = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN']
-        if (!token2) {
+        const token = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN']
+        if (!token) {
           throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_TOKEN env variable')
         }
-        return token2
+        return token
       }
       static getIDTokenUrl() {
         const runtimeUrl = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
@@ -3449,9 +3449,9 @@ var require_scan = __commonJS({
     var isPathSeparator = (code) => {
       return code === CHAR_FORWARD_SLASH || code === CHAR_BACKWARD_SLASH
     }
-    var depth = (token2) => {
-      if (token2.isPrefix !== true) {
-        token2.depth = token2.isGlobstar ? Infinity : 1
+    var depth = (token) => {
+      if (token.isPrefix !== true) {
+        token.depth = token.isGlobstar ? Infinity : 1
       }
     }
     var scan = (input, options) => {
@@ -3478,7 +3478,7 @@ var require_scan = __commonJS({
       let braces = 0
       let prev
       let code
-      let token2 = { value: '', depth: 0, isGlob: false }
+      let token = { value: '', depth: 0, isGlob: false }
       const eos = () => index >= length
       const peek = () => str.charCodeAt(index + 1)
       const advance = () => {
@@ -3489,7 +3489,7 @@ var require_scan = __commonJS({
         code = advance()
         let next
         if (code === CHAR_BACKWARD_SLASH) {
-          backslashes = token2.backslashes = true
+          backslashes = token.backslashes = true
           code = advance()
           if (code === CHAR_LEFT_CURLY_BRACE) {
             braceEscaped = true
@@ -3500,7 +3500,7 @@ var require_scan = __commonJS({
           braces++
           while (eos() !== true && (code = advance())) {
             if (code === CHAR_BACKWARD_SLASH) {
-              backslashes = token2.backslashes = true
+              backslashes = token.backslashes = true
               advance()
               continue
             }
@@ -3509,8 +3509,8 @@ var require_scan = __commonJS({
               continue
             }
             if (braceEscaped !== true && code === CHAR_DOT && (code = advance()) === CHAR_DOT) {
-              isBrace = token2.isBrace = true
-              isGlob = token2.isGlob = true
+              isBrace = token.isBrace = true
+              isGlob = token.isGlob = true
               finished = true
               if (scanToEnd === true) {
                 continue
@@ -3518,8 +3518,8 @@ var require_scan = __commonJS({
               break
             }
             if (braceEscaped !== true && code === CHAR_COMMA) {
-              isBrace = token2.isBrace = true
-              isGlob = token2.isGlob = true
+              isBrace = token.isBrace = true
+              isGlob = token.isGlob = true
               finished = true
               if (scanToEnd === true) {
                 continue
@@ -3530,7 +3530,7 @@ var require_scan = __commonJS({
               braces--
               if (braces === 0) {
                 braceEscaped = false
-                isBrace = token2.isBrace = true
+                isBrace = token.isBrace = true
                 finished = true
                 break
               }
@@ -3543,8 +3543,8 @@ var require_scan = __commonJS({
         }
         if (code === CHAR_FORWARD_SLASH) {
           slashes.push(index)
-          tokens.push(token2)
-          token2 = { value: '', depth: 0, isGlob: false }
+          tokens.push(token)
+          token = { value: '', depth: 0, isGlob: false }
           if (finished === true) continue
           if (prev === CHAR_DOT && index === start + 1) {
             start += 2
@@ -3561,8 +3561,8 @@ var require_scan = __commonJS({
             code === CHAR_QUESTION_MARK ||
             code === CHAR_EXCLAMATION_MARK
           if (isExtglobChar === true && peek() === CHAR_LEFT_PARENTHESES) {
-            isGlob = token2.isGlob = true
-            isExtglob = token2.isExtglob = true
+            isGlob = token.isGlob = true
+            isExtglob = token.isExtglob = true
             finished = true
             if (code === CHAR_EXCLAMATION_MARK && index === start) {
               negatedExtglob = true
@@ -3570,12 +3570,12 @@ var require_scan = __commonJS({
             if (scanToEnd === true) {
               while (eos() !== true && (code = advance())) {
                 if (code === CHAR_BACKWARD_SLASH) {
-                  backslashes = token2.backslashes = true
+                  backslashes = token.backslashes = true
                   code = advance()
                   continue
                 }
                 if (code === CHAR_RIGHT_PARENTHESES) {
-                  isGlob = token2.isGlob = true
+                  isGlob = token.isGlob = true
                   finished = true
                   break
                 }
@@ -3586,8 +3586,8 @@ var require_scan = __commonJS({
           }
         }
         if (code === CHAR_ASTERISK) {
-          if (prev === CHAR_ASTERISK) isGlobstar = token2.isGlobstar = true
-          isGlob = token2.isGlob = true
+          if (prev === CHAR_ASTERISK) isGlobstar = token.isGlobstar = true
+          isGlob = token.isGlob = true
           finished = true
           if (scanToEnd === true) {
             continue
@@ -3595,7 +3595,7 @@ var require_scan = __commonJS({
           break
         }
         if (code === CHAR_QUESTION_MARK) {
-          isGlob = token2.isGlob = true
+          isGlob = token.isGlob = true
           finished = true
           if (scanToEnd === true) {
             continue
@@ -3605,13 +3605,13 @@ var require_scan = __commonJS({
         if (code === CHAR_LEFT_SQUARE_BRACKET) {
           while (eos() !== true && (next = advance())) {
             if (next === CHAR_BACKWARD_SLASH) {
-              backslashes = token2.backslashes = true
+              backslashes = token.backslashes = true
               advance()
               continue
             }
             if (next === CHAR_RIGHT_SQUARE_BRACKET) {
-              isBracket = token2.isBracket = true
-              isGlob = token2.isGlob = true
+              isBracket = token.isBracket = true
+              isGlob = token.isGlob = true
               finished = true
               break
             }
@@ -3622,16 +3622,16 @@ var require_scan = __commonJS({
           break
         }
         if (opts.nonegate !== true && code === CHAR_EXCLAMATION_MARK && index === start) {
-          negated = token2.negated = true
+          negated = token.negated = true
           start++
           continue
         }
         if (opts.noparen !== true && code === CHAR_LEFT_PARENTHESES) {
-          isGlob = token2.isGlob = true
+          isGlob = token.isGlob = true
           if (scanToEnd === true) {
             while (eos() !== true && (code = advance())) {
               if (code === CHAR_LEFT_PARENTHESES) {
-                backslashes = token2.backslashes = true
+                backslashes = token.backslashes = true
                 code = advance()
                 continue
               }
@@ -3701,7 +3701,7 @@ var require_scan = __commonJS({
       if (opts.tokens === true) {
         state.maxDepth = 0
         if (!isPathSeparator(code)) {
-          tokens.push(token2)
+          tokens.push(token)
         }
         state.tokens = tokens
       }
@@ -3849,9 +3849,9 @@ var require_parse2 = __commonJS({
         state.consumed += value2
         state.index += num
       }
-      const append = (token2) => {
-        state.output += token2.output != null ? token2.output : token2.value
-        consume(token2.value)
+      const append = (token) => {
+        state.output += token.output != null ? token.output : token.value
+        consume(token.value)
       }
       const negate = () => {
         let count = 1
@@ -3903,32 +3903,32 @@ var require_parse2 = __commonJS({
         prev = tok
       }
       const extglobOpen = (type, value2) => {
-        const token2 = { ...EXTGLOB_CHARS[value2], conditions: 1, inner: '' }
-        token2.prev = prev
-        token2.parens = state.parens
-        token2.output = state.output
-        const output = (opts.capture ? '(' : '') + token2.open
+        const token = { ...EXTGLOB_CHARS[value2], conditions: 1, inner: '' }
+        token.prev = prev
+        token.parens = state.parens
+        token.output = state.output
+        const output = (opts.capture ? '(' : '') + token.open
         increment('parens')
         push({ type, value: value2, output: state.output ? '' : ONE_CHAR })
         push({ type: 'paren', extglob: true, value: advance(), output })
-        extglobs.push(token2)
+        extglobs.push(token)
       }
-      const extglobClose = (token2) => {
-        let output = token2.close + (opts.capture ? ')' : '')
+      const extglobClose = (token) => {
+        let output = token.close + (opts.capture ? ')' : '')
         let rest
-        if (token2.type === 'negate') {
+        if (token.type === 'negate') {
           let extglobStar = star
-          if (token2.inner && token2.inner.length > 1 && token2.inner.includes('/')) {
+          if (token.inner && token.inner.length > 1 && token.inner.includes('/')) {
             extglobStar = globstar(opts)
           }
           if (extglobStar !== star || eos() || /^\)+$/.test(remaining())) {
-            output = token2.close = `)$))${extglobStar}`
+            output = token.close = `)$))${extglobStar}`
           }
-          if (token2.inner.includes('*') && (rest = remaining()) && /^\.[^\\/.]+$/.test(rest)) {
+          if (token.inner.includes('*') && (rest = remaining()) && /^\.[^\\/.]+$/.test(rest)) {
             const expression = parse(rest, { ...options, fastpaths: false }).output
-            output = token2.close = `)${expression})${extglobStar})`
+            output = token.close = `)${expression})${extglobStar})`
           }
-          if (token2.prev.type === 'bos') {
+          if (token.prev.type === 'bos') {
             state.negatedExtglob = true
           }
         }
@@ -4401,18 +4401,18 @@ var require_parse2 = __commonJS({
           consume(value)
           continue
         }
-        const token2 = { type: 'star', value, output: star }
+        const token = { type: 'star', value, output: star }
         if (opts.bash === true) {
-          token2.output = '.*?'
+          token.output = '.*?'
           if (prev.type === 'bos' || prev.type === 'slash') {
-            token2.output = nodot + token2.output
+            token.output = nodot + token.output
           }
-          push(token2)
+          push(token)
           continue
         }
         if (prev && (prev.type === 'bracket' || prev.type === 'paren') && opts.regex === true) {
-          token2.output = value
-          push(token2)
+          token.output = value
+          push(token)
           continue
         }
         if (state.index === state.start || prev.type === 'slash' || prev.type === 'dot') {
@@ -4431,7 +4431,7 @@ var require_parse2 = __commonJS({
             prev.output += ONE_CHAR
           }
         }
-        push(token2)
+        push(token)
       }
       while (state.brackets > 0) {
         if (opts.strictBrackets === true) throw new SyntaxError(syntaxError('closing', ']'))
@@ -4453,10 +4453,10 @@ var require_parse2 = __commonJS({
       }
       if (state.backtrack === true) {
         state.output = ''
-        for (const token2 of state.tokens) {
-          state.output += token2.output != null ? token2.output : token2.value
-          if (token2.suffix) {
-            state.output += token2.suffix
+        for (const token of state.tokens) {
+          state.output += token.output != null ? token.output : token.value
+          if (token.suffix) {
+            state.output += token.suffix
           }
         }
       }
@@ -9361,6 +9361,67 @@ var require_adm_zip = __commonJS({
 // src/action/index.ts
 var import_core = __toESM(require_core(), 1)
 
+// src/getAccessToken.ts
+var import_http = __toESM(require('http'), 1)
+var import_https = __toESM(require('https'), 1)
+
+// src/readStream.ts
+async function readStream(req) {
+  const chunks = []
+  for await (const chunk of req) {
+    chunks.push(chunk)
+  }
+  return Buffer.concat(chunks)
+}
+
+// src/getAccessToken.ts
+async function getAccessToken(baseUrl2, refreshToken2, requestTimeout) {
+  const headers = {
+    Authorization: `Bearer ${refreshToken2}`,
+  }
+  const url = new URL(`/api/refresh-access-token`, baseUrl2)
+  return new Promise((resolve, reject) => {
+    let h
+    switch (url.protocol) {
+      case 'http:':
+        h = import_http.default
+        break
+      case 'https:':
+        h = import_https.default
+        break
+      default:
+        return reject(new Error(`Unsupported protocol: ${url.toString()}`))
+    }
+    const req = h.request(
+      url.toString(),
+      {
+        method: 'POST',
+        headers,
+      },
+      (res) => {
+        if (res.statusCode !== 201) {
+          return reject(new Error(`Invalid refresh token`))
+        } else {
+          readStream(res)
+            .then((buffer) => buffer.toString('utf-8'))
+            .then((body) => {
+              const ob = JSON.parse(body)
+              resolve(ob.accessToken)
+            })
+        }
+      }
+    )
+    if (requestTimeout) {
+      req.setTimeout(requestTimeout)
+    }
+    req.on('error', reject)
+    req.on('timeout', () =>
+      reject(new Error(`request to ${url.toString()} timed out after ${requestTimeout}ms`))
+    )
+    req.end()
+  })
+}
+
 // node_modules/@cucumber/ci-environment/dist/esm/src/detectCiEnvironment.js
 var import_fs = require('fs')
 
@@ -9651,8 +9712,8 @@ var src_default = detectCiEnvironment
 
 // src/publish.ts
 var import_fs3 = __toESM(require('fs'), 1)
-var import_http = __toESM(require('http'), 1)
-var import_https = __toESM(require('https'), 1)
+var import_http2 = __toESM(require('http'), 1)
+var import_https2 = __toESM(require('https'), 1)
 var import_path2 = require('path')
 var import_stream = require('stream')
 var import_url = require('url')
@@ -9669,15 +9730,6 @@ async function manyglob(globs2) {
       }, [])
     )
   ).flatMap((paths) => paths)
-}
-
-// src/readStream.ts
-async function readStream(req) {
-  const chunks = []
-  for await (const chunk of req) {
-    chunks.push(chunk)
-  }
-  return Buffer.concat(chunks)
 }
 
 // src/zipPaths.ts
@@ -9764,10 +9816,10 @@ async function publishFile(path, url, ciEnv, authHeaders, requestTimeout) {
         let h
         switch (url.protocol) {
           case 'http:':
-            h = import_http.default
+            h = import_http2.default
             break
           case 'https:':
-            h = import_https.default
+            h = import_https2.default
             break
           default:
             return reject(new Error(`Unsupported protocol: ${url.toString()}`))
@@ -9839,15 +9891,16 @@ ${body}
 }
 
 // src/tokenAuthenticator.ts
-function tokenAuthenticator(token2) {
+function tokenAuthenticator(token) {
   return () => ({
-    Authorization: `Bearer ${token2}`,
+    Authorization: `Bearer ${token}`,
   })
 }
 
 // src/action/index.ts
 var projectId = import_core.default.getInput('project-id') || process.env.ONE_REPORT_PROJECT_ID
-var token = import_core.default.getInput('token') || process.env.ONE_REPORT_TOKEN
+var refreshToken =
+  import_core.default.getInput('refresh-token') || process.env.ONE_REPORT_REFRESH_TOKEN
 var baseUrl = import_core.default.getInput('url') || process.env.ONE_REPORT_URL
 var globs = import_core.default.getMultilineInput('reports')
 var maxTime = import_core.default.getInput('max-time')
@@ -9858,18 +9911,21 @@ async function main() {
     throw new Error(
       "Please specify 'project-id' or define the ONE_REPORT_PROJECT_ID environment variable"
     )
-  if (!token)
-    throw new Error("Please specify 'token' or define the ONE_REPORT_TOKEN environment variable")
+  if (!refreshToken)
+    throw new Error(
+      "Please specify 'refresh-token' or define the ONE_REPORT_REFRESH_TOKEN environment variable"
+    )
   if (!baseUrl)
     throw new Error("Please specify 'url' or define the ONE_REPORT_URL environment variable")
   const requestTimeout = maxTime ? +maxTime * 1e3 : void 0
+  const accessToken = await getAccessToken(baseUrl, refreshToken)
   const responseBodies = await publish(
     globs,
     zip,
     projectId,
     baseUrl,
     process.env,
-    tokenAuthenticator(token),
+    tokenAuthenticator(accessToken),
     requestTimeout
   )
   return responseBodies.map((body) => body.testCycleId)

@@ -18,7 +18,7 @@ describe('getAccessToken', () => {
       server = http.createServer((req, res) => {
         if (!req.headers.authorization) {
           res.statusCode = 401
-        } else if (req.headers.authorization.match(/^Bearer\s+.+/)) {
+        } else if (req.headers.authorization === 'Bearer valid-refresh-token') {
           res.statusCode = 201
           res.write(JSON.stringify({ accessToken: 'the-access-token' }))
         } else {
@@ -40,15 +40,13 @@ describe('getAccessToken', () => {
   })
 
   it('should throw an error if refresh token is invalid', async () => {
-    console.log('Getting token')
     await assert.rejects(getAccessToken(`http://localhost:${port}`, 'invalid-refresh-token'), {
       message: 'Invalid refresh token',
     })
-    console.log('Done!')
   })
 
   it('should return access token if the refresh token is valid', async () => {
-    const accessToken = await getAccessToken(`http://localhost:${port}`, 'Bearer Refresh Token')
+    const accessToken = await getAccessToken(`http://localhost:${port}`, 'valid-refresh-token')
     assert(accessToken)
   })
 })

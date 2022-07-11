@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 
-import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
+import {
+  getAccessToken,
+  OneReportResponseBody,
+  publish,
+  tokenAuthenticator,
+} from '../../src/index.js'
 
 const program = new Command()
 program.requiredOption(
@@ -37,13 +42,15 @@ const {
 
 async function main() {
   const requestTimeout = maxTime ? +maxTime * 1000 : undefined
+  const accessToken = await getAccessToken(baseUrl, refreshToken)
+
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
     !noZip,
     projectId,
     baseUrl,
     process.env,
-    tokenAuthenticator(refreshToken),
+    tokenAuthenticator(accessToken),
     requestTimeout
   )
 
