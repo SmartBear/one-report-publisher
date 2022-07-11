@@ -15,9 +15,9 @@ program.requiredOption(
   process.env.ONE_REPORT_PROJECT_ID
 )
 program.requiredOption(
-  '-t, --token <token>',
-  'OneReport token. Defaults to $ONE_REPORT_TOKEN',
-  process.env.ONE_REPORT_TOKEN
+  '-t, --refresh-token <refresh-token>',
+  'OneReport refresh-token. Defaults to $ONE_REPORT_REFRESH_TOKEN',
+  process.env.ONE_REPORT_REFRESH_TOKEN
 )
 program.requiredOption('-r, --reports <glob...>', 'Glob to the files to publish')
 program.option('-m, --max-time <seconds>', 'Max time for each request')
@@ -27,7 +27,7 @@ program.option('--no-zip', 'Do not zip non .zip files', false)
 program.parse(process.argv)
 const {
   projectId,
-  token,
+  refreshToken,
   reports: globs,
   maxTime,
   ignoreError,
@@ -43,7 +43,7 @@ async function main() {
     projectId,
     baseUrl,
     process.env,
-    tokenAuthenticator(token),
+    tokenAuthenticator(refreshToken),
     requestTimeout
   )
 

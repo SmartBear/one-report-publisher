@@ -4,8 +4,8 @@ inputs:
   project-id:
     description: 'OneReport project id. Defaults to $ONE_REPORT_PROJECT_ID.'
     required: false
-  token:
-    description: 'OneReport token. Defaults to $ONE_REPORT_TOKEN.'
+  refresh-token:
+    description: 'OneReport refresh token. Defaults to $ONE_REPORT_REFRESH_TOKEN.'
     required: false
   url:
     description: 'OneReport URL. Defaults to $ONE_REPORT_URL.'

@@ -1,9 +1,14 @@
 import core from '@actions/core'
 
-import { OneReportResponseBody, publish, tokenAuthenticator } from '../../src/index.js'
+import {
+  getAccessToken,
+  OneReportResponseBody,
+  publish,
+  tokenAuthenticator,
+} from '../../src/index.js'
 
 const projectId = core.getInput('project-id') || process.env.ONE_REPORT_PROJECT_ID
-const token = core.getInput('token') || process.env.ONE_REPORT_TOKEN
+const refreshToken = core.getInput('refresh-token') || process.env.ONE_REPORT_REFRESH_TOKEN
 const baseUrl = core.getInput('url') || process.env.ONE_REPORT_URL
 const globs = core.getMultilineInput('reports')
 const maxTime = core.getInput('max-time')
@@ -16,20 +21,24 @@ async function main() {
       "Please specify 'project-id' or define the ONE_REPORT_PROJECT_ID environment variable"
     )
 
-  if (!token)
-    throw new Error("Please specify 'token' or define the ONE_REPORT_TOKEN environment variable")
+  if (!refreshToken)
+    throw new Error(
+      "Please specify 'refresh-token' or define the ONE_REPORT_REFRESH_TOKEN environment variable"
+    )
 
   if (!baseUrl)
     throw new Error("Please specify 'url' or define the ONE_REPORT_URL environment variable")
 
   const requestTimeout = maxTime ? +maxTime * 1000 : undefined
+  const accessToken = await getAccessToken(refreshToken)
+
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
     zip,
     projectId,
     baseUrl,
     process.env,
-    tokenAuthenticator(token),
+    tokenAuthenticator(accessToken),
     requestTimeout
   )
 

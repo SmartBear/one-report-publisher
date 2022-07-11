@@ -27,7 +27,7 @@ jobs:
     env:
       ONE_REPORT_PROJECT_ID: ${{ secrets.ONE_REPORT_PROJECT_ID }}
       ONE_REPORT_URL: ${{ secrets.ONE_REPORT_URL }}
-      ONE_REPORT_TOKEN: ${{ secrets.ONE_REPORT_TOKEN }}
+      ONE_REPORT_REFRESH_TOKEN: ${{ secrets.ONE_REPORT_REFRESH_TOKEN }}
 
     steps:
       - name: set git core.autocrlf to 'input'
