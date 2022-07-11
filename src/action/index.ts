@@ -30,7 +30,7 @@ async function main() {
     throw new Error("Please specify 'url' or define the ONE_REPORT_URL environment variable")
 
   const requestTimeout = maxTime ? +maxTime * 1000 : undefined
-  const accessToken = await getAccessToken(refreshToken)
+  const accessToken = await getAccessToken(baseUrl, refreshToken)
 
   const responseBodies = await publish<OneReportResponseBody>(
     globs,
