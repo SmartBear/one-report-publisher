@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed `ONE_REPORT_TOKEN` to `ONE_REPORT_REFRESH_TOKEN`
+- Changed the `--token` command-line option to `--refresh-token`
+- Changed the `token` GitHub action input to `refresh-token`.
+
 ## [0.6.0] - 2022-07-05
 ### Added
 - If an error is thrown it contains the response body
