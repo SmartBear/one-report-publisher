@@ -9365,6 +9365,22 @@ var import_core = __toESM(require_core(), 1)
 var import_http = __toESM(require('http'), 1)
 var import_https = __toESM(require('https'), 1)
 
+// src/createResponseError.ts
+function createResponseError(res, url, reqHeaders, responseBody, requestBodyPath) {
+  return new Error(`Unexpected status code ${res.statusCode}
+POST ${url.toString()} ${requestBodyPath ? `-d @${requestBodyPath}` : ''}
+> ${Object.entries(reqHeaders)
+    .map(([h, v]) => `${h}: ${v}`)
+    .join('\n> ')}
+
+< ${Object.entries(res.headers)
+    .map(([h, v]) => `${h}: ${v}`)
+    .join('\n< ')}
+
+${responseBody}
+`)
+}
+
 // src/readStream.ts
 async function readStream(req) {
   const chunks = []
@@ -9399,16 +9415,16 @@ async function getAccessToken(baseUrl2, refreshToken2, requestTimeout) {
         headers,
       },
       (res) => {
-        if (res.statusCode !== 201) {
-          return reject(new Error(`Invalid refresh token`))
-        } else {
-          readStream(res)
-            .then((buffer) => buffer.toString('utf-8'))
-            .then((body) => {
-              const ob = JSON.parse(body)
+        readStream(res)
+          .then((buffer) => buffer.toString('utf-8'))
+          .then((responseBody) => {
+            if (res.statusCode !== 201) {
+              return reject(createResponseError(res, url, headers, responseBody))
+            } else {
+              const ob = JSON.parse(responseBody)
               resolve(ob.accessToken)
-            })
-        }
+            }
+          })
       }
     )
     if (requestTimeout) {
@@ -9809,9 +9825,9 @@ async function publish(globs2, zip2, projectId2, baseUrl2, env, authenticate, re
     publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders, requestTimeout))
   )
 }
-async function publishFile(path, url, ciEnv, authHeaders, requestTimeout) {
+async function publishFile(requestBodyPath, url, ciEnv, authHeaders, requestTimeout) {
   return new Promise((resolve, reject) => {
-    lstat(path)
+    lstat(requestBodyPath)
       .then((stat) => {
         let h
         switch (url.protocol) {
@@ -9824,8 +9840,8 @@ async function publishFile(path, url, ciEnv, authHeaders, requestTimeout) {
           default:
             return reject(new Error(`Unsupported protocol: ${url.toString()}`))
         }
-        const headers = {
-          'Content-Type': contentTypes[(0, import_path2.extname)(path)],
+        const reqHeaders = {
+          'Content-Type': contentTypes[(0, import_path2.extname)(requestBodyPath)],
           'Content-Length': stat.size,
           ...(ciEnv?.git?.remote ? { 'OneReport-SourceControl': ciEnv.git.remote } : {}),
           ...(ciEnv?.git?.revision ? { 'OneReport-Revision': ciEnv.git.revision } : {}),
@@ -9837,31 +9853,20 @@ async function publishFile(path, url, ciEnv, authHeaders, requestTimeout) {
           url.toString(),
           {
             method: 'POST',
-            headers,
+            headers: reqHeaders,
           },
           (res) => {
             readStream(res)
               .then((buffer) => buffer.toString('utf-8'))
-              .then((body) => {
+              .then((responseBody) => {
                 if (res.statusCode !== 201) {
                   return reject(
-                    new Error(`Unexpected status code ${res.statusCode}
-POST ${url.toString()} -d @${path}
-> ${Object.entries(headers)
-                      .map(([h2, v]) => `${h2}: ${v}`)
-                      .join('\n> ')}
-
-< ${Object.entries(res.headers)
-                      .map(([h2, v]) => `${h2}: ${v}`)
-                      .join('\n< ')}
-
-${body}
-`)
+                    createResponseError(res, url, reqHeaders, responseBody, requestBodyPath)
                   )
                 } else {
                   try {
-                    const responseBody = JSON.parse(body)
-                    return resolve(responseBody)
+                    const jsonResponseBody = JSON.parse(responseBody)
+                    return resolve(jsonResponseBody)
                   } catch (err) {
                     reject(err)
                   }
@@ -9877,7 +9882,7 @@ ${body}
         req.on('timeout', () =>
           reject(new Error(`request to ${url.toString()} timed out after ${requestTimeout}ms`))
         )
-        const file = import_fs3.default.createReadStream(path)
+        const file = import_fs3.default.createReadStream(requestBodyPath)
         ;(0, import_stream.pipeline)(file, req, (err) => {
           try {
             if (err) return reject(err)

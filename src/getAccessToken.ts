@@ -1,6 +1,7 @@
 import http from 'http'
 import https from 'https'
 
+import { createResponseError } from './createResponseError.js'
 import { readStream } from './readStream.js'
 
 export async function getAccessToken(
@@ -33,16 +34,16 @@ export async function getAccessToken(
         headers,
       },
       (res) => {
-        if (res.statusCode !== 201) {
-          return reject(new Error(`Invalid refresh token`))
-        } else {
-          readStream(res)
-            .then((buffer) => buffer.toString('utf-8'))
-            .then((body) => {
-              const ob = JSON.parse(body)
+        readStream(res)
+          .then((buffer) => buffer.toString('utf-8'))
+          .then((responseBody) => {
+            if (res.statusCode !== 201) {
+              return reject(createResponseError(res, url, headers, responseBody))
+            } else {
+              const ob = JSON.parse(responseBody)
               resolve(ob.accessToken)
-            })
-        }
+            }
+          })
       }
     )
     if (requestTimeout) {

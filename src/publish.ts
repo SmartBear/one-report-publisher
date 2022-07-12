@@ -7,6 +7,7 @@ import { pipeline } from 'stream'
 import { URL } from 'url'
 import { promisify } from 'util'
 
+import { createResponseError } from './createResponseError.js'
 import { manyglob } from './manyglob.js'
 import { readStream } from './readStream.js'
 import { Authenticate } from './types.js'
@@ -73,14 +74,14 @@ export async function publish<ResponseBody>(
 }
 
 async function publishFile<ResponseBody>(
-  path: string,
+  requestBodyPath: string,
   url: URL,
   ciEnv: CiEnvironment | undefined,
   authHeaders: http.OutgoingHttpHeaders,
   requestTimeout?: number
 ): Promise<ResponseBody> {
   return new Promise<ResponseBody>((resolve, reject) => {
-    lstat(path)
+    lstat(requestBodyPath)
       .then((stat) => {
         let h: typeof http | typeof https
         switch (url.protocol) {
@@ -93,8 +94,8 @@ async function publishFile<ResponseBody>(
           default:
             return reject(new Error(`Unsupported protocol: ${url.toString()}`))
         }
-        const headers = {
-          'Content-Type': contentTypes[extname(path) as Extension],
+        const reqHeaders = {
+          'Content-Type': contentTypes[extname(requestBodyPath) as Extension],
           'Content-Length': stat.size,
           ...(ciEnv?.git?.remote ? { 'OneReport-SourceControl': ciEnv.git.remote } : {}),
           ...(ciEnv?.git?.revision ? { 'OneReport-Revision': ciEnv.git.revision } : {}),
@@ -107,31 +108,20 @@ async function publishFile<ResponseBody>(
           url.toString(),
           {
             method: 'POST',
-            headers,
+            headers: reqHeaders,
           },
           (res) => {
             readStream(res)
               .then((buffer) => buffer.toString('utf-8'))
-              .then((body) => {
+              .then((responseBody) => {
                 if (res.statusCode !== 201) {
                   return reject(
-                    new Error(`Unexpected status code ${res.statusCode}
-POST ${url.toString()} -d @${path}
-> ${Object.entries(headers)
-                      .map(([h, v]) => `${h}: ${v}`)
-                      .join('\n> ')}
-
-< ${Object.entries(res.headers)
-                      .map(([h, v]) => `${h}: ${v}`)
-                      .join('\n< ')}
-
-${body}
-`)
+                    createResponseError(res, url, reqHeaders, responseBody, requestBodyPath)
                   )
                 } else {
                   try {
-                    const responseBody = JSON.parse(body) as ResponseBody
-                    return resolve(responseBody)
+                    const jsonResponseBody = JSON.parse(responseBody) as ResponseBody
+                    return resolve(jsonResponseBody)
                   } catch (err) {
                     reject(err)
                   }
@@ -150,7 +140,7 @@ ${body}
           reject(new Error(`request to ${url.toString()} timed out after ${requestTimeout}ms`))
         )
 
-        const file = fs.createReadStream(path)
+        const file = fs.createReadStream(requestBodyPath)
 
         pipeline(file, req, (err) => {
           try {
