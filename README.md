@@ -2,7 +2,7 @@
 
 # OneReport Publisher
 
-This is a tool that publishes test results to SmartBear OneReport. It is intended to be used in Continuous Integration workflows.
+This is a tool that publishes test results (test cycles) to SmartBear OneReport. It is intended to be used in Continuous Integration workflows.
 
 The tool supports the following file formats:
 
