@@ -1,7 +1,7 @@
 import assert from 'assert'
 import fs from 'fs'
 import * as os from 'os'
-import path from 'path'
+import { join, normalize } from 'path'
 import { promisify } from 'util'
 
 import { manyglob } from '../src/manyglob.js'
@@ -18,13 +18,14 @@ describe('manyglob', () => {
 
   it('expands ~ to home dir', async () => {
     const tmp = 'one-report-publisher-test-' + Date.now()
-    const homeTmp = path.join(os.homedir(), tmp)
+    const homeTmp = join(os.homedir(), tmp)
     try {
       await mkdir(homeTmp, { recursive: true })
-      const wanted = path.join(homeTmp, 'file.txt')
+      const wanted = join(homeTmp, 'file.txt')
       await writeFile(wanted, '')
       const paths = await manyglob([`~/${tmp}/*.txt`])
-      assert.deepStrictEqual(paths, [wanted])
+      const normalizedPaths = paths.map(normalize)
+      assert.deepStrictEqual(normalizedPaths, [wanted])
     } finally {
       await rm(homeTmp, { recursive: true })
     }
