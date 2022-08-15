@@ -1,7 +1,7 @@
 import fg from 'fast-glob'
 import * as os from 'os'
 import path from 'path'
-const normalize = process.platform === 'win32' ? path.win32.normalize : path.normalize
+const normalize = path.normalize
 
 export async function manyglob(globs: readonly string[]): Promise<readonly string[]> {
   const globPaths = (
