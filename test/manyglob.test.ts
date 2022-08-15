@@ -24,7 +24,6 @@ describe('manyglob', () => {
       const wanted = path.join(homeTmp, 'file.txt')
       await writeFile(wanted, '')
       const paths = await manyglob([`~/${tmp}/*.txt`])
-      console.log([wanted], 'wanted')
       assert.deepStrictEqual(paths, [wanted])
     } finally {
       await rm(homeTmp, { recursive: true })
