@@ -25,6 +25,13 @@ const contentTypes: Record<Extension, string> = {
   '.zip': 'application/zip',
 }
 
+const urlExtensionPath: Record<Extension, string> = {
+  '.xml': 'junit-xml',
+  '.json': 'cucumber-json',
+  '.ndjson': 'cucumber-messages',
+  '.zip': 'zip',
+}
+
 /**
  * Publishes test results to OneReport
  *
@@ -54,8 +61,6 @@ export async function publish<ResponseBody>(
   }
   const authHeaders = authenticate()
 
-  const url = new URL(`/api/project/${encodeURIComponent(projectId)}/test-cycle`, baseUrl)
-
   const ciEnv = ciEnvironment(env)
 
   const paths = (await manyglob(globs))
@@ -69,7 +74,9 @@ export async function publish<ResponseBody>(
   const publishPaths = zip ? await zipPaths(paths) : paths
 
   return Promise.all<ResponseBody>(
-    publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders, requestTimeout))
+    publishPaths.map((path) =>
+      publishFile(path, getUrl(path, baseUrl, projectId), ciEnv, authHeaders, requestTimeout)
+    )
   )
 }
 
@@ -152,4 +159,11 @@ async function publishFile<ResponseBody>(
       })
       .catch(reject)
   })
+}
+
+function getUrl(path: string, baseUrl: string, projectId: string): URL {
+  return new URL(
+    `/api/project/${encodeURIComponent(projectId)}/${urlExtensionPath[extname(path) as Extension]}`,
+    baseUrl
+  )
 }

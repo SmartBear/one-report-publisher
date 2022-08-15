@@ -119,7 +119,7 @@ describe('publish', () => {
     )
     const expectedServerRequests: ServerRequest[] = [
       {
-        url: `/api/project/${projectId}/test-cycle`,
+        url: `/api/project/${projectId}/cucumber-json`,
         headers: {
           'content-type': 'application/json',
           'content-length': String((await lstat('test/fixtures/cucumber.json')).size),
@@ -133,7 +133,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/cucumber.json'),
       },
       {
-        url: `/api/project/${projectId}/test-cycle`,
+        url: `/api/project/${projectId}/junit-xml`,
         headers: {
           'content-type': 'text/xml',
           'content-length': String((await lstat('test/fixtures/junit.xml')).size),
@@ -147,7 +147,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/junit.xml'),
       },
       {
-        url: `/api/project/${projectId}/test-cycle`,
+        url: `/api/project/${projectId}/cucumber-messages`,
         headers: {
           'content-type': 'application/x-ndjson',
           'content-length': String((await lstat('test/fixtures/cucumber.ndjson')).size),
@@ -161,7 +161,7 @@ describe('publish', () => {
         body: await readFile('test/fixtures/cucumber.ndjson'),
       },
       {
-        url: `/api/project/${projectId}/test-cycle`,
+        url: `/api/project/${projectId}/zip`,
         headers: {
           'content-type': 'application/zip',
           'content-length': String((await lstat('test/fixtures/bundled.zip')).size),
@@ -214,7 +214,7 @@ describe('publish', () => {
     )
     const expectedServerRequests: Omit<ServerRequest, 'body'>[] = [
       {
-        url: `/api/project/${projectId}/test-cycle`,
+        url: `/api/project/${projectId}/zip`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',
@@ -223,7 +223,7 @@ describe('publish', () => {
         },
       },
       {
-        url: `/api/project/${projectId}/test-cycle`,
+        url: `/api/project/${projectId}/zip`,
         headers: {
           'content-type': 'application/zip',
           connection: 'close',
@@ -281,7 +281,7 @@ describe('publish', () => {
         ),
       {
         message: `Unexpected status code 401
-POST http://localhost:${port}/api/project/32C46057-0AB6-44E8-8944-0246E0BEA96F/test-cycle -d @test/fixtures/junit.xml
+POST http://localhost:${port}/api/project/32C46057-0AB6-44E8-8944-0246E0BEA96F/junit-xml -d @test/fixtures/junit.xml
 > Content-Type: text/xml
 > Content-Length: 359
 > OneReport-SourceControl: https://github.com/SmartBear/one-report-publisher.git
