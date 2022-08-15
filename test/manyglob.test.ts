@@ -16,7 +16,7 @@ describe('manyglob', () => {
     assert.deepStrictEqual(paths, ['test/fixtures/bundled.zip', 'test/fixtures/cucumber.ndjson'])
   })
 
-  it('expands ~ to home dir', async () => {
+  it.only('expands ~ to home dir', async () => {
     const tmp = 'one-report-publisher-test-' + Date.now()
     const homeTmp = path.join(os.homedir(), tmp)
     try {

@@ -8,7 +8,11 @@ export async function manyglob(globs: readonly string[]): Promise<readonly strin
   return (
     await Promise.all(
       globs.reduce<readonly Promise<string[]>[]>((prev, glob) => {
-        return prev.concat(fg(normalize(glob.replace(/^~/, os.homedir()))))
+        const path = normalize(glob.replace(/^~/, os.homedir()))
+        console.log(path, 'this is the path')
+        const globPath = fg(path)
+        console.log(globPath, 'this is the globPath')
+        return prev.concat(globPath)
       }, [])
     )
   ).flatMap((paths) => paths)
