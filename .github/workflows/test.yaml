@@ -1,6 +1,13 @@
 name: Run Tests
 
-on: push
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_call:
 
 jobs:
   test:
@@ -15,8 +22,8 @@ jobs:
         include:
           - os: windows-latest
             node-version: '17.x'
-          # - os: macos-latest
-          #   node-version: '17.x'
+          - os: macos-latest
+            node-version: '17.x'
     env:
       ONE_REPORT_PROJECT_ID: ${{ secrets.ONE_REPORT_PROJECT_ID }}
       ONE_REPORT_URL: ${{ secrets.ONE_REPORT_URL }}

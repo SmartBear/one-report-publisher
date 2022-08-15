@@ -16,14 +16,13 @@ describe('manyglob', () => {
     assert.deepStrictEqual(paths, ['test/fixtures/bundled.zip', 'test/fixtures/cucumber.ndjson'])
   })
 
-  it.only('expands ~ to home dir', async () => {
+  it('expands ~ to home dir', async () => {
     const tmp = 'one-report-publisher-test-' + Date.now()
     const homeTmp = join(os.homedir(), tmp)
     try {
       await mkdir(homeTmp, { recursive: true })
       const wanted = join(homeTmp, 'file.txt')
       await writeFile(wanted, '')
-      console.log(wanted, 'Wanted')
       const paths = await manyglob([`~/${tmp}/*.txt`])
       const normalizedPaths = paths.map(normalize)
       assert.deepStrictEqual(normalizedPaths, [wanted])
