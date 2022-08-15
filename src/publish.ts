@@ -15,8 +15,8 @@ import { zipPaths } from './zipPaths.js'
 
 const lstat = promisify(fs.lstat)
 
-type Extension = '.xml' | '.json' | '.ndjson' | '.zip'
-const extensions: Extension[] = ['.xml', '.json', '.ndjson', '.zip']
+const extensions = ['.xml', '.json', '.ndjson', '.zip'] as const
+type Extension = typeof extensions[number]
 
 const contentTypes: Record<Extension, string> = {
   '.xml': 'text/xml',
@@ -162,8 +162,13 @@ async function publishFile<ResponseBody>(
 }
 
 function getUrl(path: string, baseUrl: string, projectId: string): URL {
+  const ext = extname(path) as Extension
+  if (!extensions.includes(ext)) {
+    throw new Error(`Unsupported extension: ${ext}`)
+  }
+  const urlExtension = urlExtensionPath[ext]
   return new URL(
-    `/api/project/${encodeURIComponent(projectId)}/${urlExtensionPath[extname(path) as Extension]}`,
+    `/api/project/${encodeURIComponent(projectId)}/${encodeURIComponent(urlExtension)}`,
     baseUrl
   )
 }
