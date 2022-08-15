@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Make `~` expansion work on Windows
+
+### Changed
+- Use new publishing API ([e8b0695ecdae025ce0e0d734e2cdcc119c5a79f9](https://github.com/SmartBear/one-report-publisher/commit/e8b0695ecdae025ce0e0d734e2cdcc119c5a79f9))
+
 ## [0.7.0] - 2022-07-12
 ### Changed
 - Changed `ONE_REPORT_TOKEN` to `ONE_REPORT_REFRESH_TOKEN`
