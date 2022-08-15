@@ -6,13 +6,9 @@ export async function manyglob(globs: readonly string[]): Promise<readonly strin
   return (
     await Promise.all(
       globs.reduce<readonly Promise<string[]>[]>((prev, glob) => {
-        console.log(glob, 'this is the glob')
+        // Globs must always use forward slashes - even on Windows
         const homeDir = os.homedir().split(path.sep).join(path.posix.sep)
-        const globWithHomeDirExpanded = glob.replace(/^~/, homeDir)
-        console.log(globWithHomeDirExpanded, 'this is the glob with homedir expanded')
-        const foundPaths = fg(globWithHomeDirExpanded)
-        console.log(foundPaths, 'this is the found paths')
-        return prev.concat(foundPaths)
+        return prev.concat(fg(glob.replace(/^~/, homeDir)))
       }, [])
     )
   ).flatMap((paths) => paths)
