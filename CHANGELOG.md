@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- Make `~` expansion work on Windows
-
+## [0.8.0] - 2022-08-15
 ### Changed
 - Use new publishing API ([e8b0695ecdae025ce0e0d734e2cdcc119c5a79f9](https://github.com/SmartBear/one-report-publisher/commit/e8b0695ecdae025ce0e0d734e2cdcc119c5a79f9))
+
+### Fixed
+- Make `~` expansion work on Windows
 
 ## [0.7.0] - 2022-07-12
 ### Changed
@@ -126,7 +127,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - First release
 
-[Unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/smartbear/one-report-publisher/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/smartbear/one-report-publisher/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/smartbear/one-report-publisher/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/smartbear/one-report-publisher/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/smartbear/one-report-publisher/compare/v0.4.0...v0.5.0
