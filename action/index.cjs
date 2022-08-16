@@ -4,32 +4,38 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor
 var __getOwnPropNames = Object.getOwnPropertyNames
 var __getProtoOf = Object.getPrototypeOf
 var __hasOwnProp = Object.prototype.hasOwnProperty
+var __markAsModule = (target) => __defProp(target, '__esModule', { value: true })
 var __commonJS = (cb, mod) =>
   function __require() {
     return (
       mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports
     )
   }
-var __copyProps = (to, from, except, desc) => {
-  if ((from && typeof from === 'object') || typeof from === 'function') {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, {
-          get: () => from[key],
-          enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+var __reExport = (target, module2, copyDefault, desc) => {
+  if ((module2 && typeof module2 === 'object') || typeof module2 === 'function') {
+    for (let key of __getOwnPropNames(module2))
+      if (!__hasOwnProp.call(target, key) && (copyDefault || key !== 'default'))
+        __defProp(target, key, {
+          get: () => module2[key],
+          enumerable: !(desc = __getOwnPropDesc(module2, key)) || desc.enumerable,
         })
   }
-  return to
+  return target
 }
-var __toESM = (mod, isNodeMode, target) => (
-  (target = mod != null ? __create(__getProtoOf(mod)) : {}),
-  __copyProps(
-    isNodeMode || !mod || !mod.__esModule
-      ? __defProp(target, 'default', { value: mod, enumerable: true })
-      : target,
-    mod
+var __toESM = (module2, isNodeMode) => {
+  return __reExport(
+    __markAsModule(
+      __defProp(
+        module2 != null ? __create(__getProtoOf(module2)) : {},
+        'default',
+        !isNodeMode && module2 && module2.__esModule
+          ? { get: () => module2.default, enumerable: true }
+          : { value: module2, enumerable: true }
+      )
+    ),
+    module2
   )
-)
+}
 
 // node_modules/@actions/core/lib/utils.js
 var require_utils = __commonJS({
@@ -233,36 +239,34 @@ var require_file_command = __commonJS({
   },
 })
 
-// node_modules/@actions/http-client/lib/proxy.js
+// node_modules/@actions/http-client/proxy.js
 var require_proxy = __commonJS({
-  'node_modules/@actions/http-client/lib/proxy.js'(exports) {
+  'node_modules/@actions/http-client/proxy.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    exports.checkBypass = exports.getProxyUrl = void 0
     function getProxyUrl(reqUrl) {
-      const usingSsl = reqUrl.protocol === 'https:'
+      let usingSsl = reqUrl.protocol === 'https:'
+      let proxyUrl
       if (checkBypass(reqUrl)) {
-        return void 0
+        return proxyUrl
       }
-      const proxyVar = (() => {
-        if (usingSsl) {
-          return process.env['https_proxy'] || process.env['HTTPS_PROXY']
-        } else {
-          return process.env['http_proxy'] || process.env['HTTP_PROXY']
-        }
-      })()
-      if (proxyVar) {
-        return new URL(proxyVar)
+      let proxyVar
+      if (usingSsl) {
+        proxyVar = process.env['https_proxy'] || process.env['HTTPS_PROXY']
       } else {
-        return void 0
+        proxyVar = process.env['http_proxy'] || process.env['HTTP_PROXY']
       }
+      if (proxyVar) {
+        proxyUrl = new URL(proxyVar)
+      }
+      return proxyUrl
     }
     exports.getProxyUrl = getProxyUrl
     function checkBypass(reqUrl) {
       if (!reqUrl.hostname) {
         return false
       }
-      const noProxy = process.env['no_proxy'] || process.env['NO_PROXY'] || ''
+      let noProxy = process.env['no_proxy'] || process.env['NO_PROXY'] || ''
       if (!noProxy) {
         return false
       }
@@ -274,11 +278,11 @@ var require_proxy = __commonJS({
       } else if (reqUrl.protocol === 'https:') {
         reqPort = 443
       }
-      const upperReqHosts = [reqUrl.hostname.toUpperCase()]
+      let upperReqHosts = [reqUrl.hostname.toUpperCase()]
       if (typeof reqPort === 'number') {
         upperReqHosts.push(`${upperReqHosts[0]}:${reqPort}`)
       }
-      for (const upperNoProxyItem of noProxy
+      for (let upperNoProxyItem of noProxy
         .split(',')
         .map((x) => x.trim().toUpperCase())
         .filter((x) => x)) {
@@ -528,93 +532,15 @@ var require_tunnel2 = __commonJS({
   },
 })
 
-// node_modules/@actions/http-client/lib/index.js
-var require_lib = __commonJS({
-  'node_modules/@actions/http-client/lib/index.js'(exports) {
+// node_modules/@actions/http-client/index.js
+var require_http_client = __commonJS({
+  'node_modules/@actions/http-client/index.js'(exports) {
     'use strict'
-    var __createBinding =
-      (exports && exports.__createBinding) ||
-      (Object.create
-        ? function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            Object.defineProperty(o, k2, {
-              enumerable: true,
-              get: function () {
-                return m[k]
-              },
-            })
-          }
-        : function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            o[k2] = m[k]
-          })
-    var __setModuleDefault =
-      (exports && exports.__setModuleDefault) ||
-      (Object.create
-        ? function (o, v) {
-            Object.defineProperty(o, 'default', { enumerable: true, value: v })
-          }
-        : function (o, v) {
-            o['default'] = v
-          })
-    var __importStar =
-      (exports && exports.__importStar) ||
-      function (mod) {
-        if (mod && mod.__esModule) return mod
-        var result = {}
-        if (mod != null) {
-          for (var k in mod)
-            if (k !== 'default' && Object.hasOwnProperty.call(mod, k))
-              __createBinding(result, mod, k)
-        }
-        __setModuleDefault(result, mod)
-        return result
-      }
-    var __awaiter =
-      (exports && exports.__awaiter) ||
-      function (thisArg, _arguments, P, generator) {
-        function adopt(value) {
-          return value instanceof P
-            ? value
-            : new P(function (resolve) {
-                resolve(value)
-              })
-        }
-        return new (P || (P = Promise))(function (resolve, reject) {
-          function fulfilled(value) {
-            try {
-              step(generator.next(value))
-            } catch (e) {
-              reject(e)
-            }
-          }
-          function rejected(value) {
-            try {
-              step(generator['throw'](value))
-            } catch (e) {
-              reject(e)
-            }
-          }
-          function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected)
-          }
-          step((generator = generator.apply(thisArg, _arguments || [])).next())
-        })
-      }
     Object.defineProperty(exports, '__esModule', { value: true })
-    exports.HttpClient =
-      exports.isHttps =
-      exports.HttpClientResponse =
-      exports.HttpClientError =
-      exports.getProxyUrl =
-      exports.MediaTypes =
-      exports.Headers =
-      exports.HttpCodes =
-        void 0
-    var http3 = __importStar(require('http'))
-    var https3 = __importStar(require('https'))
-    var pm = __importStar(require_proxy())
-    var tunnel = __importStar(require_tunnel2())
+    var http3 = require('http')
+    var https3 = require('https')
+    var pm = require_proxy()
+    var tunnel
     var HttpCodes
     ;(function (HttpCodes2) {
       HttpCodes2[(HttpCodes2['OK'] = 200)] = 'OK'
@@ -655,7 +581,7 @@ var require_lib = __commonJS({
       MediaTypes2['ApplicationJson'] = 'application/json'
     })((MediaTypes = exports.MediaTypes || (exports.MediaTypes = {})))
     function getProxyUrl(serverUrl) {
-      const proxyUrl = pm.getProxyUrl(new URL(serverUrl))
+      let proxyUrl = pm.getProxyUrl(new URL(serverUrl))
       return proxyUrl ? proxyUrl.href : ''
     }
     exports.getProxyUrl = getProxyUrl
@@ -688,24 +614,20 @@ var require_lib = __commonJS({
         this.message = message
       }
       readBody() {
-        return __awaiter(this, void 0, void 0, function* () {
-          return new Promise((resolve) =>
-            __awaiter(this, void 0, void 0, function* () {
-              let output = Buffer.alloc(0)
-              this.message.on('data', (chunk) => {
-                output = Buffer.concat([output, chunk])
-              })
-              this.message.on('end', () => {
-                resolve(output.toString())
-              })
-            })
-          )
+        return new Promise(async (resolve, reject) => {
+          let output = Buffer.alloc(0)
+          this.message.on('data', (chunk) => {
+            output = Buffer.concat([output, chunk])
+          })
+          this.message.on('end', () => {
+            resolve(output.toString())
+          })
         })
       }
     }
     exports.HttpClientResponse = HttpClientResponse
     function isHttps(requestUrl) {
-      const parsedUrl = new URL(requestUrl)
+      let parsedUrl = new URL(requestUrl)
       return parsedUrl.protocol === 'https:'
     }
     exports.isHttps = isHttps
@@ -748,185 +670,155 @@ var require_lib = __commonJS({
         }
       }
       options(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request('OPTIONS', requestUrl, null, additionalHeaders || {})
-        })
+        return this.request('OPTIONS', requestUrl, null, additionalHeaders || {})
       }
       get(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request('GET', requestUrl, null, additionalHeaders || {})
-        })
+        return this.request('GET', requestUrl, null, additionalHeaders || {})
       }
       del(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request('DELETE', requestUrl, null, additionalHeaders || {})
-        })
+        return this.request('DELETE', requestUrl, null, additionalHeaders || {})
       }
       post(requestUrl, data, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request('POST', requestUrl, data, additionalHeaders || {})
-        })
+        return this.request('POST', requestUrl, data, additionalHeaders || {})
       }
       patch(requestUrl, data, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request('PATCH', requestUrl, data, additionalHeaders || {})
-        })
+        return this.request('PATCH', requestUrl, data, additionalHeaders || {})
       }
       put(requestUrl, data, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request('PUT', requestUrl, data, additionalHeaders || {})
-        })
+        return this.request('PUT', requestUrl, data, additionalHeaders || {})
       }
       head(requestUrl, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request('HEAD', requestUrl, null, additionalHeaders || {})
-        })
+        return this.request('HEAD', requestUrl, null, additionalHeaders || {})
       }
       sendStream(verb, requestUrl, stream, additionalHeaders) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.request(verb, requestUrl, stream, additionalHeaders)
-        })
+        return this.request(verb, requestUrl, stream, additionalHeaders)
       }
-      getJson(requestUrl, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-            additionalHeaders,
-            Headers.Accept,
-            MediaTypes.ApplicationJson
-          )
-          const res = yield this.get(requestUrl, additionalHeaders)
-          return this._processResponse(res, this.requestOptions)
-        })
+      async getJson(requestUrl, additionalHeaders = {}) {
+        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
+          additionalHeaders,
+          Headers.Accept,
+          MediaTypes.ApplicationJson
+        )
+        let res = await this.get(requestUrl, additionalHeaders)
+        return this._processResponse(res, this.requestOptions)
       }
-      postJson(requestUrl, obj, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
-          const data = JSON.stringify(obj, null, 2)
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-            additionalHeaders,
-            Headers.Accept,
-            MediaTypes.ApplicationJson
-          )
-          additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
-            additionalHeaders,
-            Headers.ContentType,
-            MediaTypes.ApplicationJson
-          )
-          const res = yield this.post(requestUrl, data, additionalHeaders)
-          return this._processResponse(res, this.requestOptions)
-        })
+      async postJson(requestUrl, obj, additionalHeaders = {}) {
+        let data = JSON.stringify(obj, null, 2)
+        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
+          additionalHeaders,
+          Headers.Accept,
+          MediaTypes.ApplicationJson
+        )
+        additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
+          additionalHeaders,
+          Headers.ContentType,
+          MediaTypes.ApplicationJson
+        )
+        let res = await this.post(requestUrl, data, additionalHeaders)
+        return this._processResponse(res, this.requestOptions)
       }
-      putJson(requestUrl, obj, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
-          const data = JSON.stringify(obj, null, 2)
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-            additionalHeaders,
-            Headers.Accept,
-            MediaTypes.ApplicationJson
-          )
-          additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
-            additionalHeaders,
-            Headers.ContentType,
-            MediaTypes.ApplicationJson
-          )
-          const res = yield this.put(requestUrl, data, additionalHeaders)
-          return this._processResponse(res, this.requestOptions)
-        })
+      async putJson(requestUrl, obj, additionalHeaders = {}) {
+        let data = JSON.stringify(obj, null, 2)
+        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
+          additionalHeaders,
+          Headers.Accept,
+          MediaTypes.ApplicationJson
+        )
+        additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
+          additionalHeaders,
+          Headers.ContentType,
+          MediaTypes.ApplicationJson
+        )
+        let res = await this.put(requestUrl, data, additionalHeaders)
+        return this._processResponse(res, this.requestOptions)
       }
-      patchJson(requestUrl, obj, additionalHeaders = {}) {
-        return __awaiter(this, void 0, void 0, function* () {
-          const data = JSON.stringify(obj, null, 2)
-          additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
-            additionalHeaders,
-            Headers.Accept,
-            MediaTypes.ApplicationJson
-          )
-          additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
-            additionalHeaders,
-            Headers.ContentType,
-            MediaTypes.ApplicationJson
-          )
-          const res = yield this.patch(requestUrl, data, additionalHeaders)
-          return this._processResponse(res, this.requestOptions)
-        })
+      async patchJson(requestUrl, obj, additionalHeaders = {}) {
+        let data = JSON.stringify(obj, null, 2)
+        additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(
+          additionalHeaders,
+          Headers.Accept,
+          MediaTypes.ApplicationJson
+        )
+        additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(
+          additionalHeaders,
+          Headers.ContentType,
+          MediaTypes.ApplicationJson
+        )
+        let res = await this.patch(requestUrl, data, additionalHeaders)
+        return this._processResponse(res, this.requestOptions)
       }
-      request(verb, requestUrl, data, headers) {
-        return __awaiter(this, void 0, void 0, function* () {
-          if (this._disposed) {
-            throw new Error('Client has already been disposed.')
-          }
-          const parsedUrl = new URL(requestUrl)
-          let info = this._prepareRequest(verb, parsedUrl, headers)
-          const maxTries =
-            this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1
-          let numTries = 0
-          let response
-          do {
-            response = yield this.requestRaw(info, data)
-            if (
-              response &&
-              response.message &&
-              response.message.statusCode === HttpCodes.Unauthorized
-            ) {
-              let authenticationHandler
-              for (const handler of this.handlers) {
-                if (handler.canHandleAuthentication(response)) {
-                  authenticationHandler = handler
-                  break
-                }
-              }
-              if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info, data)
-              } else {
-                return response
-              }
-            }
-            let redirectsRemaining = this._maxRedirects
-            while (
-              response.message.statusCode &&
-              HttpRedirectCodes.includes(response.message.statusCode) &&
-              this._allowRedirects &&
-              redirectsRemaining > 0
-            ) {
-              const redirectUrl = response.message.headers['location']
-              if (!redirectUrl) {
+      async request(verb, requestUrl, data, headers) {
+        if (this._disposed) {
+          throw new Error('Client has already been disposed.')
+        }
+        let parsedUrl = new URL(requestUrl)
+        let info = this._prepareRequest(verb, parsedUrl, headers)
+        let maxTries =
+          this._allowRetries && RetryableHttpVerbs.indexOf(verb) != -1 ? this._maxRetries + 1 : 1
+        let numTries = 0
+        let response
+        while (numTries < maxTries) {
+          response = await this.requestRaw(info, data)
+          if (
+            response &&
+            response.message &&
+            response.message.statusCode === HttpCodes.Unauthorized
+          ) {
+            let authenticationHandler
+            for (let i = 0; i < this.handlers.length; i++) {
+              if (this.handlers[i].canHandleAuthentication(response)) {
+                authenticationHandler = this.handlers[i]
                 break
               }
-              const parsedRedirectUrl = new URL(redirectUrl)
-              if (
-                parsedUrl.protocol === 'https:' &&
-                parsedUrl.protocol !== parsedRedirectUrl.protocol &&
-                !this._allowRedirectDowngrade
-              ) {
-                throw new Error(
-                  'Redirect from HTTPS to HTTP protocol. This downgrade is not allowed for security reasons. If you want to allow this behavior, set the allowRedirectDowngrade option to true.'
-                )
-              }
-              yield response.readBody()
-              if (parsedRedirectUrl.hostname !== parsedUrl.hostname) {
-                for (const header in headers) {
-                  if (header.toLowerCase() === 'authorization') {
-                    delete headers[header]
-                  }
-                }
-              }
-              info = this._prepareRequest(verb, parsedRedirectUrl, headers)
-              response = yield this.requestRaw(info, data)
-              redirectsRemaining--
             }
-            if (
-              !response.message.statusCode ||
-              !HttpResponseRetryCodes.includes(response.message.statusCode)
-            ) {
+            if (authenticationHandler) {
+              return authenticationHandler.handleAuthentication(this, info, data)
+            } else {
               return response
             }
-            numTries += 1
-            if (numTries < maxTries) {
-              yield response.readBody()
-              yield this._performExponentialBackoff(numTries)
+          }
+          let redirectsRemaining = this._maxRedirects
+          while (
+            HttpRedirectCodes.indexOf(response.message.statusCode) != -1 &&
+            this._allowRedirects &&
+            redirectsRemaining > 0
+          ) {
+            const redirectUrl = response.message.headers['location']
+            if (!redirectUrl) {
+              break
             }
-          } while (numTries < maxTries)
-          return response
-        })
+            let parsedRedirectUrl = new URL(redirectUrl)
+            if (
+              parsedUrl.protocol == 'https:' &&
+              parsedUrl.protocol != parsedRedirectUrl.protocol &&
+              !this._allowRedirectDowngrade
+            ) {
+              throw new Error(
+                'Redirect from HTTPS to HTTP protocol. This downgrade is not allowed for security reasons. If you want to allow this behavior, set the allowRedirectDowngrade option to true.'
+              )
+            }
+            await response.readBody()
+            if (parsedRedirectUrl.hostname !== parsedUrl.hostname) {
+              for (let header in headers) {
+                if (header.toLowerCase() === 'authorization') {
+                  delete headers[header]
+                }
+              }
+            }
+            info = this._prepareRequest(verb, parsedRedirectUrl, headers)
+            response = await this.requestRaw(info, data)
+            redirectsRemaining--
+          }
+          if (HttpResponseRetryCodes.indexOf(response.message.statusCode) == -1) {
+            return response
+          }
+          numTries += 1
+          if (numTries < maxTries) {
+            await response.readBody()
+            await this._performExponentialBackoff(numTries)
+          }
+        }
+        return response
       }
       dispose() {
         if (this._agent) {
@@ -935,40 +827,32 @@ var require_lib = __commonJS({
         this._disposed = true
       }
       requestRaw(info, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return new Promise((resolve, reject) => {
-            function callbackForResult(err, res) {
-              if (err) {
-                reject(err)
-              } else if (!res) {
-                reject(new Error('Unknown error'))
-              } else {
-                resolve(res)
-              }
+        return new Promise((resolve, reject) => {
+          let callbackForResult = function (err, res) {
+            if (err) {
+              reject(err)
             }
-            this.requestRawWithCallback(info, data, callbackForResult)
-          })
+            resolve(res)
+          }
+          this.requestRawWithCallback(info, data, callbackForResult)
         })
       }
       requestRawWithCallback(info, data, onResult) {
+        let socket
         if (typeof data === 'string') {
-          if (!info.options.headers) {
-            info.options.headers = {}
-          }
           info.options.headers['Content-Length'] = Buffer.byteLength(data, 'utf8')
         }
         let callbackCalled = false
-        function handleResult(err, res) {
+        let handleResult = (err, res) => {
           if (!callbackCalled) {
             callbackCalled = true
             onResult(err, res)
           }
         }
-        const req = info.httpModule.request(info.options, (msg) => {
-          const res = new HttpClientResponse(msg)
-          handleResult(void 0, res)
+        let req = info.httpModule.request(info.options, (msg) => {
+          let res = new HttpClientResponse(msg)
+          handleResult(null, res)
         })
-        let socket
         req.on('socket', (sock) => {
           socket = sock
         })
@@ -976,10 +860,10 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end()
           }
-          handleResult(new Error(`Request timeout: ${info.options.path}`))
+          handleResult(new Error('Request timeout: ' + info.options.path), null)
         })
         req.on('error', function (err) {
-          handleResult(err)
+          handleResult(err, null)
         })
         if (data && typeof data === 'string') {
           req.write(data, 'utf8')
@@ -994,7 +878,7 @@ var require_lib = __commonJS({
         }
       }
       getAgent(serverUrl) {
-        const parsedUrl = new URL(serverUrl)
+        let parsedUrl = new URL(serverUrl)
         return this._getAgent(parsedUrl)
       }
       _prepareRequest(method, requestUrl, headers) {
@@ -1014,23 +898,27 @@ var require_lib = __commonJS({
         }
         info.options.agent = this._getAgent(info.parsedUrl)
         if (this.handlers) {
-          for (const handler of this.handlers) {
+          this.handlers.forEach((handler) => {
             handler.prepareRequest(info.options)
-          }
+          })
         }
         return info
       }
       _mergeHeaders(headers) {
+        const lowercaseKeys = (obj) =>
+          Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {})
         if (this.requestOptions && this.requestOptions.headers) {
           return Object.assign(
             {},
             lowercaseKeys(this.requestOptions.headers),
-            lowercaseKeys(headers || {})
+            lowercaseKeys(headers)
           )
         }
         return lowercaseKeys(headers || {})
       }
       _getExistingOrDefaultHeader(additionalHeaders, header, _default) {
+        const lowercaseKeys = (obj) =>
+          Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {})
         let clientHeader
         if (this.requestOptions && this.requestOptions.headers) {
           clientHeader = lowercaseKeys(this.requestOptions.headers)[header]
@@ -1039,35 +927,36 @@ var require_lib = __commonJS({
       }
       _getAgent(parsedUrl) {
         let agent
-        const proxyUrl = pm.getProxyUrl(parsedUrl)
-        const useProxy = proxyUrl && proxyUrl.hostname
+        let proxyUrl = pm.getProxyUrl(parsedUrl)
+        let useProxy = proxyUrl && proxyUrl.hostname
         if (this._keepAlive && useProxy) {
           agent = this._proxyAgent
         }
         if (this._keepAlive && !useProxy) {
           agent = this._agent
         }
-        if (agent) {
+        if (!!agent) {
           return agent
         }
         const usingSsl = parsedUrl.protocol === 'https:'
         let maxSockets = 100
-        if (this.requestOptions) {
+        if (!!this.requestOptions) {
           maxSockets = this.requestOptions.maxSockets || http3.globalAgent.maxSockets
         }
-        if (proxyUrl && proxyUrl.hostname) {
+        if (useProxy) {
+          if (!tunnel) {
+            tunnel = require_tunnel2()
+          }
           const agentOptions = {
             maxSockets,
             keepAlive: this._keepAlive,
-            proxy: Object.assign(
-              Object.assign(
-                {},
-                (proxyUrl.username || proxyUrl.password) && {
-                  proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`,
-                }
-              ),
-              { host: proxyUrl.hostname, port: proxyUrl.port }
-            ),
+            proxy: {
+              ...((proxyUrl.username || proxyUrl.password) && {
+                proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`,
+              }),
+              host: proxyUrl.hostname,
+              port: proxyUrl.port,
+            },
           }
           let tunnelAgent
           const overHttps = proxyUrl.protocol === 'https:'
@@ -1095,134 +984,85 @@ var require_lib = __commonJS({
         return agent
       }
       _performExponentialBackoff(retryNumber) {
-        return __awaiter(this, void 0, void 0, function* () {
-          retryNumber = Math.min(ExponentialBackoffCeiling, retryNumber)
-          const ms = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber)
-          return new Promise((resolve) => setTimeout(() => resolve(), ms))
-        })
+        retryNumber = Math.min(ExponentialBackoffCeiling, retryNumber)
+        const ms = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber)
+        return new Promise((resolve) => setTimeout(() => resolve(), ms))
       }
-      _processResponse(res, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-          return new Promise((resolve, reject) =>
-            __awaiter(this, void 0, void 0, function* () {
-              const statusCode = res.message.statusCode || 0
-              const response = {
-                statusCode,
-                result: null,
-                headers: {},
-              }
-              if (statusCode === HttpCodes.NotFound) {
-                resolve(response)
-              }
-              function dateTimeDeserializer(key, value) {
-                if (typeof value === 'string') {
-                  const a = new Date(value)
-                  if (!isNaN(a.valueOf())) {
-                    return a
-                  }
-                }
-                return value
-              }
-              let obj
-              let contents
-              try {
-                contents = yield res.readBody()
-                if (contents && contents.length > 0) {
-                  if (options && options.deserializeDates) {
-                    obj = JSON.parse(contents, dateTimeDeserializer)
-                  } else {
-                    obj = JSON.parse(contents)
-                  }
-                  response.result = obj
-                }
-                response.headers = res.message.headers
-              } catch (err) {}
-              if (statusCode > 299) {
-                let msg
-                if (obj && obj.message) {
-                  msg = obj.message
-                } else if (contents && contents.length > 0) {
-                  msg = contents
-                } else {
-                  msg = `Failed request: (${statusCode})`
-                }
-                const err = new HttpClientError(msg, statusCode)
-                err.result = response.result
-                reject(err)
+      static dateTimeDeserializer(key, value) {
+        if (typeof value === 'string') {
+          let a = new Date(value)
+          if (!isNaN(a.valueOf())) {
+            return a
+          }
+        }
+        return value
+      }
+      async _processResponse(res, options) {
+        return new Promise(async (resolve, reject) => {
+          const statusCode = res.message.statusCode
+          const response = {
+            statusCode,
+            result: null,
+            headers: {},
+          }
+          if (statusCode == HttpCodes.NotFound) {
+            resolve(response)
+          }
+          let obj
+          let contents
+          try {
+            contents = await res.readBody()
+            if (contents && contents.length > 0) {
+              if (options && options.deserializeDates) {
+                obj = JSON.parse(contents, HttpClient.dateTimeDeserializer)
               } else {
-                resolve(response)
+                obj = JSON.parse(contents)
               }
-            })
-          )
+              response.result = obj
+            }
+            response.headers = res.message.headers
+          } catch (err) {}
+          if (statusCode > 299) {
+            let msg
+            if (obj && obj.message) {
+              msg = obj.message
+            } else if (contents && contents.length > 0) {
+              msg = contents
+            } else {
+              msg = 'Failed request: (' + statusCode + ')'
+            }
+            let err = new HttpClientError(msg, statusCode)
+            err.result = response.result
+            reject(err)
+          } else {
+            resolve(response)
+          }
         })
       }
     }
     exports.HttpClient = HttpClient
-    var lowercaseKeys = (obj) =>
-      Object.keys(obj).reduce((c, k) => ((c[k.toLowerCase()] = obj[k]), c), {})
   },
 })
 
-// node_modules/@actions/http-client/lib/auth.js
+// node_modules/@actions/http-client/auth.js
 var require_auth = __commonJS({
-  'node_modules/@actions/http-client/lib/auth.js'(exports) {
+  'node_modules/@actions/http-client/auth.js'(exports) {
     'use strict'
-    var __awaiter =
-      (exports && exports.__awaiter) ||
-      function (thisArg, _arguments, P, generator) {
-        function adopt(value) {
-          return value instanceof P
-            ? value
-            : new P(function (resolve) {
-                resolve(value)
-              })
-        }
-        return new (P || (P = Promise))(function (resolve, reject) {
-          function fulfilled(value) {
-            try {
-              step(generator.next(value))
-            } catch (e) {
-              reject(e)
-            }
-          }
-          function rejected(value) {
-            try {
-              step(generator['throw'](value))
-            } catch (e) {
-              reject(e)
-            }
-          }
-          function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected)
-          }
-          step((generator = generator.apply(thisArg, _arguments || [])).next())
-        })
-      }
     Object.defineProperty(exports, '__esModule', { value: true })
-    exports.PersonalAccessTokenCredentialHandler =
-      exports.BearerCredentialHandler =
-      exports.BasicCredentialHandler =
-        void 0
     var BasicCredentialHandler = class {
       constructor(username, password) {
         this.username = username
         this.password = password
       }
       prepareRequest(options) {
-        if (!options.headers) {
-          throw Error('The request has no headers')
-        }
-        options.headers['Authorization'] = `Basic ${Buffer.from(
-          `${this.username}:${this.password}`
-        ).toString('base64')}`
+        options.headers['Authorization'] =
+          'Basic ' + Buffer.from(this.username + ':' + this.password).toString('base64')
       }
-      canHandleAuthentication() {
+      canHandleAuthentication(response) {
         return false
       }
-      handleAuthentication() {
-        return __awaiter(this, void 0, void 0, function* () {
-          throw new Error('not implemented')
-        })
+      handleAuthentication(httpClient, requestInfo, objs) {
+        return null
       }
     }
     exports.BasicCredentialHandler = BasicCredentialHandler
@@ -1231,18 +1071,13 @@ var require_auth = __commonJS({
         this.token = token
       }
       prepareRequest(options) {
-        if (!options.headers) {
-          throw Error('The request has no headers')
-        }
-        options.headers['Authorization'] = `Bearer ${this.token}`
+        options.headers['Authorization'] = 'Bearer ' + this.token
       }
-      canHandleAuthentication() {
+      canHandleAuthentication(response) {
         return false
       }
-      handleAuthentication() {
-        return __awaiter(this, void 0, void 0, function* () {
-          throw new Error('not implemented')
-        })
+      handleAuthentication(httpClient, requestInfo, objs) {
+        return null
       }
     }
     exports.BearerCredentialHandler = BearerCredentialHandler
@@ -1251,20 +1086,14 @@ var require_auth = __commonJS({
         this.token = token
       }
       prepareRequest(options) {
-        if (!options.headers) {
-          throw Error('The request has no headers')
-        }
-        options.headers['Authorization'] = `Basic ${Buffer.from(`PAT:${this.token}`).toString(
-          'base64'
-        )}`
+        options.headers['Authorization'] =
+          'Basic ' + Buffer.from('PAT:' + this.token).toString('base64')
       }
-      canHandleAuthentication() {
+      canHandleAuthentication(response) {
         return false
       }
-      handleAuthentication() {
-        return __awaiter(this, void 0, void 0, function* () {
-          throw new Error('not implemented')
-        })
+      handleAuthentication(httpClient, requestInfo, objs) {
+        return null
       }
     }
     exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler
@@ -1308,7 +1137,7 @@ var require_oidc_utils = __commonJS({
       }
     Object.defineProperty(exports, '__esModule', { value: true })
     exports.OidcClient = void 0
-    var http_client_1 = require_lib()
+    var http_client_1 = require_http_client()
     var auth_1 = require_auth()
     var core_1 = require_core()
     var OidcClient = class {
@@ -1374,253 +1203,6 @@ var require_oidc_utils = __commonJS({
       }
     }
     exports.OidcClient = OidcClient
-  },
-})
-
-// node_modules/@actions/core/lib/summary.js
-var require_summary = __commonJS({
-  'node_modules/@actions/core/lib/summary.js'(exports) {
-    'use strict'
-    var __awaiter =
-      (exports && exports.__awaiter) ||
-      function (thisArg, _arguments, P, generator) {
-        function adopt(value) {
-          return value instanceof P
-            ? value
-            : new P(function (resolve) {
-                resolve(value)
-              })
-        }
-        return new (P || (P = Promise))(function (resolve, reject) {
-          function fulfilled(value) {
-            try {
-              step(generator.next(value))
-            } catch (e) {
-              reject(e)
-            }
-          }
-          function rejected(value) {
-            try {
-              step(generator['throw'](value))
-            } catch (e) {
-              reject(e)
-            }
-          }
-          function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected)
-          }
-          step((generator = generator.apply(thisArg, _arguments || [])).next())
-        })
-      }
-    Object.defineProperty(exports, '__esModule', { value: true })
-    exports.summary =
-      exports.markdownSummary =
-      exports.SUMMARY_DOCS_URL =
-      exports.SUMMARY_ENV_VAR =
-        void 0
-    var os_1 = require('os')
-    var fs_1 = require('fs')
-    var { access, appendFile, writeFile: writeFile2 } = fs_1.promises
-    exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY'
-    exports.SUMMARY_DOCS_URL =
-      'https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary'
-    var Summary = class {
-      constructor() {
-        this._buffer = ''
-      }
-      filePath() {
-        return __awaiter(this, void 0, void 0, function* () {
-          if (this._filePath) {
-            return this._filePath
-          }
-          const pathFromEnv = process.env[exports.SUMMARY_ENV_VAR]
-          if (!pathFromEnv) {
-            throw new Error(
-              `Unable to find environment variable for $${exports.SUMMARY_ENV_VAR}. Check if your runtime environment supports job summaries.`
-            )
-          }
-          try {
-            yield access(pathFromEnv, fs_1.constants.R_OK | fs_1.constants.W_OK)
-          } catch (_a) {
-            throw new Error(
-              `Unable to access summary file: '${pathFromEnv}'. Check if the file has correct read/write permissions.`
-            )
-          }
-          this._filePath = pathFromEnv
-          return this._filePath
-        })
-      }
-      wrap(tag, content, attrs = {}) {
-        const htmlAttrs = Object.entries(attrs)
-          .map(([key, value]) => ` ${key}="${value}"`)
-          .join('')
-        if (!content) {
-          return `<${tag}${htmlAttrs}>`
-        }
-        return `<${tag}${htmlAttrs}>${content}</${tag}>`
-      }
-      write(options) {
-        return __awaiter(this, void 0, void 0, function* () {
-          const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite)
-          const filePath = yield this.filePath()
-          const writeFunc = overwrite ? writeFile2 : appendFile
-          yield writeFunc(filePath, this._buffer, { encoding: 'utf8' })
-          return this.emptyBuffer()
-        })
-      }
-      clear() {
-        return __awaiter(this, void 0, void 0, function* () {
-          return this.emptyBuffer().write({ overwrite: true })
-        })
-      }
-      stringify() {
-        return this._buffer
-      }
-      isEmptyBuffer() {
-        return this._buffer.length === 0
-      }
-      emptyBuffer() {
-        this._buffer = ''
-        return this
-      }
-      addRaw(text, addEOL = false) {
-        this._buffer += text
-        return addEOL ? this.addEOL() : this
-      }
-      addEOL() {
-        return this.addRaw(os_1.EOL)
-      }
-      addCodeBlock(code, lang) {
-        const attrs = Object.assign({}, lang && { lang })
-        const element = this.wrap('pre', this.wrap('code', code), attrs)
-        return this.addRaw(element).addEOL()
-      }
-      addList(items, ordered = false) {
-        const tag = ordered ? 'ol' : 'ul'
-        const listItems = items.map((item) => this.wrap('li', item)).join('')
-        const element = this.wrap(tag, listItems)
-        return this.addRaw(element).addEOL()
-      }
-      addTable(rows) {
-        const tableBody = rows
-          .map((row) => {
-            const cells = row
-              .map((cell) => {
-                if (typeof cell === 'string') {
-                  return this.wrap('td', cell)
-                }
-                const { header, data, colspan, rowspan } = cell
-                const tag = header ? 'th' : 'td'
-                const attrs = Object.assign(
-                  Object.assign({}, colspan && { colspan }),
-                  rowspan && { rowspan }
-                )
-                return this.wrap(tag, data, attrs)
-              })
-              .join('')
-            return this.wrap('tr', cells)
-          })
-          .join('')
-        const element = this.wrap('table', tableBody)
-        return this.addRaw(element).addEOL()
-      }
-      addDetails(label, content) {
-        const element = this.wrap('details', this.wrap('summary', label) + content)
-        return this.addRaw(element).addEOL()
-      }
-      addImage(src, alt, options) {
-        const { width, height } = options || {}
-        const attrs = Object.assign(Object.assign({}, width && { width }), height && { height })
-        const element = this.wrap('img', null, Object.assign({ src, alt }, attrs))
-        return this.addRaw(element).addEOL()
-      }
-      addHeading(text, level) {
-        const tag = `h${level}`
-        const allowedTag = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tag) ? tag : 'h1'
-        const element = this.wrap(allowedTag, text)
-        return this.addRaw(element).addEOL()
-      }
-      addSeparator() {
-        const element = this.wrap('hr', null)
-        return this.addRaw(element).addEOL()
-      }
-      addBreak() {
-        const element = this.wrap('br', null)
-        return this.addRaw(element).addEOL()
-      }
-      addQuote(text, cite) {
-        const attrs = Object.assign({}, cite && { cite })
-        const element = this.wrap('blockquote', text, attrs)
-        return this.addRaw(element).addEOL()
-      }
-      addLink(text, href) {
-        const element = this.wrap('a', text, { href })
-        return this.addRaw(element).addEOL()
-      }
-    }
-    var _summary = new Summary()
-    exports.markdownSummary = _summary
-    exports.summary = _summary
-  },
-})
-
-// node_modules/@actions/core/lib/path-utils.js
-var require_path_utils = __commonJS({
-  'node_modules/@actions/core/lib/path-utils.js'(exports) {
-    'use strict'
-    var __createBinding =
-      (exports && exports.__createBinding) ||
-      (Object.create
-        ? function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            Object.defineProperty(o, k2, {
-              enumerable: true,
-              get: function () {
-                return m[k]
-              },
-            })
-          }
-        : function (o, m, k, k2) {
-            if (k2 === void 0) k2 = k
-            o[k2] = m[k]
-          })
-    var __setModuleDefault =
-      (exports && exports.__setModuleDefault) ||
-      (Object.create
-        ? function (o, v) {
-            Object.defineProperty(o, 'default', { enumerable: true, value: v })
-          }
-        : function (o, v) {
-            o['default'] = v
-          })
-    var __importStar =
-      (exports && exports.__importStar) ||
-      function (mod) {
-        if (mod && mod.__esModule) return mod
-        var result = {}
-        if (mod != null) {
-          for (var k in mod)
-            if (k !== 'default' && Object.hasOwnProperty.call(mod, k))
-              __createBinding(result, mod, k)
-        }
-        __setModuleDefault(result, mod)
-        return result
-      }
-    Object.defineProperty(exports, '__esModule', { value: true })
-    exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = void 0
-    var path = __importStar(require('path'))
-    function toPosixPath(pth) {
-      return pth.replace(/[\\]/g, '/')
-    }
-    exports.toPosixPath = toPosixPath
-    function toWin32Path(pth) {
-      return pth.replace(/[/]/g, '\\')
-    }
-    exports.toWin32Path = toWin32Path
-    function toPlatformPath(pth) {
-      return pth.replace(/[/\\]/g, path.sep)
-    }
-    exports.toPlatformPath = toPlatformPath
   },
 })
 
@@ -1725,7 +1307,7 @@ var require_core = __commonJS({
     var file_command_1 = require_file_command()
     var utils_1 = require_utils()
     var os3 = __importStar(require('os'))
-    var path = __importStar(require('path'))
+    var path2 = __importStar(require('path'))
     var oidc_utils_1 = require_oidc_utils()
     var ExitCode
     ;(function (ExitCode2) {
@@ -1756,7 +1338,7 @@ var require_core = __commonJS({
       } else {
         command_1.issueCommand('add-path', {}, inputPath)
       }
-      process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`
+      process.env['PATH'] = `${inputPath}${path2.delimiter}${process.env['PATH']}`
     }
     exports.addPath = addPath
     function getInput(name, options) {
@@ -1872,39 +1454,6 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``)
       })
     }
     exports.getIDToken = getIDToken
-    var summary_1 = require_summary()
-    Object.defineProperty(exports, 'summary', {
-      enumerable: true,
-      get: function () {
-        return summary_1.summary
-      },
-    })
-    var summary_2 = require_summary()
-    Object.defineProperty(exports, 'markdownSummary', {
-      enumerable: true,
-      get: function () {
-        return summary_2.markdownSummary
-      },
-    })
-    var path_utils_1 = require_path_utils()
-    Object.defineProperty(exports, 'toPosixPath', {
-      enumerable: true,
-      get: function () {
-        return path_utils_1.toPosixPath
-      },
-    })
-    Object.defineProperty(exports, 'toWin32Path', {
-      enumerable: true,
-      get: function () {
-        return path_utils_1.toWin32Path
-      },
-    })
-    Object.defineProperty(exports, 'toPlatformPath', {
-      enumerable: true,
-      get: function () {
-        return path_utils_1.toPlatformPath
-      },
-    })
   },
 })
 
@@ -1983,7 +1532,7 @@ var require_path = __commonJS({
       exports.makeAbsolute =
       exports.unixify =
         void 0
-    var path = require('path')
+    var path2 = require('path')
     var LEADING_DOT_SEGMENT_CHARACTERS_COUNT = 2
     var UNESCAPED_GLOB_SYMBOLS_RE = /(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g
     function unixify(filepath) {
@@ -1991,7 +1540,7 @@ var require_path = __commonJS({
     }
     exports.unixify = unixify
     function makeAbsolute(cwd, filepath) {
-      return path.resolve(cwd, filepath)
+      return path2.resolve(cwd, filepath)
     }
     exports.makeAbsolute = makeAbsolute
     function escape(pattern) {
@@ -3224,7 +2773,7 @@ var require_braces = __commonJS({
 var require_constants2 = __commonJS({
   'node_modules/picomatch/lib/constants.js'(exports, module2) {
     'use strict'
-    var path = require('path')
+    var path2 = require('path')
     var WIN_SLASH = '\\\\/'
     var WIN_NO_SLASH = `[^${WIN_SLASH}]`
     var DOT_LITERAL = '\\.'
@@ -3346,7 +2895,7 @@ var require_constants2 = __commonJS({
       CHAR_UNDERSCORE: 95,
       CHAR_VERTICAL_LINE: 124,
       CHAR_ZERO_WIDTH_NOBREAK_SPACE: 65279,
-      SEP: path.sep,
+      SEP: path2.sep,
       extglobChars(chars) {
         return {
           '!': { type: 'negate', open: '(?:(?!(?:', close: `))${chars.STAR})` },
@@ -3367,7 +2916,7 @@ var require_constants2 = __commonJS({
 var require_utils3 = __commonJS({
   'node_modules/picomatch/lib/utils.js'(exports) {
     'use strict'
-    var path = require('path')
+    var path2 = require('path')
     var win32 = process.platform === 'win32'
     var {
       REGEX_BACKSLASH,
@@ -3396,7 +2945,7 @@ var require_utils3 = __commonJS({
       if (options && typeof options.windows === 'boolean') {
         return options.windows
       }
-      return win32 === true || path.sep === '\\'
+      return win32 === true || path2.sep === '\\'
     }
     exports.escapeLast = (input, char, lastIdx) => {
       const idx = input.lastIndexOf(char, lastIdx)
@@ -4539,7 +4088,7 @@ var require_parse2 = __commonJS({
 var require_picomatch = __commonJS({
   'node_modules/picomatch/lib/picomatch.js'(exports, module2) {
     'use strict'
-    var path = require('path')
+    var path2 = require('path')
     var scan = require_scan()
     var parse = require_parse2()
     var utils = require_utils3()
@@ -4626,7 +4175,7 @@ var require_picomatch = __commonJS({
     }
     picomatch.matchBase = (input, glob, options, posix = utils.isWindows(options)) => {
       const regex = glob instanceof RegExp ? glob : picomatch.makeRe(glob, options)
-      return regex.test(path.basename(input))
+      return regex.test(path2.basename(input))
     }
     picomatch.isMatch = (str, patterns, options) => picomatch(patterns, options)(str)
     picomatch.parse = (pattern, options) => {
@@ -4869,7 +4418,7 @@ var require_pattern = __commonJS({
       exports.isDynamicPattern =
       exports.isStaticPattern =
         void 0
-    var path = require('path')
+    var path2 = require('path')
     var globParent = require_glob_parent()
     var micromatch = require_micromatch()
     var GLOBSTAR = '**'
@@ -4967,7 +4516,7 @@ var require_pattern = __commonJS({
     }
     exports.endsWithSlashGlobStar = endsWithSlashGlobStar
     function isAffectDepthOfReadingPattern(pattern) {
-      const basename2 = path.basename(pattern)
+      const basename2 = path2.basename(pattern)
       return endsWithSlashGlobStar(pattern) || isStaticPattern(basename2)
     }
     exports.isAffectDepthOfReadingPattern = isAffectDepthOfReadingPattern
@@ -5192,8 +4741,8 @@ var require_utils4 = __commonJS({
     exports.errno = errno
     var fs3 = require_fs()
     exports.fs = fs3
-    var path = require_path()
-    exports.path = path
+    var path2 = require_path()
+    exports.path = path2
     var pattern = require_pattern()
     exports.pattern = pattern
     var stream = require_stream()
@@ -5320,8 +4869,8 @@ var require_async = __commonJS({
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
     exports.read = void 0
-    function read(path, settings, callback) {
-      settings.fs.lstat(path, (lstatError, lstat2) => {
+    function read(path2, settings, callback) {
+      settings.fs.lstat(path2, (lstatError, lstat2) => {
         if (lstatError !== null) {
           callFailureCallback(callback, lstatError)
           return
@@ -5330,7 +4879,7 @@ var require_async = __commonJS({
           callSuccessCallback(callback, lstat2)
           return
         }
-        settings.fs.stat(path, (statError, stat) => {
+        settings.fs.stat(path2, (statError, stat) => {
           if (statError !== null) {
             if (settings.throwErrorOnBrokenSymbolicLink) {
               callFailureCallback(callback, statError)
@@ -5362,13 +4911,13 @@ var require_sync = __commonJS({
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
     exports.read = void 0
-    function read(path, settings) {
-      const lstat2 = settings.fs.lstatSync(path)
+    function read(path2, settings) {
+      const lstat2 = settings.fs.lstatSync(path2)
       if (!lstat2.isSymbolicLink() || !settings.followSymbolicLink) {
         return lstat2
       }
       try {
-        const stat = settings.fs.statSync(path)
+        const stat = settings.fs.statSync(path2)
         if (settings.markSymbolicLink) {
           stat.isSymbolicLink = () => true
         }
@@ -5442,17 +4991,17 @@ var require_out = __commonJS({
     var sync = require_sync()
     var settings_1 = require_settings()
     exports.Settings = settings_1.default
-    function stat(path, optionsOrSettingsOrCallback, callback) {
+    function stat(path2, optionsOrSettingsOrCallback, callback) {
       if (typeof optionsOrSettingsOrCallback === 'function') {
-        async.read(path, getSettings(), optionsOrSettingsOrCallback)
+        async.read(path2, getSettings(), optionsOrSettingsOrCallback)
         return
       }
-      async.read(path, getSettings(optionsOrSettingsOrCallback), callback)
+      async.read(path2, getSettings(optionsOrSettingsOrCallback), callback)
     }
     exports.stat = stat
-    function statSync(path, optionsOrSettings) {
+    function statSync(path2, optionsOrSettings) {
       const settings = getSettings(optionsOrSettings)
-      return sync.read(path, settings)
+      return sync.read(path2, settings)
     }
     exports.statSync = statSync
     function getSettings(settingsOrOptions = {}) {
@@ -5678,16 +5227,16 @@ var require_async2 = __commonJS({
           return
         }
         const tasks = names.map((name) => {
-          const path = common.joinPathSegments(directory, name, settings.pathSegmentSeparator)
+          const path2 = common.joinPathSegments(directory, name, settings.pathSegmentSeparator)
           return (done) => {
-            fsStat.stat(path, settings.fsStatSettings, (error, stats) => {
+            fsStat.stat(path2, settings.fsStatSettings, (error, stats) => {
               if (error !== null) {
                 done(error)
                 return
               }
               const entry = {
                 name,
-                path,
+                path: path2,
                 dirent: utils.fs.createDirentFromStats(name, stats),
               }
               if (settings.stats) {
@@ -5805,7 +5354,7 @@ var require_settings2 = __commonJS({
   'node_modules/@nodelib/fs.scandir/out/settings.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var path = require('path')
+    var path2 = require('path')
     var fsStat = require_out()
     var fs3 = require_fs4()
     var Settings = class {
@@ -5813,7 +5362,7 @@ var require_settings2 = __commonJS({
         this._options = _options
         this.followSymbolicLinks = this._getValue(this._options.followSymbolicLinks, false)
         this.fs = fs3.createFileSystemAdapter(this._options.fs)
-        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path.sep)
+        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path2.sep)
         this.stats = this._getValue(this._options.stats, false)
         this.throwErrorOnBrokenSymbolicLink = this._getValue(
           this._options.throwErrorOnBrokenSymbolicLink,
@@ -5843,17 +5392,17 @@ var require_out2 = __commonJS({
     var sync = require_sync2()
     var settings_1 = require_settings2()
     exports.Settings = settings_1.default
-    function scandir(path, optionsOrSettingsOrCallback, callback) {
+    function scandir(path2, optionsOrSettingsOrCallback, callback) {
       if (typeof optionsOrSettingsOrCallback === 'function') {
-        async.read(path, getSettings(), optionsOrSettingsOrCallback)
+        async.read(path2, getSettings(), optionsOrSettingsOrCallback)
         return
       }
-      async.read(path, getSettings(optionsOrSettingsOrCallback), callback)
+      async.read(path2, getSettings(optionsOrSettingsOrCallback), callback)
     }
     exports.scandir = scandir
-    function scandirSync(path, optionsOrSettings) {
+    function scandirSync(path2, optionsOrSettings) {
       const settings = getSettings(optionsOrSettings)
-      return sync.read(path, settings)
+      return sync.read(path2, settings)
     }
     exports.scandirSync = scandirSync
     function getSettings(settingsOrOptions = {}) {
@@ -6467,7 +6016,7 @@ var require_settings3 = __commonJS({
   'node_modules/@nodelib/fs.walk/out/settings.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var path = require('path')
+    var path2 = require('path')
     var fsScandir = require_out2()
     var Settings = class {
       constructor(_options = {}) {
@@ -6477,7 +6026,7 @@ var require_settings3 = __commonJS({
         this.deepFilter = this._getValue(this._options.deepFilter, null)
         this.entryFilter = this._getValue(this._options.entryFilter, null)
         this.errorFilter = this._getValue(this._options.errorFilter, null)
-        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path.sep)
+        this.pathSegmentSeparator = this._getValue(this._options.pathSegmentSeparator, path2.sep)
         this.fsScandirSettings = new fsScandir.Settings({
           followSymbolicLinks: this._options.followSymbolicLinks,
           fs: this._options.fs,
@@ -6539,7 +6088,7 @@ var require_reader2 = __commonJS({
   'node_modules/fast-glob/out/readers/reader.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var path = require('path')
+    var path2 = require('path')
     var fsStat = require_out()
     var utils = require_utils4()
     var Reader = class {
@@ -6552,7 +6101,7 @@ var require_reader2 = __commonJS({
         })
       }
       _getFullEntryPath(filepath) {
-        return path.resolve(this._settings.cwd, filepath)
+        return path2.resolve(this._settings.cwd, filepath)
       }
       _makeEntry(stats, pattern) {
         const entry = {
@@ -6923,7 +6472,7 @@ var require_provider = __commonJS({
   'node_modules/fast-glob/out/providers/provider.js'(exports) {
     'use strict'
     Object.defineProperty(exports, '__esModule', { value: true })
-    var path = require('path')
+    var path2 = require('path')
     var deep_1 = require_deep()
     var entry_1 = require_entry()
     var error_1 = require_error()
@@ -6937,7 +6486,7 @@ var require_provider = __commonJS({
         this.entryTransformer = new entry_2.default(this._settings)
       }
       _getRootDirectory(task) {
-        return path.resolve(this._settings.cwd, task.base)
+        return path2.resolve(this._settings.cwd, task.base)
       }
       _getReaderOptions(task) {
         const basePath = task.base === '.' ? '' : task.base
@@ -7432,25 +6981,25 @@ var require_utils6 = __commonJS({
       }
       mkdirSync(folder)
     }
-    Utils.prototype.writeFileTo = function (path, content, overwrite, attr) {
+    Utils.prototype.writeFileTo = function (path2, content, overwrite, attr) {
       const self = this
-      if (self.fs.existsSync(path)) {
+      if (self.fs.existsSync(path2)) {
         if (!overwrite) return false
-        var stat = self.fs.statSync(path)
+        var stat = self.fs.statSync(path2)
         if (stat.isDirectory()) {
           return false
         }
       }
-      var folder = pth.dirname(path)
+      var folder = pth.dirname(path2)
       if (!self.fs.existsSync(folder)) {
         self.makeDir(folder)
       }
       var fd
       try {
-        fd = self.fs.openSync(path, 'w', 438)
+        fd = self.fs.openSync(path2, 'w', 438)
       } catch (e) {
-        self.fs.chmodSync(path, 438)
-        fd = self.fs.openSync(path, 'w', 438)
+        self.fs.chmodSync(path2, 438)
+        fd = self.fs.openSync(path2, 'w', 438)
       }
       if (fd) {
         try {
@@ -7459,31 +7008,31 @@ var require_utils6 = __commonJS({
           self.fs.closeSync(fd)
         }
       }
-      self.fs.chmodSync(path, attr || 438)
+      self.fs.chmodSync(path2, attr || 438)
       return true
     }
-    Utils.prototype.writeFileToAsync = function (path, content, overwrite, attr, callback) {
+    Utils.prototype.writeFileToAsync = function (path2, content, overwrite, attr, callback) {
       if (typeof attr === 'function') {
         callback = attr
         attr = void 0
       }
       const self = this
-      self.fs.exists(path, function (exist) {
+      self.fs.exists(path2, function (exist) {
         if (exist && !overwrite) return callback(false)
-        self.fs.stat(path, function (err, stat) {
+        self.fs.stat(path2, function (err, stat) {
           if (exist && stat.isDirectory()) {
             return callback(false)
           }
-          var folder = pth.dirname(path)
+          var folder = pth.dirname(path2)
           self.fs.exists(folder, function (exists) {
             if (!exists) self.makeDir(folder)
-            self.fs.open(path, 'w', 438, function (err2, fd) {
+            self.fs.open(path2, 'w', 438, function (err2, fd) {
               if (err2) {
-                self.fs.chmod(path, 438, function () {
-                  self.fs.open(path, 'w', 438, function (err3, fd2) {
+                self.fs.chmod(path2, 438, function () {
+                  self.fs.open(path2, 'w', 438, function (err3, fd2) {
                     self.fs.write(fd2, content, 0, content.length, 0, function () {
                       self.fs.close(fd2, function () {
-                        self.fs.chmod(path, attr || 438, function () {
+                        self.fs.chmod(path2, attr || 438, function () {
                           callback(true)
                         })
                       })
@@ -7493,13 +7042,13 @@ var require_utils6 = __commonJS({
               } else if (fd) {
                 self.fs.write(fd, content, 0, content.length, 0, function () {
                   self.fs.close(fd, function () {
-                    self.fs.chmod(path, attr || 438, function () {
+                    self.fs.chmod(path2, attr || 438, function () {
                       callback(true)
                     })
                   })
                 })
               } else {
-                self.fs.chmod(path, attr || 438, function () {
+                self.fs.chmod(path2, attr || 438, function () {
                   callback(true)
                 })
               }
@@ -7508,7 +7057,7 @@ var require_utils6 = __commonJS({
         })
       })
     }
-    Utils.prototype.findFiles = function (path) {
+    Utils.prototype.findFiles = function (path2) {
       const self = this
       function findSync(dir, pattern, recursive) {
         if (typeof pattern === 'boolean') {
@@ -7517,18 +7066,18 @@ var require_utils6 = __commonJS({
         }
         let files = []
         self.fs.readdirSync(dir).forEach(function (file) {
-          var path2 = pth.join(dir, file)
-          if (self.fs.statSync(path2).isDirectory() && recursive)
-            files = files.concat(findSync(path2, pattern, recursive))
-          if (!pattern || pattern.test(path2)) {
+          var path3 = pth.join(dir, file)
+          if (self.fs.statSync(path3).isDirectory() && recursive)
+            files = files.concat(findSync(path3, pattern, recursive))
+          if (!pattern || pattern.test(path3)) {
             files.push(
-              pth.normalize(path2) + (self.fs.statSync(path2).isDirectory() ? self.sep : '')
+              pth.normalize(path3) + (self.fs.statSync(path3).isDirectory() ? self.sep : '')
             )
           }
         })
         return files
       }
-      return findSync(path, void 0, true)
+      return findSync(path2, void 0, true)
     }
     Utils.prototype.getAttributes = function () {}
     Utils.prototype.setAttributes = function () {}
@@ -7555,18 +7104,18 @@ var require_utils6 = __commonJS({
           return 'UNSUPPORTED (' + method + ')'
       }
     }
-    Utils.canonical = function (path) {
-      if (!path) return ''
-      var safeSuffix = pth.posix.normalize('/' + path.split('\\').join('/'))
+    Utils.canonical = function (path2) {
+      if (!path2) return ''
+      var safeSuffix = pth.posix.normalize('/' + path2.split('\\').join('/'))
       return pth.join('.', safeSuffix)
     }
     Utils.sanitize = function (prefix, name) {
       prefix = pth.resolve(pth.normalize(prefix))
       var parts = name.split('/')
       for (var i = 0, l = parts.length; i < l; i++) {
-        var path = pth.normalize(pth.join(prefix, parts.slice(i, l).join(pth.sep)))
-        if (path.indexOf(prefix) === 0) {
-          return path
+        var path2 = pth.normalize(pth.join(prefix, parts.slice(i, l).join(pth.sep)))
+        if (path2.indexOf(prefix) === 0) {
+          return path2
         }
       }
       return pth.normalize(pth.join(prefix, pth.basename(name)))
@@ -7635,8 +7184,8 @@ var require_fattr = __commonJS({
     var fs3 = require_fileSystem().require()
     var pth = require('path')
     fs3.existsSync = fs3.existsSync || pth.existsSync
-    module2.exports = function (path) {
-      var _path = path || '',
+    module2.exports = function (path2) {
+      var _path = path2 || '',
         _obj = newAttr(),
         _stat = null
       function newAttr() {
@@ -9730,7 +9279,7 @@ var src_default = detectCiEnvironment
 var import_fs3 = __toESM(require('fs'), 1)
 var import_http2 = __toESM(require('http'), 1)
 var import_https2 = __toESM(require('https'), 1)
-var import_path2 = require('path')
+var import_path3 = require('path')
 var import_stream = require('stream')
 var import_url = require('url')
 var import_util2 = require('util')
@@ -9738,11 +9287,16 @@ var import_util2 = require('util')
 // src/manyglob.ts
 var import_fast_glob = __toESM(require_out4(), 1)
 var os = __toESM(require('os'), 1)
+var import_path = __toESM(require('path'), 1)
 async function manyglob(globs2) {
   return (
     await Promise.all(
       globs2.reduce((prev, glob) => {
-        return prev.concat((0, import_fast_glob.default)(glob.replace(/^~/, os.homedir())))
+        const homeDir = os
+          .homedir()
+          .split(import_path.default.sep)
+          .join(import_path.default.posix.sep)
+        return prev.concat((0, import_fast_glob.default)(glob.replace(/^~/, homeDir)))
       }, [])
     )
   ).flatMap((paths) => paths)
@@ -9752,7 +9306,7 @@ async function manyglob(globs2) {
 var import_adm_zip = __toESM(require_adm_zip(), 1)
 var import_fs2 = __toESM(require('fs'), 1)
 var os2 = __toESM(require('os'), 1)
-var import_path = require('path')
+var import_path2 = require('path')
 var import_util = require('util')
 var readFile = (0, import_util.promisify)(import_fs2.default.readFile)
 var writeFile = (0, import_util.promisify)(import_fs2.default.writeFile)
@@ -9760,12 +9314,12 @@ var mkdtemp = (0, import_util.promisify)(import_fs2.default.mkdtemp)
 var realpath = (0, import_util.promisify)(import_fs2.default.realpath)
 var rm = (0, import_util.promisify)(import_fs2.default.rm)
 async function zipPaths(paths) {
-  const nonZips = paths.filter((path) => (0, import_path.extname)(path) !== '.zip')
-  const zips = paths.filter((path) => (0, import_path.extname)(path) === '.zip')
+  const nonZips = paths.filter((path2) => (0, import_path2.extname)(path2) !== '.zip')
+  const zips = paths.filter((path2) => (0, import_path2.extname)(path2) === '.zip')
   const admZip = new import_adm_zip.default()
   for (const nonZip of nonZips) {
     const content = await readFile(nonZip)
-    const name = (0, import_path.basename)(nonZip)
+    const name = (0, import_path2.basename)(nonZip)
     admZip.addFile(name, content)
   }
   const resultPaths = []
@@ -9780,9 +9334,9 @@ async function zipPaths(paths) {
   return resultPaths.concat(zips)
 }
 var withTempFile = (baseName, fn, remove) =>
-  withTempDir((dir) => fn((0, import_path.join)(dir, baseName)), remove)
+  withTempDir((dir) => fn((0, import_path2.join)(dir, baseName)), remove)
 async function withTempDir(fn, remove) {
-  const dir = await mkdtemp((await realpath(os2.tmpdir())) + import_path.sep)
+  const dir = await mkdtemp((await realpath(os2.tmpdir())) + import_path2.sep)
   try {
     await fn(dir)
   } finally {
@@ -9801,6 +9355,12 @@ var contentTypes = {
   '.ndjson': 'application/x-ndjson',
   '.zip': 'application/zip',
 }
+var urlExtensionPath = {
+  '.xml': 'junit-xml',
+  '.json': 'cucumber-json',
+  '.ndjson': 'cucumber-messages',
+  '.zip': 'zip',
+}
 async function publish(globs2, zip2, projectId2, baseUrl2, env, authenticate, requestTimeout) {
   if (!Array.isArray(globs2)) {
     throw new Error('globs must be an array')
@@ -9809,20 +9369,18 @@ async function publish(globs2, zip2, projectId2, baseUrl2, env, authenticate, re
     throw new Error('globs cannot be empty')
   }
   const authHeaders = authenticate()
-  const url = new import_url.URL(
-    `/api/project/${encodeURIComponent(projectId2)}/test-cycle`,
-    baseUrl2
-  )
   const ciEnv = src_default(env)
   const paths = (await manyglob(globs2))
-    .filter((path) => extensions.includes((0, import_path2.extname)(path)))
+    .filter((path2) => extensions.includes((0, import_path3.extname)(path2)))
     .sort()
   if (paths.length === 0) {
     throw new Error(`No report files found. Please check your globs: ${JSON.stringify(globs2)}`)
   }
   const publishPaths = zip2 ? await zipPaths(paths) : paths
   return Promise.all(
-    publishPaths.map((path) => publishFile(path, url, ciEnv, authHeaders, requestTimeout))
+    publishPaths.map((path2) =>
+      publishFile(path2, getUrl(path2, baseUrl2, projectId2), ciEnv, authHeaders, requestTimeout)
+    )
   )
 }
 async function publishFile(requestBodyPath, url, ciEnv, authHeaders, requestTimeout) {
@@ -9841,7 +9399,7 @@ async function publishFile(requestBodyPath, url, ciEnv, authHeaders, requestTime
             return reject(new Error(`Unsupported protocol: ${url.toString()}`))
         }
         const reqHeaders = {
-          'Content-Type': contentTypes[(0, import_path2.extname)(requestBodyPath)],
+          'Content-Type': contentTypes[(0, import_path3.extname)(requestBodyPath)],
           'Content-Length': stat.size,
           ...(ciEnv?.git?.remote ? { 'OneReport-SourceControl': ciEnv.git.remote } : {}),
           ...(ciEnv?.git?.revision ? { 'OneReport-Revision': ciEnv.git.revision } : {}),
@@ -9893,6 +9451,17 @@ async function publishFile(requestBodyPath, url, ciEnv, authHeaders, requestTime
       })
       .catch(reject)
   })
+}
+function getUrl(path2, baseUrl2, projectId2) {
+  const ext = (0, import_path3.extname)(path2)
+  if (!extensions.includes(ext)) {
+    throw new Error(`Unsupported extension: ${ext}`)
+  }
+  const urlExtension = urlExtensionPath[ext]
+  return new import_url.URL(
+    `/api/project/${encodeURIComponent(projectId2)}/${encodeURIComponent(urlExtension)}`,
+    baseUrl2
+  )
 }
 
 // src/tokenAuthenticator.ts
