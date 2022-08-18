@@ -52,7 +52,7 @@
   },
   "homepage": "https://github.com/SmartBear/one-report-publisher#readme",
   "devDependencies": {
-    "@actions/core": "1.9.0",
+    "@actions/core": "1.9.1",
     "@types/mocha": "9.1.1",
     "@types/node": "18.0.1",
     "@typescript-eslint/eslint-plugin": "5.30.5",
